@@ -1,0 +1,338 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage[a4paper, lmargin = 1cm, rmargin =1cm, tmargin = 1cm, bmargin = 2cm]{geometry}
+
+
+\usepackage{tikz}
+\usetikzlibrary{cd}
+\usepackage{quiver}
+
+\usepackage[sorting=none]{biblatex}
+\addbibresource{reference.bib}
+
+
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd }
+\usepackage[T1]{fontenc}
+\usepackage{euscript}
+
+
+
+\usepackage{adjustbox}
+
+\usepackage{color}
+
+
+\usepackage{semantic}
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{definition}[theorem]{Definition}
+
+\DeclareMathOperator{\colim}{colim}
+\DeclareMathOperator{\Prop}{\mathsf{Prop}}
+\DeclareMathOperator{\SProp}{\mathsf{SProp}}
+\DeclareMathOperator{\rec}{rec}
+
+\newcommand{\ovarr}{\overrightarrow}
+\newcommand{\ovl}{\overline}
+\newcommand{\omlim}{A_0+\sum\limits_{i\geq 1}\ovl A_i}
+
+\newcommand{\0}{\mathbf{0}}
+\newcommand{\1}{\mathbf{1}}
+\newcommand{\nat}{\mathbf{N}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\SBS}{\mathbf{SBS}}
+
+\newcommand{\Gram}{\mathsf{G}}
+\newcommand{\mono}{\rightarrowtail}
+\newcommand{\omop}{\omega^{op}}
+\newcommand{\omopch}{\Theta}
+\newcommand{\omch}{\Omega}
+\newcommand{\Dist}{\mathsf{Dist}}
+\newcommand{\gd}{\dot {\mathbf{Fun}}}
+\newcommand{\colomf}[1]{\varinjlim\circ\omch_{#1}^{(-)}}
+\newcommand{\colom}[2]{\varinjlim(\omch_{#1}^{#2})}
+\newcommand{\lcontext}{\Gamma}
+\newcommand{\rcontext}{\Delta}
+\newcommand{\lvar}{\gamma}
+\newcommand{\rvar}{\delta}
+
+\newcommand{\tcontext}{\Gamma}
+\newcommand{\tvar}{\gamma}
+\newcommand{\diag}{\Delta}
+\newcommand{\DThunk}{\mathsf{Dist}}
+
+\newcommand{\Unit}{\mathsf{Unit}}
+\newcommand{\Bool}{\mathsf{Bool}}
+\newcommand{\Real}{\mathsf{Real}}
+\newcommand{\Nat}{\mathsf{Nat}}
+\newcommand{\List}{\textsf{List}}
+\newcommand{\Stream}{\textsf{Stream}}
+
+\newcommand{\Wf}{\textsf{well-formed}}
+\newcommand{\slvl}{\mathbf{s}}
+\newcommand{\llvl}{\mathbf{l}}
+
+
+\mathlig{<-}{\leftarrow}
+\mathlig{->}{\to}
+\mathlig{|->}{\mapsto}
+\mathlig{=>}{\Rightarrow}
+\mathlig{|-}{\vdash}
+\mathlig{[|}{\llbracket}
+\mathlig{|]}{\rrbracket}
+
+\mathlig{==}{\equiv}
+
+\reservestyle{\command}{\mathsf}
+\command{inl,inr,wrap,roll,rec,corec,as,match,return,let,in,sample,on,do}
+
+
+% Distributions in programming language
+\newcommand{\Uniform}{\mathsf{uniform}}
+
+
+\title{Internship report M2\\ Parisian Master of Research in Computer Science Level 
+2\vspace{1cm}\\  Non-singleton Elimination\\}
+\author{\textbf{Soudant L\'eo}\\ fourth year student at ENS Paris Saclay}
+\date{2025}
+
+
+\begin{document}
+
+
+\begin{titlepage}
+    \maketitle
+    \centering
+    Supervisor
+    
+    \textbf{Pierre-Merie P\'edrot}, chargé de recherche at Inria Rennes-Bretagne-Atlantique, 
+
+\end{titlepage}
+
+\begin{abstract}
+\end{abstract}
+\tableofcontents
+\newpage
+
+
+\section{Introduction}
+
+
+
+
+\subsection{The outline}
+
+\section{Sheaves}
+\subsection{Topoï and sheaves in topoï}
+
+
+Proofs, results and details for this section can often be found in \emph{Sheaves in geometry and logic: A first introduction to topos theory} by Saunders Maclane and Ieke Moerdijk \cite{maclane2012sheaves}.
+
+\begin{definition}[Subobject]
+    In a category, a \emph{subobject} of $X$ is an equivalence class of monomorphism $m : A \mono X$, where the equivalence comes from the preorder where $ m : A \mono X $ is smaller than $ m' : A' \mono X$ when there is a map $f : A -> A'$ with $ m' \circ f = m$.
+\end{definition}
+
+We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of subobjects of $X$, and $\mathbf{Sub}(f) : \mathbf{Sub}(Y) -> \mathbf{Sub}(X)$ sends $m : A -> Y$ to its pullback by $f : X -> Y $. 
+
+\begin{definition}[Topos]
+    A \emph{topos} is a cartesian closed category with all finite limits and a suboject \emph{classifier} $\Omega$ and an isomorphism $\mathbf{Sub}(X)\cong \mathbf{Hom}(X, \Omega)$ natural in $X$.
+\end{definition}
+
+We note that topoï also have finite colimits.
+
+A topos serves to give models of intuitionistic logic in classical mathematical language. It has an internal logic which is higher order.
+
+For example, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoï. In particular categories of presheaves are topoï, and correspond to Kripke models. 
+
+The subobject classifier $\Omega$ is equipped with an internal meet-semilattice structure inherited from the meet-semilattice structure on each $\mathbf{Sub}(X)$, which is natural in $X$.
+
+\begin{definition}[Lawvere-Tierney topology]
+    A \emph{Lawvere-Tierney topology} is a left exact idempotent monad $j$ on the internal meet-semilattice on $\Omega$.
+\begin{itemize}
+    \item $ id_\Omega \leq j $,
+    \item $ j\circ j \leq  j$
+    \item $ j \circ \wedge = \wedge \circ j\times j$
+\end{itemize}
+\end{definition}
+
+From a topology $j$ we extract a closure operator $J_X$ of $\mathbf{Sub}(X)$ for any $X$.
+\begin{definition}[Dense subobject]
+    A suboject $U$ of $X$ is dense if $JU  = X$
+\end{definition}
+
+A topology can be lifted to a left exact idempotent monad on the entirety of the topos, the sheafification monad.
+
+\begin{definition}[$j$-Sheaf in topos]
+    An object $F$ is a $j$-\emph{sheaf} in a topos if for any dense subobject $U$ of any object $X$, the morphism $\mathbf{Hom}(X, F) -> \mathbf{Hom}(U, F)$ obtained by precomposition is an isomorphism.
+\end{definition}
+
+A $j$-Sheaf is up to isomorphism the result of sheafifying an object.
+
+$j$-Sheaves form a topos. The sheaves on a presheaf topos correspond to Beth semantics.
+
+\subsection{Sheaves in type theory}
+
+Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \textsc{Rocq} with $\SProp$.
+
+Then, a Lawvere-Tierney topology may be similarily defined, as a map $j : \Prop -> \Prop$
+
+\section{System T and MLTT}
+\subsection{MLTT}
+We sought to extend the following variant of MLTT.
+
+We consider a type of levels containing two elements $\slvl$ and $\llvl$ for small and large, with generic $\ell$
+
+With terms :
+
+$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\slvl | \square_\llvl$$
+
+
+Contexts :
+$$ \Gamma ::= \Gamma, x : A | \cdot $$
+
+And conversion rules :
+
+$$
+    \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
+    \inference[\textsc{Wf-Ext}]{\Gamma |- A == A & \Gamma |- \Wf}{ \Gamma, x : A |- \Wf}
+$$
+$$
+    \inference[\textsc{Int-Typ}]{\Gamma |- \Wf}{\Gamma |- \nat == \nat : \square_\ell} \qquad
+    \inference[\textsc{Emp-Typ}]{\Gamma |- \Wf}{\Gamma |- \bot == \bot : \square_\ell}
+$$
+$$
+    \inference[\textsc{Fun-Typ}]{\Gamma |- A == A' : \square_\ell & \Gamma, x : A |- B == B' : \square_\ell}{\Gamma |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
+    \inference[\textsc{Typ-Typ}]{\Gamma |- \Wf}{\Gamma |- \square_\slvl : \square_\llvl}
+$$
+
+
+$$
+    \inference[\textsc{Fun-Intro}]{\Gamma, x : A |- M == M' : B &\Gamma |- A == A : \square_\ell}{\Gamma |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \qquad
+    \inference[\textsc{Fun-Elim}]{\Gamma |- M == M' : \Pi x:A, B& \Gamma |- N == N' : A}{\Gamma |- MN == M'N' : B(N/x)}
+$$
+
+$$
+    \inference[\textsc{Axiom}]{\Gamma |- \Wf & x : A \in \Gamma }{\Gamma |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\Gamma, x : A |- M == M' : B & \Gamma |- N == N' : A}{\Gamma |- (\lambda x. M)N == M'(N'/x) : B(N/x)}
+$$
+
+$$
+    \inference[\textsc{Int-Zero}]{\Gamma |- \Wf}{\Gamma |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\Gamma |- \Wf}{\Gamma |- S == S : \nat -> \nat}
+$$
+
+$$
+    \inference[\textsc{Int-Rec}]{\Gamma |- \Wf}{\Gamma |- \nat_{\rec} == \nat_{\rec} : \Pi A : \nat \to \square_\slvl, A 0 \to \left(\Pi n:\nat, A n \to A (S n)\right) \to \Pi n :\nat, A n}
+$$
+
+
+$$
+    \inference[\textsc{Int-Rec-Zero}]{\Gamma |- A == A : \nat -> square_\slvl & \Gamma |- N_0 == N'_0 == A 0\\ \Gamma |- N_S == N_S : \Pi n:\nat, A n -> A(S n)}{\Gamma |- \nat_{\rec} A N_0N_S0 == N'_0 : A 0}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\Gamma |- A == A' : \nat -> square_\slvl & \Gamma |- N_0 == N'_0 == A 0\\ \Gamma |- N_S == N'_S : \Pi n:\nat, A n -> A(S n) & \Gamma |- N == N' :\nat}{\Gamma |- \nat_{\rec} A N_0N_S (S N) == N'_S N' (\nat_{\rec}A' N'_0 N'_S N') : A (S N)}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{\Gamma |- \Wf}{\Gamma |- \bot_{\rec} == \bot_{\rec} : \Pi A : \bot \to \square_\slvl,\Pi e :\bot, A e}
+$$
+
+$$
+    \inference[\textsc{Sym}]{\Gamma |- M == M' : A}{\Gamma |- M' == M : A} \qquad
+    \inference[\textsc{Trans}]
+    {\Gamma |- M == M' :A & \Gamma |- M' == M'' : A}{\Gamma |- M == M'' : A}
+$$
+
+$$
+    \inference[\textsc{Conv}]
+    {\Gamma |- M == M' :A & \Gamma |- A == A' : \square_\ell}{\Gamma M ==M' : A'}
+$$
+
+\subsection{System T}
+
+To identify and solve problems in a simpler envirronement, we studied a modified System T before, based on the following variant.
+
+With types :
+
+$$ A ::= A -> A | \nat | \bot $$
+
+Terms :
+
+$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
+
+
+Contexts :
+$$ \Gamma ::= \Gamma, x : A | \cdot $$
+
+And conversion rules :
+
+
+$$
+    \inference[\textsc{Fun-Intro}]{\Gamma, x : A |- M == M' : B }{\Gamma |- \lambda x. M == \lambda x. M' : A -> B} \qquad
+    \inference[\textsc{Fun-Elim}]{\Gamma |- M == M' : A -> B& \Gamma |- N == N' : A}{\Gamma |- MN == M'N' : B}
+$$
+
+$$
+    \inference[\textsc{Axiom}]{x : A \in \Gamma }{\Gamma |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\Gamma, x : A |- M == M' : B & \Gamma |- N == N' : A}{\Gamma |- (\lambda x. M)N == M' : B}
+$$
+
+$$
+    \inference[\textsc{Int-Zero}]{\Gamma |- \Wf}{\Gamma |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\Gamma |- \Wf}{\Gamma |- S == S : \nat -> \nat}
+$$
+
+$$
+    \inference[\textsc{Int-Rec}]{\Gamma |- \Wf}{\Gamma |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
+$$
+
+
+$$
+    \inference[\textsc{Int-Rec-Zero}]{\Gamma |- N_0 == N'_0 == A\\ \Gamma |- N_S == N_S : \nat -> A  -> A}{\Gamma |- \nat_{\rec} N_0N_S0 == N'_0 : A}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\Gamma |- N_0 == N'_0 == A\\ \Gamma |- N_S == N'_S : \nat -> A  -> A & \Gamma |- N == N' :\nat}{\Gamma |- \nat_{\rec} N_0N_S (S N) == N'_S N' (\nat_{\rec}N'_0 N'_S N') : A}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{}{\Gamma |- \bot_{\rec} == \bot_{\rec} : \bot -> A}
+$$
+
+$$
+    \inference[\textsc{Sym}]{\Gamma |- M == M' : A}{\Gamma |- M' == M : A} \qquad
+    \inference[\textsc{Trans}]
+    {\Gamma |- M == M' :A & \Gamma |- M' == M'' : A}{\Gamma |- M == M'' : A}
+$$
+
+
+\section{Meta-informations}
+
+\subsection{Time expenditure}
+
+
+\subsection{Difficulties}
+
+
+%\subsection{Activities}
+
+\section{Conclusion}
+
+
+
+\newpage
+
+\appendix
+\appendixname
+
+\section{Dummy}
+
+\printbibliography
+\end{document}

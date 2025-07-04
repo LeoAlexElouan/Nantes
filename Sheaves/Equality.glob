@@ -1,0 +1,490 @@
+DIGEST 0af69e50124b72c035cf804458a172c2
+Fsheaves.Equality
+ind 55:56 <> eq
+constr 107:113 <> eq_refl
+binder 63:63 <> A:1
+R82:82 sheaves.Equality <> A:1 var
+binder 78:78 <> x:2
+R88:91 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R117:118 sheaves.Equality <> eq:3 ind
+R122:122 sheaves.Equality <> x:2 var
+R120:120 sheaves.Equality <> x:2 var
+scheme 55:56 <> eq_rect
+scheme 55:56 <> eq_ind
+scheme 55:56 <> eq_rec
+scheme 55:56 <> eq_sind
+R155:156 sheaves.Equality <> eq ind
+not 137:137 <> ::type_scope:x_'='_x_':>'_x
+R200:201 sheaves.Equality <> eq ind
+not 188:188 <> ::type_scope:x_'='_x
+R233:239 sheaves.Equality <> eq_refl constr
+R233:239 sheaves.Equality <> eq_refl constr
+def 260:267 <> eq_trans
+binder 274:274 <> A:5
+R295:295 sheaves.Equality <> A:5 var
+binder 287:287 <> x:6
+binder 289:289 <> y:7
+binder 291:291 <> z:8
+R300:300 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R306:310 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R302:304 sheaves.Equality <> ::type_scope:x_'='_x not
+R301:301 sheaves.Equality <> x:6 var
+R305:305 sheaves.Equality <> y:7 var
+R311:311 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R317:322 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R328:328 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R313:315 sheaves.Equality <> ::type_scope:x_'='_x not
+R312:312 sheaves.Equality <> y:7 var
+R316:316 sheaves.Equality <> z:8 var
+R324:326 sheaves.Equality <> ::type_scope:x_'='_x not
+R323:323 sheaves.Equality <> x:6 var
+R327:327 sheaves.Equality <> z:8 var
+R411:418 sheaves.Equality <> eq_trans def
+def 432:437 <> eq_sym
+binder 440:440 <> A:9
+R450:450 sheaves.Equality <> A:9 var
+binder 444:444 <> x:10
+binder 446:446 <> y:11
+R455:455 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R461:466 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R472:472 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R457:459 sheaves.Equality <> ::type_scope:x_'='_x not
+R456:456 sheaves.Equality <> x:10 var
+R460:460 sheaves.Equality <> y:11 var
+R468:470 sheaves.Equality <> ::type_scope:x_'='_x not
+R467:467 sheaves.Equality <> y:11 var
+R471:471 sheaves.Equality <> x:10 var
+R549:554 sheaves.Equality <> eq_sym def
+def 569:577 <> transport
+binder 595:595 <> A:12
+R612:612 sheaves.Equality <> A:12 var
+binder 608:608 <> x:13
+R621:624 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R620:620 sheaves.Equality <> A:12 var
+binder 616:616 <> P:14
+R641:644 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R638:638 sheaves.Equality <> P:14 var
+R640:640 sheaves.Equality <> x:13 var
+R656:656 sheaves.Equality <> A:12 var
+binder 652:652 <> y:15
+R664:667 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R660:662 sheaves.Equality <> ::type_scope:x_'='_x not
+R659:659 sheaves.Equality <> x:13 var
+R663:663 sheaves.Equality <> y:15 var
+R668:668 sheaves.Equality <> P:14 var
+R670:670 sheaves.Equality <> y:15 var
+def 741:751 <> transport_r
+binder 769:769 <> A:16
+R786:786 sheaves.Equality <> A:16 var
+binder 782:782 <> x:17
+R795:798 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R794:794 sheaves.Equality <> A:16 var
+binder 790:790 <> P:18
+R815:818 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R812:812 sheaves.Equality <> P:18 var
+R814:814 sheaves.Equality <> x:17 var
+R831:831 sheaves.Equality <> A:16 var
+binder 827:827 <> y:19
+R840:843 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R836:838 sheaves.Equality <> ::type_scope:x_'='_x not
+R835:835 sheaves.Equality <> y:19 var
+R839:839 sheaves.Equality <> x:17 var
+R844:844 sheaves.Equality <> P:18 var
+R846:846 sheaves.Equality <> y:19 var
+binder 855:855 <> A:20
+binder 857:857 <> x:21
+binder 859:859 <> P:22
+binder 861:861 <> p:23
+binder 863:863 <> y:24
+binder 865:865 <> e:25
+R870:878 sheaves.Equality <> transport def
+R902:907 sheaves.Equality <> eq_sym def
+R909:909 sheaves.Equality <> e:25 var
+R899:899 sheaves.Equality <> y:24 var
+R897:897 sheaves.Equality <> p:23 var
+binder 887:887 <> y:26
+R892:892 sheaves.Equality <> P:22 var
+R894:894 sheaves.Equality <> y:26 var
+R880:880 sheaves.Equality <> x:21 var
+R948:956 sheaves.Equality <> transport def
+not 926:926 <> :::'rew'_x_'in'_x
+R1082:1090 sheaves.Equality <> transport def
+not 1054:1054 <> :::'rew'_'['_x_']'_x_'in'_x
+R1233:1243 sheaves.Equality <> transport_r def
+not 1208:1208 <> :::'rew'_'<-'_x_'in'_x
+R1372:1382 sheaves.Equality <> transport_r def
+not 1341:1341 <> :::'rew'_'<-'_'['_x_']'_x_'in'_x
+R1517:1525 sheaves.Equality <> transport def
+not 1492:1492 <> :::'rew'_'->'_x_'in'_x
+R1626:1634 sheaves.Equality <> transport def
+not 1595:1595 <> :::'rew'_'->'_'['_x_']'_x_'in'_x
+R1762:1768 sheaves.Equality <> eq_refl constr
+not 1705:1705 <> :::'rew'_'dependent'_x_'in'_x
+R1959:1965 sheaves.Equality <> eq_refl constr
+not 1899:1899 <> :::'rew'_'dependent'_'->'_x_'in'_x
+R2090:2095 sheaves.Equality <> eq_sym def
+R2112:2118 sheaves.Equality <> eq_refl constr
+not 2045:2045 <> :::'rew'_'dependent'_'<-'_x_'in'_x
+R2326:2328 sheaves.Equality <> ::type_scope:x_'='_x not
+R2354:2360 sheaves.Equality <> eq_refl constr
+not 2253:2253 <> :::'rew'_'dependent'_'['_'fun'_x_x_'=>'_x_']'_x_'in'_x
+R2606:2608 sheaves.Equality <> ::type_scope:x_'='_x not
+R2634:2640 sheaves.Equality <> eq_refl constr
+not 2530:2530 <> :::'rew'_'dependent'_'->'_'['_'fun'_x_x_'=>'_x_']'_x_'in'_x
+R2800:2805 sheaves.Equality <> eq_sym def
+R2819:2821 sheaves.Equality <> ::type_scope:x_'='_x not
+R2847:2853 sheaves.Equality <> eq_refl constr
+not 2736:2736 <> :::'rew'_'dependent'_'<-'_'['_'fun'_x_x_'=>'_x_']'_x_'in'_x
+R3087:3089 sheaves.Equality <> ::type_scope:x_'='_x not
+R3102:3102 sheaves.Equality <> y:34 var
+R3104:3104 sheaves.Equality <> p:33 var
+R3119:3125 sheaves.Equality <> eq_refl constr
+not 3027:3027 <> :::'rew'_'dependent'_'['_x_']'_x_'in'_x
+R3325:3327 sheaves.Equality <> ::type_scope:x_'='_x not
+R3340:3340 sheaves.Equality <> y:36 var
+R3342:3342 sheaves.Equality <> p:35 var
+R3357:3363 sheaves.Equality <> eq_refl constr
+not 3262:3262 <> :::'rew'_'dependent'_'->'_'['_x_']'_x_'in'_x
+R3502:3507 sheaves.Equality <> eq_sym def
+R3521:3523 sheaves.Equality <> ::type_scope:x_'='_x not
+R3536:3536 sheaves.Equality <> y:38 var
+R3538:3538 sheaves.Equality <> p:37 var
+R3553:3559 sheaves.Equality <> eq_refl constr
+not 3451:3451 <> :::'rew'_'dependent'_'<-'_'['_x_']'_x_'in'_x
+def 3704:3710 <> f_equal
+binder 3713:3713 <> A:39
+binder 3715:3715 <> B:40
+R3724:3727 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3723:3723 sheaves.Equality <> A:39 var
+R3728:3728 sheaves.Equality <> B:40 var
+binder 3719:3719 <> f:41
+R3738:3738 sheaves.Equality <> A:39 var
+binder 3732:3732 <> x:42
+binder 3734:3734 <> y:43
+R3748:3751 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R3744:3746 sheaves.Equality <> ::type_scope:x_'='_x not
+R3743:3743 sheaves.Equality <> x:42 var
+R3747:3747 sheaves.Equality <> y:43 var
+R3755:3757 sheaves.Equality <> ::type_scope:x_'='_x not
+R3752:3752 sheaves.Equality <> f:41 var
+R3754:3754 sheaves.Equality <> x:42 var
+R3758:3758 sheaves.Equality <> f:41 var
+R3760:3760 sheaves.Equality <> y:43 var
+def 3825:3835 <> f_equal_dep
+binder 3838:3838 <> A:44
+binder 3840:3840 <> B:45
+R3858:3858 sheaves.Equality <> A:44 var
+binder 3855:3855 <> a:46
+R3861:3861 sheaves.Equality <> B:45 var
+R3863:3863 sheaves.Equality <> a:46 var
+binder 3844:3844 <> f:47
+R3873:3873 sheaves.Equality <> A:44 var
+binder 3867:3867 <> x:48
+binder 3869:3869 <> y:49
+R3882:3884 sheaves.Equality <> ::type_scope:x_'='_x not
+R3881:3881 sheaves.Equality <> x:48 var
+R3885:3885 sheaves.Equality <> y:49 var
+binder 3877:3877 <> e:50
+R3905:3907 sheaves.Equality <> ::type_scope:x_'='_x not
+R3889:3893 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R3895:3896 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R3898:3901 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R3894:3894 sheaves.Equality <> B:45 var
+R3902:3902 sheaves.Equality <> f:47 var
+R3904:3904 sheaves.Equality <> x:48 var
+R3897:3897 sheaves.Equality <> e:50 var
+R3908:3908 sheaves.Equality <> f:47 var
+R3910:3910 sheaves.Equality <> y:49 var
+def 3965:3978 <> eq_trans_assoc
+binder 3985:3985 <> A:51
+R4010:4010 sheaves.Equality <> A:51 var
+binder 4000:4000 <> x:52
+binder 4002:4002 <> y:53
+binder 4004:4004 <> z:54
+binder 4006:4006 <> w:55
+R4019:4021 sheaves.Equality <> ::type_scope:x_'='_x not
+R4018:4018 sheaves.Equality <> x:52 var
+R4022:4022 sheaves.Equality <> y:53 var
+binder 4014:4014 <> e:56
+R4032:4034 sheaves.Equality <> ::type_scope:x_'='_x not
+R4031:4031 sheaves.Equality <> y:53 var
+R4035:4035 sheaves.Equality <> z:54 var
+binder 4026:4027 <> e':57
+R4046:4048 sheaves.Equality <> ::type_scope:x_'='_x not
+R4045:4045 sheaves.Equality <> z:54 var
+R4049:4049 sheaves.Equality <> w:55 var
+binder 4039:4041 <> e'':58
+R4084:4086 sheaves.Equality <> ::type_scope:x_'='_x not
+R4056:4063 sheaves.Equality <> eq_trans def
+R4068:4075 sheaves.Equality <> eq_trans def
+R4080:4082 sheaves.Equality <> e'':58 var
+R4077:4078 sheaves.Equality <> e':57 var
+R4065:4065 sheaves.Equality <> e:56 var
+R4087:4094 sheaves.Equality <> eq_trans def
+R4112:4114 sheaves.Equality <> e'':58 var
+R4097:4104 sheaves.Equality <> eq_trans def
+R4108:4109 sheaves.Equality <> e':57 var
+R4106:4106 sheaves.Equality <> e:56 var
+def 4171:4188 <> eq_trans_sym_inv_l
+binder 4195:4195 <> A:59
+R4215:4215 sheaves.Equality <> A:59 var
+binder 4210:4210 <> x:60
+binder 4212:4212 <> y:61
+R4224:4226 sheaves.Equality <> ::type_scope:x_'='_x not
+R4223:4223 sheaves.Equality <> x:60 var
+R4227:4227 sheaves.Equality <> y:61 var
+binder 4219:4219 <> e:62
+R4255:4257 sheaves.Equality <> ::type_scope:x_'='_x not
+R4234:4241 sheaves.Equality <> eq_trans def
+R4254:4254 sheaves.Equality <> e:62 var
+R4244:4249 sheaves.Equality <> eq_sym def
+R4251:4251 sheaves.Equality <> e:62 var
+R4258:4264 sheaves.Equality <> eq_refl constr
+def 4319:4333 <> eq_trans_refl_l
+binder 4340:4340 <> A:63
+R4362:4362 sheaves.Equality <> A:63 var
+binder 4356:4356 <> x:64
+binder 4358:4358 <> y:65
+R4372:4374 sheaves.Equality <> ::type_scope:x_'='_x not
+R4371:4371 sheaves.Equality <> x:64 var
+R4375:4375 sheaves.Equality <> y:65 var
+binder 4367:4367 <> e:66
+R4398:4400 sheaves.Equality <> ::type_scope:x_'='_x not
+R4380:4387 sheaves.Equality <> eq_trans def
+R4397:4397 sheaves.Equality <> e:66 var
+R4389:4395 sheaves.Equality <> eq_refl constr
+R4401:4401 sheaves.Equality <> e:66 var
+def 4472:4479 <> rew_swap
+binder 4497:4497 <> A:67
+R4517:4520 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4516:4516 sheaves.Equality <> A:67 var
+binder 4512:4512 <> P:68
+R4549:4549 sheaves.Equality <> A:67 var
+binder 4541:4542 <> x1:69
+binder 4544:4545 <> x2:70
+R4559:4561 sheaves.Equality <> ::type_scope:x_'='_x not
+R4557:4558 sheaves.Equality <> x1:69 var
+R4562:4563 sheaves.Equality <> x2:70 var
+binder 4553:4553 <> H:71
+R4572:4572 sheaves.Equality <> P:68 var
+R4574:4575 sheaves.Equality <> x1:69 var
+binder 4567:4568 <> y1:72
+R4594:4594 sheaves.Equality <> P:68 var
+R4596:4597 sheaves.Equality <> x2:70 var
+binder 4589:4590 <> y2:73
+R4628:4638 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4623:4625 sheaves.Equality <> ::type_scope:x_'='_x not
+R4608:4612 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4614:4615 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4617:4620 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4613:4613 sheaves.Equality <> P:68 var
+R4621:4622 sheaves.Equality <> y1:72 var
+R4616:4616 sheaves.Equality <> H:71 var
+R4626:4627 sheaves.Equality <> y2:73 var
+R4641:4643 sheaves.Equality <> ::type_scope:x_'='_x not
+R4639:4640 sheaves.Equality <> y1:72 var
+R4644:4651 sheaves.Equality <> :::'rew'_'<-'_'['_x_']'_x_'in'_x not
+R4653:4654 sheaves.Equality <> :::'rew'_'<-'_'['_x_']'_x_'in'_x not
+R4656:4659 sheaves.Equality <> :::'rew'_'<-'_'['_x_']'_x_'in'_x not
+R4652:4652 sheaves.Equality <> P:68 var
+R4660:4661 sheaves.Equality <> y2:73 var
+R4655:4655 sheaves.Equality <> H:71 var
+def 4723:4731 <> map_subst
+binder 4751:4751 <> A:74
+R4771:4774 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4770:4770 sheaves.Equality <> A:74 var
+binder 4766:4766 <> P:75
+R4791:4794 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4790:4790 sheaves.Equality <> A:74 var
+binder 4786:4786 <> Q:76
+R4821:4821 sheaves.Equality <> A:74 var
+binder 4817:4817 <> x:77
+R4827:4830 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R4824:4824 sheaves.Equality <> P:75 var
+R4826:4826 sheaves.Equality <> x:77 var
+R4831:4831 sheaves.Equality <> Q:76 var
+R4833:4833 sheaves.Equality <> x:77 var
+binder 4806:4806 <> f:78
+R4852:4852 sheaves.Equality <> A:74 var
+binder 4846:4846 <> x:79
+binder 4848:4848 <> y:80
+R4861:4863 sheaves.Equality <> ::type_scope:x_'='_x not
+R4860:4860 sheaves.Equality <> x:79 var
+R4864:4864 sheaves.Equality <> y:80 var
+binder 4856:4856 <> H:81
+R4872:4872 sheaves.Equality <> P:75 var
+R4874:4874 sheaves.Equality <> x:79 var
+binder 4868:4868 <> z:82
+R4905:4907 sheaves.Equality <> ::type_scope:x_'='_x not
+R4885:4889 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4891:4892 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4894:4898 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4904:4904 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4890:4890 sheaves.Equality <> Q:76 var
+R4899:4899 sheaves.Equality <> f:78 var
+R4903:4903 sheaves.Equality <> z:82 var
+R4901:4901 sheaves.Equality <> x:79 var
+R4893:4893 sheaves.Equality <> H:81 var
+R4908:4908 sheaves.Equality <> f:78 var
+R4913:4917 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4919:4920 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4922:4925 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R4918:4918 sheaves.Equality <> P:75 var
+R4926:4926 sheaves.Equality <> z:82 var
+R4921:4921 sheaves.Equality <> H:81 var
+R4910:4910 sheaves.Equality <> y:80 var
+def 4990:4996 <> rew_map
+binder 5016:5016 <> A:83
+binder 5031:5031 <> B:84
+R5051:5054 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5050:5050 sheaves.Equality <> B:84 var
+binder 5046:5046 <> P:85
+R5071:5074 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5070:5070 sheaves.Equality <> A:83 var
+R5075:5075 sheaves.Equality <> B:84 var
+binder 5066:5066 <> f:86
+R5090:5090 sheaves.Equality <> A:83 var
+binder 5082:5083 <> x1:87
+binder 5085:5086 <> x2:88
+R5100:5102 sheaves.Equality <> ::type_scope:x_'='_x not
+R5098:5099 sheaves.Equality <> x1:87 var
+R5103:5104 sheaves.Equality <> x2:88 var
+binder 5094:5094 <> H:89
+R5112:5112 sheaves.Equality <> P:85 var
+R5115:5115 sheaves.Equality <> f:86 var
+R5117:5118 sheaves.Equality <> x1:87 var
+binder 5108:5108 <> y:90
+R5160:5168 sheaves.Equality <> ::type_scope:x_'='_x not
+R5127:5131 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5152:5153 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5155:5158 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5140:5140 sheaves.Equality <> A:83 var
+binder 5136:5136 <> x:91
+R5145:5145 sheaves.Equality <> P:85 var
+R5148:5148 sheaves.Equality <> f:86 var
+R5150:5150 sheaves.Equality <> x:91 var
+R5159:5159 sheaves.Equality <> y:90 var
+R5154:5154 sheaves.Equality <> H:89 var
+R5169:5173 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5175:5177 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5189:5193 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5174:5174 sheaves.Equality <> P:85 var
+R5194:5194 sheaves.Equality <> y:90 var
+R5178:5184 sheaves.Equality <> f_equal def
+R5188:5188 sheaves.Equality <> H:89 var
+R5186:5186 sheaves.Equality <> f:86 var
+def 5257:5267 <> rew_compose
+binder 5285:5285 <> A:92
+R5305:5308 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5304:5304 sheaves.Equality <> A:92 var
+binder 5300:5300 <> P:93
+R5331:5331 sheaves.Equality <> A:92 var
+binder 5320:5321 <> x1:94
+binder 5323:5324 <> x2:95
+binder 5326:5327 <> x3:96
+R5344:5346 sheaves.Equality <> ::type_scope:x_'='_x not
+R5342:5343 sheaves.Equality <> x1:94 var
+R5347:5348 sheaves.Equality <> x2:95 var
+binder 5337:5338 <> H1:97
+R5359:5361 sheaves.Equality <> ::type_scope:x_'='_x not
+R5357:5358 sheaves.Equality <> x2:95 var
+R5362:5363 sheaves.Equality <> x3:96 var
+binder 5352:5353 <> H2:98
+R5371:5371 sheaves.Equality <> P:93 var
+R5373:5374 sheaves.Equality <> x1:94 var
+binder 5367:5367 <> y:99
+R5411:5420 sheaves.Equality <> ::type_scope:x_'='_x not
+R5382:5386 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5388:5389 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5392:5395 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5387:5387 sheaves.Equality <> P:93 var
+R5396:5400 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5402:5403 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5406:5409 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5401:5401 sheaves.Equality <> P:93 var
+R5410:5410 sheaves.Equality <> y:99 var
+R5404:5405 sheaves.Equality <> H1:97 var
+R5390:5391 sheaves.Equality <> H2:98 var
+R5421:5425 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5427:5428 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5443:5446 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R5426:5426 sheaves.Equality <> P:93 var
+R5447:5447 sheaves.Equality <> y:99 var
+R5429:5436 sheaves.Equality <> eq_trans def
+R5441:5442 sheaves.Equality <> H2:98 var
+R5438:5439 sheaves.Equality <> H1:97 var
+def 5511:5525 <> f_equal_compose
+binder 5545:5545 <> A:100
+binder 5560:5560 <> B:101
+binder 5575:5575 <> C:102
+R5596:5596 sheaves.Equality <> A:100 var
+binder 5590:5590 <> a:103
+binder 5592:5592 <> b:104
+R5605:5608 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5604:5604 sheaves.Equality <> A:100 var
+R5609:5609 sheaves.Equality <> B:101 var
+binder 5600:5600 <> f:105
+R5620:5623 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5619:5619 sheaves.Equality <> B:101 var
+R5624:5624 sheaves.Equality <> C:102 var
+binder 5615:5615 <> g:106
+R5633:5635 sheaves.Equality <> ::type_scope:x_'='_x not
+R5632:5632 sheaves.Equality <> a:103 var
+R5636:5636 sheaves.Equality <> b:104 var
+binder 5628:5628 <> e:107
+R5670:5672 sheaves.Equality <> ::type_scope:x_'='_x not
+R5647:5653 sheaves.Equality <> f_equal def
+R5658:5664 sheaves.Equality <> f_equal def
+R5668:5668 sheaves.Equality <> e:107 var
+R5666:5666 sheaves.Equality <> f:105 var
+R5655:5655 sheaves.Equality <> g:106 var
+R5673:5679 sheaves.Equality <> f_equal def
+R5706:5706 sheaves.Equality <> e:107 var
+R5691:5691 sheaves.Equality <> A:100 var
+binder 5686:5687 <> a0:108
+R5696:5696 sheaves.Equality <> g:106 var
+R5699:5699 sheaves.Equality <> f:105 var
+R5701:5702 sheaves.Equality <> a0:108 var
+def 5769:5784 <> eq_sym_map_distr
+binder 5802:5802 <> A:109
+binder 5817:5817 <> B:110
+binder 5832:5832 <> x:111
+binder 5834:5834 <> y:112
+R5843:5846 Corelib.Init.Logic <> ::type_scope:x_'->'_x not
+R5842:5842 sheaves.Equality <> A:109 var
+R5847:5847 sheaves.Equality <> B:110 var
+binder 5838:5838 <> f:113
+R5856:5858 sheaves.Equality <> ::type_scope:x_'='_x not
+R5855:5855 sheaves.Equality <> x:111 var
+R5859:5859 sheaves.Equality <> y:112 var
+binder 5851:5851 <> e:114
+R5885:5887 sheaves.Equality <> ::type_scope:x_'='_x not
+R5865:5870 sheaves.Equality <> eq_sym def
+R5873:5879 sheaves.Equality <> f_equal def
+R5883:5883 sheaves.Equality <> e:114 var
+R5881:5881 sheaves.Equality <> f:113 var
+R5888:5894 sheaves.Equality <> f_equal def
+R5899:5904 sheaves.Equality <> eq_sym def
+R5906:5906 sheaves.Equality <> e:114 var
+R5896:5896 sheaves.Equality <> f:113 var
+def 5987:5995 <> rew_const
+binder 6013:6013 <> A:115
+binder 6028:6028 <> P:116
+R6049:6049 sheaves.Equality <> A:115 var
+binder 6043:6043 <> x:117
+binder 6045:6045 <> y:118
+R6058:6060 sheaves.Equality <> ::type_scope:x_'='_x not
+R6057:6057 sheaves.Equality <> x:117 var
+R6061:6061 sheaves.Equality <> y:118 var
+binder 6053:6053 <> e:119
+R6069:6069 sheaves.Equality <> P:116 var
+binder 6065:6065 <> k:120
+R6102:6104 sheaves.Equality <> ::type_scope:x_'='_x not
+R6075:6079 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R6094:6095 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R6097:6100 sheaves.Equality <> :::'rew'_'['_x_']'_x_'in'_x not
+R6088:6088 sheaves.Equality <> A:115 var
+R6093:6093 sheaves.Equality <> P:116 var
+R6101:6101 sheaves.Equality <> k:120 var
+R6096:6096 sheaves.Equality <> e:119 var
+R6105:6105 sheaves.Equality <> k:120 var
