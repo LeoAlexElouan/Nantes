@@ -241,7 +241,7 @@ Proof.
     apply fext. intros a.
     apply UIP.
 Qed.
-Lemma fext_ty {Γ} : forall (A_obj B_obj: forall {X}, ctx_obj Γ X -> Type),
+Lemma fext_typ {Γ} : forall (A_obj B_obj: forall {X}, ctx_obj Γ X -> Type),
   (forall X {x:ctx_obj Γ X}, (A_obj x = B_obj x)) -> (@A_obj = @B_obj).
 Proof.
   intros A_obj B_obj H.
@@ -282,7 +282,9 @@ Lemma rew_trm : forall Γ A B X (x : ctx_obj Γ X) (H : A = B) t,
   f_equal typ_obj H in trm_obj t x.
 Proof.
   intros Γ A B X x H t.
-  rewrite <- map_subst with (f:= fun var e => @trm_obj Γ var e X x).
+  etransitivity.
+  symmetry.
+  apply (map_subst (fun var var' => @trm_obj Γ var var' X x)).
   apply rew_map with (f:=typ_obj) (P:= fun var => var X x).
 Qed.
 
@@ -461,14 +463,14 @@ Record psh_sub (Γ Δ : psh_ctx) :={
   sub_obj : forall X:cat_obj CC, ctx_obj Γ X -> ctx_obj Δ X;
   sub_fun : forall X Y (f: X ~> Y) y,
     sub_obj X (y ⋅ f) = (sub_obj Y y) ⋅ f;
-  }.
-Arguments sub_obj {Γ Δ}.
-Arguments sub_fun {Γ Δ}.
+  } as σ.
+Arguments sub_obj {Γ Δ} σ {X}.
+Arguments sub_fun {Γ Δ} σ {X Y}.
 
 Notation "Γ ⊢ Δ" := (psh_sub Γ Δ) (at level 65).
 
 Lemma psh_sub_eq {Γ Δ} : forall (σ τ : Γ ⊢ Δ),
-  (forall X x, sub_obj σ X x = sub_obj τ X x) -> σ = τ.
+  (forall X (x : ctx_obj Γ X), sub_obj σ x = sub_obj τ x) -> σ = τ.
 Proof.
   intros [σ_obj σ_fun] [τ_obj τ_fun] H.
   assert (σ_obj = τ_obj) as <-.
@@ -505,10 +507,11 @@ Definition psh_sub_com_fun {Γ Δ Ξ} :forall (σ:Γ ⊢ Δ) (τ:Δ ⊢ Ξ) X Y 
 Proof.
   intros σ τ X Y f y.
   unfold psh_sub_com_obj.
-  rewrite (sub_fun σ).
-  rewrite (sub_fun τ).
-  reflexivity.
-Qed.
+  etransitivity.
+  apply f_equal.
+  apply (sub_fun σ).
+  apply (sub_fun τ).
+Defined.
 
 Definition psh_sub_com {Γ Δ Ξ} :
     Γ ⊢ Δ -> Δ ⊢ Ξ -> Γ ⊢ Ξ.
@@ -549,21 +552,21 @@ Qed.
 
 
 Definition psh_sub_typ_obj {Γ Δ} (A : ⊣ Δ)
-    (σ : Γ ⊢ Δ) : forall X, ctx_obj Γ X -> Type :=
-    fun X x => typ_obj A (sub_obj σ X x).
+    (σ : Γ ⊢ Δ) : forall {X}, ctx_obj Γ X -> Type :=
+    fun X x => typ_obj A (sub_obj σ x).
 Definition psh_sub_typ_fun {Γ Δ} (A : ⊣ Δ)
-    (σ : Γ ⊢ Δ) : forall X Y (f : X ~> Y) {y},
-    psh_sub_typ_obj A σ Y y -> psh_sub_typ_obj A σ X (y ⋅ f) :=
+    (σ : Γ ⊢ Δ) : forall {X Y} (f : X ~> Y) {y},
+    psh_sub_typ_obj A σ y -> psh_sub_typ_obj A σ (y ⋅ f) :=
     fun X Y (f : X ~> Y) y a =>
-    rew <- [typ_obj A] sub_fun σ X Y f y in (a ⋅⋅ f).
+    rew <- [typ_obj A] sub_fun σ f y in (a ⋅⋅ f).
 Definition psh_sub_typ {Γ Δ} (A : ⊣ Δ)
     (σ : Γ ⊢ Δ) : ⊣ Γ.
 Proof.
-  refine {| typ_obj := psh_sub_typ_obj A σ; typ_fun := psh_sub_typ_fun A σ|}.
+  refine {| typ_obj X := psh_sub_typ_obj A σ; typ_fun X Y:= psh_sub_typ_fun A σ|}.
   - intros X x a.
     unfold psh_sub_typ_fun, psh_sub_typ_obj.
     etransitivity.
-    apply (rew_map _ (fun var => sub_obj σ X var)).
+    apply (rew_map _ (fun var => sub_obj σ var)).
     etransitivity.
     apply rew_compose.
     etransitivity.
@@ -573,7 +576,7 @@ Proof.
   - intros X Y Z f g z a.
     unfold psh_sub_typ_fun, psh_sub_typ_obj.
     etransitivity.
-    apply (rew_map _ (fun var => sub_obj σ X var)).
+    apply (rew_map _ (fun var => sub_obj σ var)).
     apply rew_swap.
     etransitivity.
     apply rew_compose.
@@ -594,19 +597,81 @@ Proof.
     2: apply typ_cat_com.
     apply f_equal.
     apply UIP.
+Defined.
+Notation " A [ σ ] " := (psh_sub_typ A σ) (at level 65).
+
+Definition psh_sub_trm_obj {Γ Δ} {A : ⊣ Δ} (t : A ⊣ Δ) (σ : Γ ⊢ Δ) :
+  forall {X} (x:ctx_obj Γ X), typ_obj (A [σ]) x := fun X x => trm_obj t (sub_obj σ x).
+Definition psh_sub_trm {Γ Δ}: forall {A : ⊣ Δ} (t : A ⊣ Δ)
+  (σ : Γ ⊢ Δ), (A [σ]) ⊣ Γ.
+Proof.
+  intros A t σ.
+  refine {|trm_obj X x := psh_sub_trm_obj t σ x|}.
+  intros X Y f y. simpl.
+  unfold psh_sub_trm_obj, psh_sub_typ_fun.
+  etransitivity.
+  2: symmetry.
+  2 : apply (rew_swap _ _ _ (f_equal_dep _ (trm_obj t) (sub_fun σ f y))).
+  apply (f_equal (fun var => rew <- [typ_obj A] _ in var)).
+  apply trm_fun.
+Defined.
+Notation " t [: σ ] " := (psh_sub_trm t σ) (at level 65).
+
+
+Definition psh_typ_id {Γ} {A : ⊣ Γ}:
+  A[psh_sub_id] = A.
+Proof.
+  apply (psh_typ_eq _ _ (eq_refl : @typ_obj _ (A[psh_sub_id]) = @typ_obj _ A)).
+  intros X Y f y a.
+  reflexivity.
 Qed.
 
-  sub_trm : forall {Γ Δ : ctx}
-    {A : typ Δ} (t : trm Δ A)
-    (σ : sub Γ Δ), trm Γ (sub_typ A σ);
-  typ_id : forall {Γ} {A : typ Γ},
-    sub_typ A sub_id = A;
-  typ_com : forall {Γ Δ Ξ} {σ:sub Γ Δ} {τ: sub Δ Ξ} {A},
-    sub_typ A (sub_com σ τ) = sub_typ (sub_typ A τ) σ;
-  trm_id : forall {Γ} A (t:trm Γ A),
-    rew [_] typ_id in sub_trm t sub_id = t;
-  trm_com : forall {Γ Δ Ξ} {σ:sub Γ Δ} {τ: sub Δ Ξ} {A} {t : trm Ξ A},
-    rew [_]  typ_com in sub_trm t (sub_com σ τ)  = sub_trm (sub_trm t τ) σ;
+
+Definition psh_typ_com {Γ Δ Ξ} {σ: Γ ⊢ Δ} {τ:  Δ ⊢ Ξ} {A} :
+  A [σ ∘ τ] =  (A [τ]) [σ].
+Proof.
+  apply (psh_typ_eq _ _ (eq_refl : @typ_obj _ (A [σ ∘ τ]) = @typ_obj _ ((A [τ]) [σ]))).
+  intros X Y f y a. simpl.
+  unfold psh_sub_typ_fun.
+  simpl in *. unfold psh_sub_typ_obj, psh_sub_typ_fun in *. simpl in *.
+  unfold psh_sub_com_obj in *.
+  etransitivity.
+  2: symmetry.
+  2: apply (rew_map _ (sub_obj τ)).
+  etransitivity.
+  2: symmetry.
+  2: apply rew_compose.
+  apply (f_equal (fun var => rew [typ_obj A] var in _)).
+  apply UIP.
+Qed.
+
+
+Definition psh_trm_id {Γ A} (t : A ⊣ Γ) :
+  rew psh_typ_id in (t [: psh_sub_id]) = t.
+Proof.
+  apply psh_trm_eq.
+  intros X x.
+  etransitivity.
+  apply rew_trm. simpl. unfold psh_sub_trm_obj. simpl.
+  change (rew [fun var => var X x] f_equal typ_obj psh_typ_id in trm_obj t x = rew [fun var => var X x] eq_refl in trm_obj t x).
+  apply f_equal.
+  apply UIP.
+Qed.
+
+
+Definition psh_trm_com {Γ Δ Ξ} (σ: Γ ⊢ Δ) (τ: Δ ⊢ Ξ)
+  {A} (t : A ⊣ Ξ) : 
+  rew [_] psh_typ_com in (t [: σ ∘ τ]) =  ( t [: τ]) [: σ].
+Proof.
+  apply psh_trm_eq.
+  intros X x.
+  etransitivity.
+  apply rew_trm.
+  simpl. unfold psh_sub_trm_obj. simpl. unfold psh_sub_com_obj.
+  change (rew [fun var => var X x] f_equal typ_obj psh_typ_com in trm_obj t (sub_obj τ (sub_obj σ x)) = rew [fun var => var X x] eq_refl in trm_obj t (sub_obj τ (sub_obj σ x))).
+  apply f_equal.
+  apply UIP.
+Qed.
 
 
 
