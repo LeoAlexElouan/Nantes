@@ -1,0 +1,11 @@
+Inductive equal A (a : A) : A -> Prop :=
+  | equal_reflexivity : equal A a a.
+
+
+Inductive trucmuche {A B}
+  (f : A -> B -> B) (P : A -> Prop) (Q : B -> Prop) (b : B) :
+  list A -> B -> Prop :=
+  | nil_trucmuche : Q b -> trucmuche f P Q b nil b
+  | cons_trucmuche a l b' : (P a -> Q b' -> Q (f a b')) ->
+    trucmuche f P Q b l b' ->
+    trucmuche f P Q b (cons a l) (f a b').

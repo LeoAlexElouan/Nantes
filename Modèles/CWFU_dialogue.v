@@ -1,0 +1,337 @@
+(*  Γ : G Gamma ; Δ : D Delta ; Ξ : X Xi ; γ : g gamma ; δ : d delta
+    σ : s sigma ; τ : t tau ; ρ : r rho ; θ : th theta
+    ⊳ : vrtri ; • : bull ; ∅ : emptyset ; ∘ : circ ; ⊢ : vdash ; ⊣ : dashv ;
+    ▸ : rtrif ; □ : square *)
+
+Require Import Setoid.
+
+Import Logic.EqNotations.
+
+
+Set Primitive Projections.
+
+Record sig (A : Type) (B : A -> Type) := pair {
+  prj1 : A;
+  prj2 : B prj1;
+}.
+
+Arguments pair {A B}.
+Arguments prj1 {A B}.
+Arguments prj2 {A B}.
+
+Notation "{ x : A & P }" := (sig A (fun x => P)) : type_scope.
+
+
+Record CWFUB := {
+  ctx : Type;
+  typ : ctx -> Type;
+  trm Γ : typ Γ-> Type;
+
+  uni {Γ} : typ Γ;
+  elu {Γ} : trm Γ uni -> typ Γ;
+
+  app Γ: typ Γ -> ctx;
+  (* emp : ctx; *)
+
+  sub : ctx -> ctx -> Type;
+  sub_id : forall {Γ : ctx}, sub Γ Γ;
+  sub_com : forall {Γ Δ Ξ : ctx},
+    sub Γ Δ -> sub Δ Ξ -> sub Γ Ξ;
+  neu_l: forall {Γ Δ : ctx} {σ : sub Γ Δ},
+    sub_com sub_id σ = σ;
+  neu_r: forall {Γ Δ : ctx} {σ : sub Γ Δ},
+    sub_com σ sub_id = σ;
+  ass : forall {Γ Δ Ξ Z:ctx}
+    {σ : sub Γ Δ} {τ : sub Δ Ξ} {ρ : sub Ξ Z},
+    sub_com σ (sub_com τ ρ) = sub_com (sub_com σ τ) ρ;
+
+  (* sub_emp : forall Γ, sub Γ emp;
+  emp_uni : forall {Γ} {σ : sub Γ emp},
+    σ = sub_emp Γ; *)
+
+  sub_typ : forall {Γ Δ : ctx} (A : typ Δ)
+    (σ : sub Γ Δ), typ Γ;
+  sub_trm : forall {Γ Δ : ctx}
+    {A : typ Δ} (t : trm Δ A)
+    (σ : sub Γ Δ), trm Γ (sub_typ A σ);
+
+  typ_id : forall {Γ} {A : typ Γ},
+    sub_typ A sub_id = A;
+  typ_com : forall {Γ Δ Ξ} {σ:sub Γ Δ} {τ: sub Δ Ξ} {A},
+    sub_typ A (sub_com σ τ) = sub_typ (sub_typ A τ) σ;
+  trm_id : forall {Γ} A (t:trm Γ A),
+    rew [_] typ_id in sub_trm t sub_id = t;
+  trm_com : forall {Γ Δ Ξ} {σ:sub Γ Δ} {τ: sub Δ Ξ} {A} {t : trm Ξ A},
+    rew [_]  typ_com in sub_trm t (sub_com σ τ)  = sub_trm (sub_trm t τ) σ;
+
+  wk : forall {Γ Δ: ctx} (A: typ Γ) (σ : sub Γ Δ),
+    sub (app Γ A) Δ;
+  wk_com : forall {Γ Δ Ξ} {σ:sub Γ Δ} {τ: sub Δ Ξ} {A},
+    wk A (sub_com σ τ) = sub_com (wk A σ) τ;
+  ext : forall {Γ Δ: ctx} {A: typ Δ}
+    (σ : sub Γ Δ) (t : trm Γ (sub_typ A σ)),
+    sub Γ (app Δ A);
+  lst : forall {Γ : ctx} {A : typ Γ},
+    trm (app Γ A) (sub_typ A (wk A sub_id));
+
+  wk_ext : forall {Γ Δ Ξ} {σ :sub Γ Δ} {τ: sub Δ Ξ} {A t},
+    sub_com (ext σ t) (wk A τ) = sub_com σ τ;
+  lst_ext : forall {Γ Δ} (σ: sub Γ Δ) A (t : trm Γ (sub_typ A σ)),
+    rew [_] neu_r in
+    rew [fun X => trm Γ (sub_typ A X)] wk_ext in
+    rew <- [trm Γ]  typ_com in (sub_trm lst (ext σ t)) = 
+    t;
+  ext_com : forall {Γ Δ Ξ} {σ : sub Γ Δ} {τ : sub Δ Ξ} {A} {t : trm Δ (sub_typ A τ)},
+    sub_com σ (ext τ t) = 
+    ext (sub_com σ τ) (rew <- [fun X => trm Γ X] typ_com in sub_trm t σ);
+  wk_lst : forall {Γ} {A : typ Γ},
+    ext (wk A sub_id) lst = sub_id;
+
+  lft : forall {Γ Δ} (σ : sub Γ Δ) {A : typ Δ},
+    sub (app Γ (sub_typ A σ)) (app Δ A);
+  lft_def : forall {Γ Δ} {σ : sub Γ Δ} {A : typ Δ},
+    lft σ (A := A) = ext (wk (sub_typ A σ) σ)
+    (rew [fun X => trm _ (sub_typ _ (wk _ X))] neu_l in
+    rew <- [fun X => trm _ (sub_typ _ X)] wk_com in
+    rew <- [fun X => trm _ X] typ_com in
+    lst (A := sub_typ A σ));
+  lft_ext : forall {Γ Δ} {σ : sub Γ Δ} {A : typ Δ} {a : trm Γ (sub_typ A σ)},
+    sub_com (ext sub_id (sub_trm a sub_id)) (lft σ) = ext σ a;
+
+  pi : forall {Γ} {A} (B : typ (app Γ A)), typ Γ;
+  sub_pi : forall {Γ Δ} {σ : sub Γ Δ} {A : typ Δ} {B : typ (app Δ A)},
+    sub_typ (pi B) σ = pi (sub_typ B (lft σ));
+  ev : forall {Γ} {A} {B : typ (app Γ A)} (f : trm Γ (pi B)) (a : trm Γ A),
+    trm Γ (sub_typ B (ext sub_id (sub_trm a sub_id)));
+  sub_ev : forall {Γ Δ} {σ : sub Γ Δ} {A} {B : typ (app Δ A)} {f a},
+    rew [fun X => trm Γ (sub_typ B (ext X (sub_trm a X)))] neu_r in
+    rew <- [fun X => trm Γ (sub_typ B (ext _ X))] (rew_swap _ _ _ trm_com) in
+    rew [fun X => trm Γ (sub_typ B X)] ext_com in
+    rew <- [fun X => trm Γ X] typ_com in
+    sub_trm (ev f a) σ =
+    rew [fun X => trm Γ (sub_typ B X)] lft_ext in
+    rew <- [trm Γ] typ_com in ev (rew [trm Γ] sub_pi in sub_trm f σ) (sub_trm a σ) :>
+    trm Γ (sub_typ B (ext σ (sub_trm a σ)));
+  abs : forall {Γ} {A : typ Γ} {B : typ (app Γ A)} (t : trm (app Γ A) B),
+    trm Γ (pi B);
+  abs_ev : forall {Γ} {A} {B : typ (app Γ A)} (t : trm (app Γ A) B) (a : trm Γ A),
+    ev (abs t) a = sub_trm t (ext sub_id (sub_trm a sub_id));
+  eta : forall {Γ} {A} {B : typ (app Γ A)} (f : trm Γ (pi B)),
+    f =
+    rew [fun X => trm Γ (pi X)] typ_id in
+    rew [fun X => trm Γ (pi (sub_typ B  X))] wk_lst in
+    rew [fun X => trm Γ (pi (sub_typ B  X))] lft_ext in
+    rew <- [fun X => trm Γ (pi X)] typ_com in
+    abs (ev (rew [fun X => trm _ X] sub_pi in sub_trm f (wk A sub_id)) lst);
+
+
+  bool : forall {Γ}, trm Γ uni;
+  tru : forall {Γ}, trm Γ (elu bool);
+  fal : forall {Γ}, trm Γ (elu bool);
+  th_bool : forall {Γ} (P : typ (app Γ (elu bool))), typ (app Γ (elu bool));
+  th_tru : forall {Γ} {P : typ (app Γ (elu bool))},
+    (sub_typ (th_bool P) (ext sub_id (sub_trm tru sub_id))) =
+    (sub_typ P (ext sub_id (sub_trm tru sub_id)));
+  th_fal : forall {Γ} {P : typ (app Γ (elu bool))},
+    (sub_typ (th_bool P) (ext sub_id (sub_trm fal sub_id))) =
+    (sub_typ P (ext sub_id (sub_trm fal sub_id)));
+  rec_bool : forall {Γ} {P : typ (app Γ (elu bool))}
+    (ptt : trm Γ (sub_typ P (ext sub_id (sub_trm tru sub_id))))
+    (pff : trm Γ (sub_typ P (ext sub_id (sub_trm fal sub_id))))
+    (t : trm Γ (elu bool)),
+    trm Γ (sub_typ (th_bool P) (ext sub_id (sub_trm t sub_id)));
+  rec_tru : forall {Γ} {P}
+    (ptt : trm Γ (sub_typ P (ext sub_id (sub_trm tru sub_id))))
+    (pff : trm Γ (sub_typ P (ext sub_id (sub_trm fal sub_id)))),
+    rew th_tru in rec_bool ptt pff tru = ptt;
+  rec_fal : forall {Γ} {P}
+    (ptt : trm Γ (sub_typ P (ext sub_id (sub_trm tru sub_id))))
+    (pff : trm Γ (sub_typ P (ext sub_id (sub_trm fal sub_id)))),
+    rew th_fal in rec_bool ptt pff fal = pff;
+  }.
+
+Parameter I :Type.
+Parameter O : I -> Type.
+
+Definition dia_ctx := Type.
+
+Notation " ⊣ " := (dia_ctx) (at level 65).
+
+
+Definition dia_typ (Γ : ⊣) := Γ -> {A : Type & forall i : I, (O i -> A) -> A}.
+
+Notation " ⊣ Γ " := (dia_typ Γ) (at level 65).
+
+
+Definition dia_trm Γ (A : ⊣ Γ) := forall (γ:Γ), prj1 (A γ).
+
+Notation " A ⊣ Γ " := (dia_trm Γ A) (at level 65).
+
+
+Definition dia_uni {Γ : ⊣} : dia_typ Γ :=
+  fun (γ : Γ) => pair (B:=(fun X => forall i :I, (O i -> X) -> X)) {A : Type & forall i, (O i -> A) -> A} (fun (i : I) k => pair  (B:=(fun X:Type => forall i, (O i -> X) -> X)) unit (fun _ _ => tt)).
+
+Notation "□" := dia_uni (at level 64).
+
+
+Definition dia_elu {Γ} (t: □ ⊣ Γ) : ⊣ Γ.
+Proof.
+  intros γ.
+  specialize (t γ).
+  exists (prj1 t).
+  apply (prj2 t).
+Defined.
+
+
+Definition dia_app Γ (A : ⊣ Γ) : ⊣ := {γ : Γ & prj1 (A γ)}.
+
+Notation " Γ ⊳ A " := (dia_app Γ A) (at level 64).
+
+
+Definition dia_sub (Γ Δ : ⊣) := Γ -> Δ.
+
+Notation "Γ ⊢ Δ " := (dia_sub Γ Δ) (at level 65).
+
+
+Definition dia_sub_id {Γ} : (Γ ⊢ Γ) := id.
+
+
+Definition dia_sub_com {Γ Δ Ξ} (σ : Γ ⊢ Δ) (τ : Δ ⊢ Ξ) : (Γ ⊢ Ξ) := 
+  (fun x => τ (σ x)).
+
+
+Definition dia_sub_typ {Γ Δ} (A : ⊣ Δ) (σ : Γ ⊢ Δ) : ⊣ Γ :=
+  fun γ => A (σ γ).
+
+Notation " A [ σ ] " := (dia_sub_typ A σ) (at level 63).
+
+
+
+Definition dia_sub_trm {Γ Δ} {A} (t : A ⊣ Δ) (σ : Γ ⊢ Δ ): (A [σ]) ⊣ Γ :=
+  fun γ => t (σ γ).
+
+Notation " A [: σ ] " := (dia_sub_trm A σ) (at level 63).
+
+
+
+Definition dia_wk {Γ Δ} {A} (σ : Γ ⊢ Δ): (Γ ⊳ A) ⊢ Δ :=
+  fun γa => σ (prj1 γa).
+
+Notation " σ • " := (dia_wk σ) (at level 65).
+
+
+Definition dia_ext {Γ Δ} {A} σ (t : A [σ] ⊣ Γ) : Γ ⊢ Δ ⊳ A :=
+  fun γ => pair (B:= fun δ => prj1 (A δ)) (σ γ) (t γ).
+
+Notation " σ ▸ t" := (dia_ext σ t) (at level 64).
+
+
+Definition dia_lst {Γ : ⊣} {A : ⊣ Γ} : A [dia_sub_id •] ⊣ Γ ⊳ A := prj2.
+
+Notation " ∅ " := (dia_lst) (at level 64).
+
+
+Definition dia_lft {Γ Δ} (σ : Γ ⊢ Δ)  (A : ⊣ Δ) :
+  Γ ⊳ A [σ] ⊢ Δ ⊳ A :=
+  fun γa => pair (σ (prj1 γa)) (prj2 γa).
+
+
+Definition dia_pi {Γ} {A :⊣ Γ} (B : ⊣ Γ ⊳ A) : ⊣ Γ.
+Proof.
+  intros γ.
+  exists (forall (a: prj1 (A γ)), prj1 (B (pair γ a))).
+  intros i k a.
+  apply (prj2 (B (pair γ a)) i).
+  intros o.
+  apply (k o a).
+Defined.
+
+Notation " Π, B " := (dia_pi B) (at level 64).
+
+
+Definition dia_ev {Γ A} {B : ⊣ (Γ ⊳ A)} (f : Π, B ⊣ Γ) (a : A ⊣ Γ) :
+  B [ id ▸ a [: id] ] ⊣ Γ :=
+  fun γ => (f γ (a γ)).
+
+
+Definition dia_abs {Γ} {A :⊣ Γ} {B : ⊣ Γ ⊳ A} (t : B ⊣ Γ ⊳ A) : Π, B ⊣ Γ :=
+  fun γ a => t (pair γ a).
+
+
+Inductive dia_bool_typ : Type :=
+  | dia_true : dia_bool_typ
+  | dia_false : dia_bool_typ
+  | ask_bool : forall i, (O i -> dia_bool_typ) -> dia_bool_typ.
+
+Definition dia_bool {Γ} : □ ⊣ Γ.
+Proof.
+  intros γ.
+  exists dia_bool_typ.
+  apply ask_bool.
+Defined.
+
+
+Definition dia_tru {Γ}: dia_elu dia_bool ⊣ Γ := fun _ => dia_true.
+Definition dia_fal {Γ}: dia_elu dia_bool ⊣ Γ := fun _ => dia_false.
+
+Definition dia_th_bool {Γ} (P : ⊣ Γ ⊳ (dia_elu dia_bool)) :
+  ⊣ Γ ⊳ (dia_elu dia_bool).
+Proof.
+  intros [γ b].
+  induction b as [ | |i k IH].
+  + apply (P (pair γ (dia_tru γ))).
+  + apply (P (pair γ (dia_fal γ))).
+  + exists unit.
+    intros i0 k0.
+    apply tt.
+Defined.
+
+Definition dia_rec_bool {Γ} {P} (ptt : P [id ▸ (dia_tru [: id])] ⊣ Γ)
+  (pff : P [id ▸ (dia_fal [: id])] ⊣ Γ) t : (dia_th_bool P) [id ▸ (t [: id])] ⊣ Γ.
+Proof.
+  intros γ.
+  change (prj1 ((dia_th_bool P) (pair γ (t γ)))).
+  induction (t γ) as [ | | i k IH].
+  + apply ptt.
+  + apply pff.
+  + simpl.
+    apply tt.
+Defined.
+
+
+Definition dialogue : CWFUB.
+Proof.
+  refine {|
+  ctx := dia_ctx;
+  typ := dia_typ;
+  trm := dia_trm;
+
+  uni Γ := dia_uni;
+  elu Γ:= dia_elu;
+
+  sub := dia_sub;
+  sub_id Γ := dia_sub_id;
+  sub_com Γ Δ Ξ := dia_sub_com;
+
+  sub_typ Γ Δ := dia_sub_typ;
+  sub_trm Γ Δ A := dia_sub_trm;
+
+  wk Γ Δ A := dia_wk;
+  ext Γ Δ A := dia_ext;
+  lst Γ A := dia_lst;
+
+  pi Γ A := dia_pi;
+  ev Γ A B := dia_ev;
+  abs Γ A B := dia_abs;
+
+  bool Γ := dia_bool;
+  tru Γ := dia_tru;
+  fal Γ := dia_fal;
+  th_bool Γ := dia_th_bool;
+  rec_bool Γ P := dia_rec_bool;
+
+  |}.
+  Unshelve.
+  all : try reflexivity.
+  all : try reflexivity.
+Defined.

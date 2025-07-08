@@ -35,7 +35,15 @@
 \DeclareMathOperator{\colim}{colim}
 \DeclareMathOperator{\Prop}{\mathsf{Prop}}
 \DeclareMathOperator{\SProp}{\mathsf{SProp}}
+\DeclareMathOperator{\Type}{\mathsf{Type}}
+\DeclareMathOperator{\ask}{\mathsf{ask}}
+\DeclareMathOperator{\bind}{\mathsf{bind}}
+\DeclareMathOperator{\Inductive}{\mathsf{Inductive}}
+\DeclareMathOperator{\ret}{\mathsf{ret}}
 \DeclareMathOperator{\rec}{rec}
+\DeclareMathOperator{\ctx}{\mathsf{ctx}}
+\DeclareMathOperator{\Typ}{\mathsf{Typ}}
+\DeclareMathOperator{\trm}{\mathsf{Trm}}
 
 \newcommand{\ovarr}{\overrightarrow}
 \newcommand{\ovl}{\overline}
@@ -180,7 +188,48 @@ $j$-Sheaves form a topos. The sheaves on a presheaf topos correspond to Beth sem
 
 Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \textsc{Rocq} with $\SProp$.
 
-Then, a Lawvere-Tierney topology may be similarily defined, as a map $j : \Prop -> \Prop$
+In this case, a Lawvere-Tierney topology may be similarily defined, as a monad:
+\begin{itemize}
+    \item $\mathsf{J} : \Prop -> \Prop$
+    \item $\eta : \Pi (P:\Prop).P -> \mathsf{J}\ P$
+    \item $\bind : \forall (P Q: \Prop). \mathsf{J}\ P -> (P -> \mathsf{J}\ Q) -> \mathsf{J}\ Q$
+\end{itemize}
+
+Then a sheaf is just a type $T$ with 
+\begin{itemize}
+    \item A map $\ask_T : \Pi (P:\Prop).\ \mathsf{J}\ P -> (P -> T) -> T$
+    \item A coherence $\varepsilon_T : \Pi (P:\Prop)\ (j : \mathsf{J}\ P)\ (x:T).\ \ask_T\ P\ j\ (\lambda p:P.x) = x$
+\end{itemize}
+
+Now, the sheafified of a type doesn't exists in general, if the theory admits quotient inductive types, it can then be defined as follow :
+
+$$
+\begin{array}{l}
+    \Inductive\ \mathcal{S}_{\mathsf{J}}\ T : \Type := \\
+    | \ret : T -> \mathcal{S}_{\mathsf{J}}\ T\\
+    | \ask : \Pi (P:\Prop), \mathsf{J}\ P -> (P -> \mathcal{S}_{\mathsf{J}}\ T) -> \mathcal{S}_{\mathsf{J}}\ T\\
+    |\ \varepsilon : \Pi (P:\Prop)\ (j : \mathsf J\ P)\ (x : \mathcal{S}_{\mathsf{J}}\ T). \ask\ P\ j\ (\lambda p:P. x) = x
+\end{array}
+$$
+
+We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$, a sheaf is then a
+\begin{itemize}
+    \item A type $T$
+    \item A map $\ask_T : \Pi (i:I), (O\ i -> T) -> T$
+    \item A coherence map $\varepsilon_T : \Pi(i:I)\ (x:T), \ask_T\ i\ (\lambda o:O\  i.x) = x$
+\end{itemize}
+and simimlarily for sheafification. This is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
+
+\section{Models}
+
+A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}.
+
+\begin{enumerate}
+    \item A model of a variant of Baclofen TT using dialogue trees.
+    \item An exceptional model.
+    \item 
+\end{enumerate}
+
 
 \section{System T and MLTT}
 \subsection{MLTT}
