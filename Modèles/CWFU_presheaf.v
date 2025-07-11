@@ -10,7 +10,7 @@ Import Logic.EqNotations.
 Set Primitive Projections.
 
 
-Record sig (A : Type) (B : A -> Type) := pair {
+Record sig (A : Type) (B : A -> Type) : Type := pair {
   prj1 : A;
   prj2 : B prj1;
 }.
@@ -856,14 +856,89 @@ Defined.
 
 Record psh_pi_obj {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) {Z} (z : ctx_obj Γ Z) : Type := mk_pi_obj
   {
-    pi_obj_obj : forall Y (f: Y ~> Z) (a : typ_obj A (z ⋅ f)), typ_obj B (mk_app (z ⋅ f) a);
-    pi_obj_fun : forall X Y (f: Y ~> Z) (g: X ~> Y) (a : typ_obj A (z ⋅ f)),
+    pi_obj_obj : forall Y (f : Y ~> Z) (a : typ_obj A (z ⋅ f)), typ_obj B (mk_app (z ⋅ f) a);
+    pi_obj_fun : forall X Y (f : Y ~> Z) (g: X ~> Y) (a : typ_obj A (z ⋅ f)),
       (rew ctx_com in pi_obj_obj X (cat_com f g)) (a ⋅⋅ g) = (pi_obj_obj Y f a) ⋅⋅ g;
   }.
 
 Arguments mk_pi_obj {Γ A} B {Z} z.
 Arguments pi_obj_obj {Γ A B Z z}.
 Arguments pi_obj_fun {Γ A} B {Z} z.
+
+Definition psh_pi'_obj {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) {Z} (z : ctx_obj Γ Z) : Type :=
+  @sig (forall Y (f : Y ~> Z) (a : typ_obj A (z ⋅ f)), typ_obj B (mk_app (z ⋅ f) a))
+    (fun var => forall X Y (f : Y ~> Z) (g: X ~> Y) (a : typ_obj A (z ⋅ f)),
+      (rew ctx_com in var X (cat_com f g)) (a ⋅⋅ g) = (var Y f a) ⋅⋅ g).
+Print mk_pi_obj.
+Definition mk_pi'_obj {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) {Z} (z : ctx_obj Γ Z) pi'_obj_obj pi'_obj_fun : psh_pi'_obj B z :=
+  pair pi'_obj_obj pi'_obj_fun.
+Definition pi'_obj_obj {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) {Z} (z : ctx_obj Γ Z) (Π' : psh_pi'_obj B z) := prj1 Π'.
+Definition pi'_obj_fun {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) {Z} (z : ctx_obj Γ Z) (Π' : psh_pi'_obj B z) := prj2 Π'.
+
+Lemma f_equal2 {A B C a a' b b'} (f : forall (a:A), B a -> C) :
+  forall (H : a = a'), rew H in b = b' -> f a b = f a' b'.
+Proof.
+  intros H.
+  destruct H.
+  intros H'.
+  simpl in H'.
+  destruct H'.
+  reflexivity.
+Defined.
+
+Goal forall (Γ Δ : ⊣) (σ : Γ ⊢ Δ) (A : ⊣ Δ) (B : ⊣ (Δ ⊳ A)) (X : cat_obj CC) (x : ctx_obj Γ X),
+psh_pi'_obj B (sub_obj σ x) = psh_pi'_obj (B [psh_lft A σ]) x.
+Proof.
+  intros Γ Δ σ A B X x.
+  simpl.
+  unfold psh_pi'_obj.
+  eapply (f_equal2 sig).
+  Unshelve. all:swap 0-1.
+  - apply (f_equal (fun var => forall Y (f : Y ~> X), var Y f) (x:= fun var (var' : var ~> X) => forall (a: typ_obj A (sub_obj σ x ⋅ var')),
+      typ_obj B (mk_app (sub_obj σ x ⋅ var') a))).
+    apply fext. intros Y.
+    apply fext. intros f. (* 
+    simpl. unfold psh_sub_typ_obj. unfold psh_lft. simpl. unfold psh_ext_obj. simpl.
+    unfold psh_wk_obj. simpl. *)
+    etransitivity.
+    apply (f_equal (fun var => (forall a, typ_obj B (mk_app var a)))).
+    apply (eq_sym (sub_fun σ f x)).
+    apply (f_equal (fun var => forall a, var a)).
+    apply fext. intros a.
+    apply (f_equal (fun var => typ_obj B (mk_app _ var))).
+    etransitivity.
+    2: apply (f_equal (fun var => trm_obj (A:=A[σ•]) var (mk_app (x ⋅ f) (a : typ_obj (A[σ]) _)))).
+    2: symmetry.
+    2: etransitivity.
+    2: apply (rew_map (fun var => (A[var]) ⊣ _) (fun var => var •)).
+    2: etransitivity.
+    2: apply (rew_compose (fun var => (A[var]) ⊣ _)).
+    2: etransitivity.
+    2: apply (rew_map (fun var => var ⊣ _) (fun var => A[var])).
+    2: apply (rew_compose (fun var => var ⊣ _)).
+    symmetry.
+    let p := (match goal with [|- trm_obj (rew [_] ?p in _) _ = _ ] => p end) in
+    set (H := p); clearbody H.
+    etransitivity.
+    apply (rew_trm (Γ ⊳ (A [σ])) _ _ _ (mk_app (x ⋅ f) (a: typ_obj (A[σ]) _))
+      H psh_lst).
+    simpl.
+    apply (rew_UIP (fun var => var Y (mk_app (x ⋅ f) _)) a (f_equal typ_obj H)).
+  - etransitivity.
+    symmetry.
+    apply (rew_map (fun var => var -> Type) (fun var => forall Y f, var Y f)).
+  let p := (match goal with [|- rew ?p in _ = _ ] => p end) in
+    set (H := p); clearbody H.
+    simpl in *.
+    apply fext. intros f.
+    etransitivity.
+(*     apply fext.
+    etransitivity.
+    apply (f_equal (fun var => var f)).*)
+    symmetry.
+    Print map_subst.
+    apply (map_subst (P:= fun var => var -> Type) (fun (var : Type) var' => var' f) H).
+
 
 Lemma psh_pi_obj_eq' {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)) Z (z : ctx_obj Γ Z) Π_obj Π_obj' Π_fun Π_fun':
   (forall Y f a, Π_obj Y f a = Π_obj' Y f a) -> mk_pi_obj B z Π_obj Π_fun = mk_pi_obj B z Π_obj' Π_fun'.
@@ -938,68 +1013,70 @@ Proof.
     pi_obj_fun := psh_pi_fun_fun f z Π|}.
 Defined.
 
-  Definition psh_pi {Γ}: forall {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)), ⊣ Γ.
-  Proof.
-    intros A B.
-    refine {|typ_obj X := psh_pi_obj B; typ_fun X Y:= psh_pi_fun|}.
-    + intros X x b.
-      apply psh_pi_obj_eq'.
-      intros Y f a.
-      apply (f_equal (fun var => var a)).
-      etransitivity. symmetry.
-      apply (map_subst (P:= psh_pi_obj B) (fun var var' => pi_obj_obj var' Y f)).
-      simpl.
-      etransitivity.
-      apply (rew_map (fun var => forall a, typ_obj B (mk_app var a)) (fun var => var ⋅ f)).
-      unfold psh_pi_fun_obj.
-      etransitivity. Print rew_compose.
-      apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
-      etransitivity.
-      apply f_equal. apply (UIP _ (f_equal (fun var => x ⋅ var) cat_neu_l)).
-      rewrite (cat_neu_l (f:=f)).
-      reflexivity.
-    + intros X Y Z f g z b.
-      apply psh_pi_obj_eq'.
-      intros W h a.
-      apply (f_equal (fun var => var a)).
-      etransitivity. symmetry.
-      apply (map_subst (P:= psh_pi_obj B) (fun var var' => pi_obj_obj var' W h)).
-      simpl.
-      etransitivity.
-      apply (rew_map (fun var => forall a, typ_obj B (mk_app var a)) (fun var => var ⋅ h)).
-      unfold psh_pi_fun_obj.
-      etransitivity.
-      apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
-      etransitivity.
-      2: apply f_equal. Search (eq_sym (eq_sym _)).
-      2: apply eq_sym_involutive.
-      apply (rew_swap (fun var => forall a, typ_obj B (mk_app var a))).
-      etransitivity.
-      apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
-      etransitivity.
-      apply f_equal. Unshelve.
-     intros C D E f g e [b n].
-      unfold pshf_pi_fun. simpl.
-      unfold pshf_pi_fun_obj.
-      apply pshf_pi_obj_eq.
-      intros C' h a.
-      simpl.
-      rewrite <- (map_subst (P:= pshf_pi_obj B C)) with (f:= fun (y:pshf_obj Γ C) e => pi_obj e h).
-      simpl.
-      rewrite rew_map with (P:= fun p : pshf_obj Γ C' => forall a0 : A_obj A p, A_obj B {| app_c := p; app_a := a0 |})(f:=pshf_fun Γ h) (H:= pshf_comp).
-      repeat rewrite rew_compose.
-      let p := (match goal with [|- (rew [_] ?p in _) a = _ ] => p end) in
-      set (H := p); clearbody H.
-      let p := (match goal with [|- _ = (rew [_] ?p in _) a ] => p end) in
-      set (H' := p); clearbody H'.
-      revert a H'. rewrite <- H. clear.
-      intros a H.
-      assert (f_equal (fun X => pshf_fun Γ X e) (cat_assoc CC h f g) = H) as <- by apply UIP.
-      simpl.
-      rewrite <- rew_map with (f:= (fun X : C' ~> E => pshf_fun Γ X e)).
-      rewrite cat_assoc.
-      simpl. reflexivity.
-  Defined.
+Definition psh_pi {Γ} {A : ⊣ Γ} (B : ⊣ (Γ ⊳ A)): ⊣ Γ.
+Proof.
+  refine {|typ_obj X := psh_pi_obj B; typ_fun X Y:= psh_pi_fun|}.
+  + intros X x b.
+    apply psh_pi_obj_eq'.
+    intros Y f a.
+    apply (f_equal (fun var => var a)).
+    etransitivity. symmetry.
+    apply (map_subst (P:= psh_pi_obj B) (fun var var' => pi_obj_obj var' Y f)).
+    simpl.
+    etransitivity.
+    apply (rew_map (fun var => forall a, typ_obj B (mk_app var a)) (fun var => var ⋅ f)).
+    unfold psh_pi_fun_obj.
+    etransitivity. Print rew_compose.
+    apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
+    etransitivity.
+    apply f_equal. apply (UIP _ (f_equal (fun var => x ⋅ var) cat_neu_l)).
+    rewrite (cat_neu_l (f:=f)).
+    reflexivity.
+  + intros X Y Z f g z b.
+    apply psh_pi_obj_eq'.
+    intros W h a.
+    apply (f_equal (fun var => var a)).
+    etransitivity. symmetry.
+    apply (map_subst (P:= psh_pi_obj B) (fun var var' => pi_obj_obj var' W h)).
+    simpl.
+    etransitivity.
+    apply (rew_map (fun var => forall a, typ_obj B (mk_app var a)) (fun var => var ⋅ h)).
+    unfold psh_pi_fun, psh_pi_fun_obj. simpl.
+    symmetry.
+    etransitivity.
+    apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
+    etransitivity.
+    2: symmetry.
+    2: apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
+    etransitivity.
+    2: apply f_equal.
+    2: apply eq_sym_involutive.
+    apply (rew_swap (fun var => forall a, typ_obj B (mk_app var a))).
+    etransitivity.
+    apply (rew_compose (fun var => forall a, typ_obj B (mk_app var a))).
+    etransitivity.
+    apply f_equal.
+    apply (UIP _ (f_equal (fun var => z ⋅ var) cat_ass)).
+    etransitivity.
+    symmetry.
+    apply (rew_map (fun var => forall a, typ_obj B (mk_app var a)) (fun var => z ⋅ var) ).
+    apply (f_equal_dep (fun var => forall a, typ_obj B (mk_app (z ⋅ var) a))).
+Defined.
+
+Definition psh_sub_pi {Γ Δ} {σ : Γ ⊢ Δ} {A} {B : ⊣ (Δ ⊳ A)}:
+  (psh_pi B) [σ]  = psh_pi (B [psh_lft A σ]).
+Proof.
+  eapply psh_typ_eq.
+  Unshelve.
+  all: swap 0-1.
+  - simpl.
+    apply fext. intros X.
+    apply fext. intros x.
+    unfold psh_sub_typ_obj.
+    simpl.
+
+
+
 Definition 
 
   pi : forall {Γ} {A} (B : typ (app Γ A)), typ Γ;
