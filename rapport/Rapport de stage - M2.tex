@@ -228,6 +228,7 @@ A significant part of my internship was dedicated to contructing models of type 
     \item A model of a variant of Baclofen TT using dialogue trees. Predicates must be linearized before eliminating an inductive into them.
     \item An exceptional model, with a type of exceptions $E$. A special type of dialogue trees where $I = E$ and $O i = \mathbf{0}$, the resulting theory is inconsistent (when $E$ is inhabited), as always when $O i -> \mathbf{0}$ for some $i$.
     \item A model using sheaves, which requires univalence, and quotient inductive types to model positive types.
+    \item A incomplete model using presheaves.
 \end{enumerate}
 
 
@@ -360,6 +361,18 @@ $$
     \inference[\textsc{Trans}]
     {\Gamma |- M == M' :A & \Gamma |- M' == M'' : A}{\Gamma |- M == M'' : A}
 $$
+
+\section{Martin Baillon's ShTT}
+My work was meant to generalize the work of my supervisor past PhD. student, Martin Baillon. He worked on a roughly similar MLTT extended with
+
+$$ M, N ::= \dots | \alpha$$
+
+with secondary contexts, with $n$ and $b$ an integer and boolean respectively
+$$ \mathcal{L}, \ovl n \mapsto \ovl b | \cdot$$
+
+\section{Logical relations}
+\subsection{System T extension}
+
 
 
 \section{Meta-informations}
