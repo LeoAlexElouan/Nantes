@@ -44,6 +44,9 @@
 \DeclareMathOperator{\ctx}{\mathsf{ctx}}
 \DeclareMathOperator{\Typ}{\mathsf{Typ}}
 \DeclareMathOperator{\trm}{\mathsf{Trm}}
+\DeclareMathOperator{\true}{\mathsf{tt}}
+\DeclareMathOperator{\false}{\mathsf{ff}}
+
 
 \newcommand{\ovarr}{\overrightarrow}
 \newcommand{\ovl}{\overline}
@@ -52,6 +55,7 @@
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
 \newcommand{\nat}{\mathbf{N}}
+\newcommand{\bool}{\mathbf{B}}
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\D}{\mathcal{D}}
 \newcommand{\SBS}{\mathbf{SBS}}
@@ -305,6 +309,27 @@ $$
     {\Gamma |- M == M' :A & \Gamma |- A == A' : \square_\ell}{\Gamma M ==M' : A'}
 $$
 
+But it is useful to consider the extension, with new terms :
+ $ M,N ::= \dots | \bool|\bool_{\rec}|\ovl\true|\ovl\false$
+
+ And conversion rules
+
+$$
+    \inference[\textsc{Bool-True}]{\Gamma |- \Wf}{\Gamma |- \ovl\true == \ovl\true : \bool} \qquad
+    \inference[\textsc{Bool-False}]{\Gamma |- \Wf}{\Gamma |- \ovl\false == \ovl\false : \bool}
+$$
+
+$$
+    \inference[\textsc{Bool-Rec}]{\Gamma |- \Wf}{\Gamma |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \ovl\true \to A\ovl\false \to \Pi b :\bool, A b}
+$$
+
+
+$$
+    \inference[\textsc{Bool-Rec-True}]{\Gamma |- A == A : \bool -> \square_\slvl \\ \Gamma |- M_{\ovl\true} == M'_{\ovl\true} == A {\ovl\true} & \Gamma |- M_{\ovl\false} == M_{\ovl\false} : A \ovl\false}{\Gamma |- \bool_{\rec} A M_{\true} M_{\false} \ovl\true == M'_{\ovl\true} : A \ovl\true}
+$$
+$$
+    \inference[\textsc{Bool-Rec-False}]{\Gamma |- A == A : \bool -> \square_\slvl \\ \Gamma |- M_{\ovl\true} == M_{\ovl\true} == A \ovl\true & \Gamma |- M_{\ovl\false} == M'_{\ovl\false} : A \ovl\false}{\Gamma |- \bool_{\rec} A M_{\ovl\true} M_{\ovl\false} \ovl\false == M'_{\ovl\false} : A \ovl\false}
+$$
 \subsection{System T}
 
 To identify and solve problems in a simpler envirronement, we studied a modified System T before, based on the following variant.
@@ -363,12 +388,41 @@ $$
 $$
 
 \section{Martin Baillon's ShTT}
-My work was meant to generalize the work of my supervisor past PhD. student, Martin Baillon. He worked on a roughly similar MLTT extended with
+My work was meant to generalize the work of my supervisor past PhD. student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$.
 
-$$ M, N ::= \dots | \alpha$$
+$$ M, N ::= \dots |\alpha$$
 
-with secondary contexts, with $n$ and $b$ an integer and boolean respectively
-$$ \mathcal{L}, \ovl n \mapsto \ovl b | \cdot$$
+with secondary \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
+$$ \mathcal{L} ::= \mathcal{L}, n \mapsto b | \cdot$$
+We write $n\mapsto_\mathcal{L} b$ when $n\mapsto b$ appears in $\mathcal{L}$, and $n\not\mapsto_\mathcal{L}$ when neither $n\mapsto \true$ nor $n\mapsto \false$ do.
+
+And conversion rules :
+$$
+    \inference[name]{\mathcal{L},\Gamma |- ?_0 & \cdots & \mathcal{L},\Gamma |- ?_n}{\mathcal{L},\Gamma |- ?}
+$$
+whenever the following is a rule of MLTT (with booleans)
+$$
+    \inference[name]{\Gamma |- ?_0 & \cdots & \Gamma |- ?_n}{\Gamma |- ?}
+$$
+
+Exception made of \textsc{Wf-Empty}, which becomes
+$$
+    \inference[\textsc{Wf-Empty}]{}{\cdot,\cdot |- \Wf}
+$$
+
+The new conversion rules are :
+$$
+    \inference[\textsc{Wf-Ext-Forc}]{\mathcal{L},\Gamma |- \Wf & n\not\mapsto_\mathcal{L}}{\mathcal{L}, n\mapsto b, \Gamma |- \Wf}
+$$
+$$
+    \inference[\textsc{Gen}]{\mathcal{L},\Gamma|- \Wf}{\mathcal{L},\Gamma |- \alpha == \alpha : \nat -> \bool}
+    \qquad
+    \inference[\textsc{Ask}]{\mathcal{L},\Gamma|- \Wf &n\mapsto_\mathcal{L} b}{\mathcal{L}, \Gamma |- \alpha \ovl n == \ovl b}
+$$
+$$
+    \inference[\textsc{Split}]{\mathcal{L},n\mapsto \true,\Gamma |-M == M' :A & \mathcal{L}, n\mapsto\false, \Gamma |- M == M' : A & n\not\mapsto_\mathcal{L}}{\mathcal{L},\Gamma |- M == M' : A}
+$$
+
 
 \section{Logical relations}
 \subsection{System T extension}
