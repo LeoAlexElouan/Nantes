@@ -74,7 +74,7 @@
 \newcommand{\lvar}{\gamma}
 \newcommand{\rvar}{\delta}
 
-\newcommand{\tcontext}{\Gamma}
+\newcommand{\tctx}{\Gamma}
 \newcommand{\tvar}{\gamma}
 \newcommand{\diag}{\Delta}
 \newcommand{\DThunk}{\mathsf{Dist}}
@@ -89,6 +89,7 @@
 \newcommand{\Wf}{\textsf{well-formed}}
 \newcommand{\slvl}{\mathbf{s}}
 \newcommand{\llvl}{\mathbf{l}}
+\newcommand{\fctx}{\mathcal{L}}
 
 
 \mathlig{<-}{\leftarrow}
@@ -248,65 +249,65 @@ $$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \b
 
 
 Contexts :
-$$ \Gamma ::= \Gamma, x : A | \cdot $$
+$$ \tctx ::= \tctx, x : A | \cdot $$
 
 And conversion rules :
 
 $$
     \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
-    \inference[\textsc{Wf-Ext}]{\Gamma |- A == A & \Gamma |- \Wf}{ \Gamma, x : A |- \Wf}
+    \inference[\textsc{Wf-Ext}]{\tctx |- A == A & \tctx |- \Wf}{ \tctx, x : A |- \Wf}
 $$
 $$
-    \inference[\textsc{Int-Typ}]{\Gamma |- \Wf}{\Gamma |- \nat == \nat : \square_\ell} \qquad
-    \inference[\textsc{Emp-Typ}]{\Gamma |- \Wf}{\Gamma |- \bot == \bot : \square_\ell}
+    \inference[\textsc{Int-Typ}]{\tctx |- \Wf}{\tctx |- \nat == \nat : \square_\ell} \qquad
+    \inference[\textsc{Emp-Typ}]{\tctx |- \Wf}{\tctx |- \bot == \bot : \square_\ell}
 $$
 $$
-    \inference[\textsc{Fun-Typ}]{\Gamma |- A == A' : \square_\ell & \Gamma, x : A |- B == B' : \square_\ell}{\Gamma |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
-    \inference[\textsc{Typ-Typ}]{\Gamma |- \Wf}{\Gamma |- \square_\slvl : \square_\llvl}
-$$
-
-
-$$
-    \inference[\textsc{Fun-Intro}]{\Gamma, x : A |- M == M' : B &\Gamma |- A == A : \square_\ell}{\Gamma |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \qquad
-    \inference[\textsc{Fun-Elim}]{\Gamma |- M == M' : \Pi x:A, B& \Gamma |- N == N' : A}{\Gamma |- MN == M'N' : B(N/x)}
-$$
-
-$$
-    \inference[\textsc{Axiom}]{\Gamma |- \Wf & x : A \in \Gamma }{\Gamma |- x == x : A} \qquad
-    \inference[\textsc{Beta}]{\Gamma, x : A |- M == M' : B & \Gamma |- N == N' : A}{\Gamma |- (\lambda x. M)N == M'(N'/x) : B(N/x)}
-$$
-
-$$
-    \inference[\textsc{Int-Zero}]{\Gamma |- \Wf}{\Gamma |- 0 == 0 : \nat} \qquad
-    \inference[\textsc{Int-Succ}]{\Gamma |- \Wf}{\Gamma |- S == S : \nat -> \nat}
-$$
-
-$$
-    \inference[\textsc{Int-Rec}]{\Gamma |- \Wf}{\Gamma |- \nat_{\rec} == \nat_{\rec} : \Pi A : \nat \to \square_\slvl, A 0 \to \left(\Pi n:\nat, A n \to A (S n)\right) \to \Pi n :\nat, A n}
+    \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_\ell}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
+    \inference[\textsc{Typ-Typ}]{\tctx |- \Wf}{\tctx |- \square_\slvl : \square_\llvl}
 $$
 
 
 $$
-    \inference[\textsc{Int-Rec-Zero}]{\Gamma |- A == A : \nat -> square_\slvl & \Gamma |- N_0 == N'_0 == A 0\\ \Gamma |- N_S == N_S : \Pi n:\nat, A n -> A(S n)}{\Gamma |- \nat_{\rec} A N_0N_S0 == N'_0 : A 0}
+    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B &\tctx |- A == A : \square_\ell}{\tctx |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \qquad
+    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : \Pi x:A, B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B(N/x)}
 $$
+
 $$
-    \inference[\textsc{Int-Rec-Succ}]{\Gamma |- A == A' : \nat -> square_\slvl & \Gamma |- N_0 == N'_0 == A 0\\ \Gamma |- N_S == N'_S : \Pi n:\nat, A n -> A(S n) & \Gamma |- N == N' :\nat}{\Gamma |- \nat_{\rec} A N_0N_S (S N) == N'_S N' (\nat_{\rec}A' N'_0 N'_S N') : A (S N)}
+    \inference[\textsc{Axiom}]{\tctx |- \Wf & x : A \in \tctx }{\tctx |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M'(N'/x) : B(N/x)}
+$$
+
+$$
+    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
+$$
+
+$$
+    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : \Pi A : \nat \to \square_\slvl, A 0 \to \left(\Pi n:\nat, A n \to A (S n)\right) \to \Pi n :\nat, A n}
 $$
 
 
 $$
-    \inference[\textsc{Emp-Rec}]{\Gamma |- \Wf}{\Gamma |- \bot_{\rec} == \bot_{\rec} : \Pi A : \bot \to \square_\slvl,\Pi e :\bot, A e}
+    \inference[\textsc{Int-Rec-Zero}]{\tctx |- A == A : \nat -> square_\slvl & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N_S : \Pi n:\nat, A n -> A(S n)}{\tctx |- \nat_{\rec} A N_0N_S0 == N'_0 : A 0}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\tctx |- A == A' : \nat -> square_\slvl & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N'_S : \Pi n:\nat, A n -> A(S n) & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} A N_0N_S (S N) == N'_S N' (\nat_{\rec}A' N'_0 N'_S N') : A (S N)}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{\tctx |- \Wf}{\tctx |- \bot_{\rec} == \bot_{\rec} : \Pi A : \bot \to \square_\slvl,\Pi e :\bot, A e}
 $$
 
 $$
-    \inference[\textsc{Sym}]{\Gamma |- M == M' : A}{\Gamma |- M' == M : A} \qquad
+    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
     \inference[\textsc{Trans}]
-    {\Gamma |- M == M' :A & \Gamma |- M' == M'' : A}{\Gamma |- M == M'' : A}
+    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
 $$
 
 $$
     \inference[\textsc{Conv}]
-    {\Gamma |- M == M' :A & \Gamma |- A == A' : \square_\ell}{\Gamma M ==M' : A'}
+    {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
 $$
 
 But it is useful to consider the extension, with new terms :
@@ -315,20 +316,20 @@ But it is useful to consider the extension, with new terms :
  And conversion rules
 
 $$
-    \inference[\textsc{Bool-True}]{\Gamma |- \Wf}{\Gamma |- \ovl\true == \ovl\true : \bool} \qquad
-    \inference[\textsc{Bool-False}]{\Gamma |- \Wf}{\Gamma |- \ovl\false == \ovl\false : \bool}
+    \inference[\textsc{Bool-True}]{\tctx |- \Wf}{\tctx |- \ovl\true == \ovl\true : \bool} \qquad
+    \inference[\textsc{Bool-False}]{\tctx |- \Wf}{\tctx |- \ovl\false == \ovl\false : \bool}
 $$
 
 $$
-    \inference[\textsc{Bool-Rec}]{\Gamma |- \Wf}{\Gamma |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \ovl\true \to A\ovl\false \to \Pi b :\bool, A b}
+    \inference[\textsc{Bool-Rec}]{\tctx |- \Wf}{\tctx |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \ovl\true \to A\ovl\false \to \Pi b :\bool, A b}
 $$
 
 
 $$
-    \inference[\textsc{Bool-Rec-True}]{\Gamma |- A == A : \bool -> \square_\slvl \\ \Gamma |- M_{\ovl\true} == M'_{\ovl\true} == A {\ovl\true} & \Gamma |- M_{\ovl\false} == M_{\ovl\false} : A \ovl\false}{\Gamma |- \bool_{\rec} A M_{\true} M_{\false} \ovl\true == M'_{\ovl\true} : A \ovl\true}
+    \inference[\textsc{Bool-Rec-True}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\ovl\true} == M'_{\ovl\true} == A {\ovl\true} & \tctx |- M_{\ovl\false} == M_{\ovl\false} : A \ovl\false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \ovl\true == M'_{\ovl\true} : A \ovl\true}
 $$
 $$
-    \inference[\textsc{Bool-Rec-False}]{\Gamma |- A == A : \bool -> \square_\slvl \\ \Gamma |- M_{\ovl\true} == M_{\ovl\true} == A \ovl\true & \Gamma |- M_{\ovl\false} == M'_{\ovl\false} : A \ovl\false}{\Gamma |- \bool_{\rec} A M_{\ovl\true} M_{\ovl\false} \ovl\false == M'_{\ovl\false} : A \ovl\false}
+    \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\ovl\true} == M_{\ovl\true} == A \ovl\true & \tctx |- M_{\ovl\false} == M'_{\ovl\false} : A \ovl\false}{\tctx |- \bool_{\rec} A M_{\ovl\true} M_{\ovl\false} \ovl\false == M'_{\ovl\false} : A \ovl\false}
 $$
 \subsection{System T}
 
@@ -344,65 +345,66 @@ $$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
 
 
 Contexts :
-$$ \Gamma ::= \Gamma, x : A | \cdot $$
+$$ \tctx ::= \tctx, x : A | \cdot $$
 
 And conversion rules :
 
 
 $$
-    \inference[\textsc{Fun-Intro}]{\Gamma, x : A |- M == M' : B }{\Gamma |- \lambda x. M == \lambda x. M' : A -> B} \qquad
-    \inference[\textsc{Fun-Elim}]{\Gamma |- M == M' : A -> B& \Gamma |- N == N' : A}{\Gamma |- MN == M'N' : B}
+    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B }{\tctx |- \lambda x. M == \lambda x. M' : A -> B} \qquad
+    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : A -> B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B}
 $$
 
 $$
-    \inference[\textsc{Axiom}]{x : A \in \Gamma }{\Gamma |- x == x : A} \qquad
-    \inference[\textsc{Beta}]{\Gamma, x : A |- M == M' : B & \Gamma |- N == N' : A}{\Gamma |- (\lambda x. M)N == M' : B}
+    \inference[\textsc{Axiom}]{x : A \in \tctx }{\tctx |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M' : B}
 $$
 
 $$
-    \inference[\textsc{Int-Zero}]{\Gamma |- \Wf}{\Gamma |- 0 == 0 : \nat} \qquad
-    \inference[\textsc{Int-Succ}]{\Gamma |- \Wf}{\Gamma |- S == S : \nat -> \nat}
+    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
 $$
 
 $$
-    \inference[\textsc{Int-Rec}]{\Gamma |- \Wf}{\Gamma |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
-$$
-
-
-$$
-    \inference[\textsc{Int-Rec-Zero}]{\Gamma |- N_0 == N'_0 == A\\ \Gamma |- N_S == N_S : \nat -> A  -> A}{\Gamma |- \nat_{\rec} N_0N_S0 == N'_0 : A}
-$$
-$$
-    \inference[\textsc{Int-Rec-Succ}]{\Gamma |- N_0 == N'_0 == A\\ \Gamma |- N_S == N'_S : \nat -> A  -> A & \Gamma |- N == N' :\nat}{\Gamma |- \nat_{\rec} N_0N_S (S N) == N'_S N' (\nat_{\rec}N'_0 N'_S N') : A}
+    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
 $$
 
 
 $$
-    \inference[\textsc{Emp-Rec}]{}{\Gamma |- \bot_{\rec} == \bot_{\rec} : \bot -> A}
+    \inference[\textsc{Int-Rec-Zero}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N_S : \nat -> A  -> A}{\tctx |- \nat_{\rec} N_0N_S0 == N'_0 : A}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N'_S : \nat -> A  -> A & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} N_0N_S (S N) == N'_S N' (\nat_{\rec}N'_0 N'_S N') : A}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{}{\tctx |- \bot_{\rec} == \bot_{\rec} : \bot -> A}
 $$
 
 $$
-    \inference[\textsc{Sym}]{\Gamma |- M == M' : A}{\Gamma |- M' == M : A} \qquad
+    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
     \inference[\textsc{Trans}]
-    {\Gamma |- M == M' :A & \Gamma |- M' == M'' : A}{\Gamma |- M == M'' : A}
+    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
 $$
 
-\section{Martin Baillon's ShTT}
-My work was meant to generalize the work of my supervisor past PhD. student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$.
+\section{ShTT}
+\subsection{Martin Baillon's ShTT}\label{MBshtt}
+My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$.
 
 $$ M, N ::= \dots |\alpha$$
 
-with secondary \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
-$$ \mathcal{L} ::= \mathcal{L}, n \mapsto b | \cdot$$
-We write $n\mapsto_\mathcal{L} b$ when $n\mapsto b$ appears in $\mathcal{L}$, and $n\not\mapsto_\mathcal{L}$ when neither $n\mapsto \true$ nor $n\mapsto \false$ do.
+With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
+$$ \fctx ::= \fctx, n \mapsto b | \cdot$$
+We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \true$ nor $n\mapsto \false$ do.
 
 And conversion rules :
 $$
-    \inference[name]{\mathcal{L},\Gamma |- ?_0 & \cdots & \mathcal{L},\Gamma |- ?_n}{\mathcal{L},\Gamma |- ?}
+    \inference[name]{\fctx,\tctx |- ?_0 & \cdots & \fctx,\tctx |- ?_n}{\fctx,\tctx |- ?}
 $$
 whenever the following is a rule of MLTT (with booleans)
 $$
-    \inference[name]{\Gamma |- ?_0 & \cdots & \Gamma |- ?_n}{\Gamma |- ?}
+    \inference[name]{\tctx |- ?_0 & \cdots & \tctx |- ?_n}{\tctx |- ?}
 $$
 
 Exception made of \textsc{Wf-Empty}, which becomes
@@ -412,22 +414,60 @@ $$
 
 The new conversion rules are :
 $$
-    \inference[\textsc{Wf-Ext-Forc}]{\mathcal{L},\Gamma |- \Wf & n\not\mapsto_\mathcal{L}}{\mathcal{L}, n\mapsto b, \Gamma |- \Wf}
+    \inference[\textsc{Wf-Ext-Forc}]{\fctx,\tctx |- \Wf & n\not\mapsto_\fctx}{\fctx, n\mapsto b, \tctx |- \Wf}
 $$
 $$
-    \inference[\textsc{Gen}]{\mathcal{L},\Gamma|- \Wf}{\mathcal{L},\Gamma |- \alpha == \alpha : \nat -> \bool}
+    \inference[\textsc{Gen}]{\fctx,\tctx|- \Wf}{\fctx,\tctx |- \alpha == \alpha : \nat -> \bool}
     \qquad
-    \inference[\textsc{Ask}]{\mathcal{L},\Gamma|- \Wf &n\mapsto_\mathcal{L} b}{\mathcal{L}, \Gamma |- \alpha \ovl n == \ovl b}
+    \inference[\textsc{Ask}]{\fctx,\tctx|- \Wf &n\mapsto_\fctx b}{\fctx, \tctx |- \alpha \ovl n == \ovl b}
 $$
 $$
-    \inference[\textsc{Split}]{\mathcal{L},n\mapsto \true,\Gamma |-M == M' :A & \mathcal{L}, n\mapsto\false, \Gamma |- M == M' : A & n\not\mapsto_\mathcal{L}}{\mathcal{L},\Gamma |- M == M' : A}
+    \inference[\textsc{Split}]{\fctx,n\mapsto \true,\tctx |-M == M' :A & \fctx, n\mapsto\false, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
+Entre autre, cette théorie permet de montrer que tout terme de MLTT $\cdot |- M == M : (\nat -> \bool) -> \nat$ est continu.
+\subsection{ShTT}
+
+The prototype of theory I have defined and hoped to study is as follows :
+
+We imagine we have a set $\Omega$ of \emph{atoms}.
+We first set a set $I$ with decidable equality, and a (morally finite) set $A i$ for each $i \in I$ standing for arity, and finally a family $((O_{i,\alpha})_{\alpha \in A i})_{i\in I}$ of elements of $\Omega$. The term extend those of MLTT as follows :
+
+$$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha\in A i}$$
+
+When instanciating with finite $A i$, it would rather be  $\digamma_i M_1 \cdots M_n$.
+
+The forcing contexts $\fctx$ are now subset of $\Omega$, and never cause ill-formation.
+
+The conversion rules also copy those from MLTT by adding a forcing context as in \ref{MBshtt}, without the \textsc{WF-Empty} exception.
+
+The new conversion rules are as follows :
+
+$$
+    \inference[\textsc{Dig}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
+$$
+
+This rule is both the expected congruence rule and a compatibility rule.
+
+$$
+    \inference[\textsc{Ask}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
+$$
+$$
+    \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
+$$
+$$
+    \inference[\textsc{Int-Rec-Dig}]{\fctx,\tctx |- A == A : \nat -> \square_\slvl & \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \Pi n : \nat, A n -> A (S n)\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} AM_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma (\nat_{\rec}M_0M_SM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+$$
+$$
+    \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma (\bot_{\rec}M_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+$$
+
+We may encode \ref{MBshtt} with $I := \nat + \nat$
 
 \section{Logical relations}
+
+
 \subsection{System T extension}
-
-
 
 \section{Meta-informations}
 
