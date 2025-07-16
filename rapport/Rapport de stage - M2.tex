@@ -425,7 +425,7 @@ $$
     \inference[\textsc{Split}]{\fctx,n\mapsto \true,\tctx |-M == M' :A & \fctx, n\mapsto\false, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
-Entre autre, cette théorie permet de montrer que tout terme de MLTT $\cdot |- M == M : (\nat -> \bool) -> \nat$ est continu.
+Amongst other thing, this theory can be used to show that any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT has a continuity proof.
 \subsection{ShTT}
 
 The prototype of theory I have defined and hoped to study is as follows :
@@ -447,22 +447,22 @@ $$
     \inference[\textsc{Dig}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
 
-This rule is both the expected congruence rule and a compatibility rule.
+This rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a purre typing judgement.
 
 $$
     \inference[\textsc{Ask}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
 $$
 $$
-    \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
+    \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
 $$
 $$
-    \inference[\textsc{Int-Rec-Dig}]{\fctx,\tctx |- A == A : \nat -> \square_\slvl & \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \Pi n : \nat, A n -> A (S n)\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} AM_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma (\nat_{\rec}M_0M_SM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+    \inference[\textsc{Int-Rec-Dig}]{\fctx,\tctx |- A == A : \nat -> \square_\slvl & \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \Pi n : \nat, A n -> A (S n)\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} AM_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\nat_{\rec}M_0M_SM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 $$
-    \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma (\bot_{\rec}M_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+    \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}M_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-We may encode \ref{MBshtt} with $I := \nat + \nat$
+This theory is still missing a few things. Notably, to instantiate it with \ref{MBshtt}, we would proceed as follows $\Omega = \1 + \nat \times \bool$
 
 \section{Logical relations}
 
