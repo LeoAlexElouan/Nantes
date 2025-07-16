@@ -84,11 +84,11 @@ Inductive conv@{i} : ctx -> term@{i} -> term@{i} -> type@{i} -> Type@{i} :=
   | term_trans c A t u v : conv c t u A -> conv c u v A ->
     conv c t v A
   | digamma_i i c A k k' : (forall a a': Arity i, conv (ctx_cons_OO a a' c) (k a) (k' a') A) -> conv c (digamma i k) (digamma i k') A
-  | digamma_erase i a c A k t' : List.In (O i a) (L c) -> conv c (k a) t' A -> conv c (digamma i k) t' A
-  | App_digamma i c A B k k' u u' : (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a) (A → B)) -> conv c u u' A -> conv c ((digamma i k) u) (digamma i (fun a => (k' a) u')) B
+  | digamma_erase i a c A k k' : List.In (O i a) (L c) -> (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a') A)-> conv c (digamma i k) (k' a) A
+  | App_digamma i c A B k k' u u' : (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a') (A → B)) -> conv c u u' A -> conv c ((digamma i k) u) (digamma i (fun a => (k' a) u')) B
   | nat_r_digamma i c A k k' t0 t0' tS tS' : (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a') nat_typ) -> conv c t0 t0' A ->
     conv c tS tS' (nat_typ → A → A) -> conv c (nat_r t0 tS (digamma i k)) (digamma i (fun a => nat_r t0' tS' (k' a))) A
-  | bot_r_digamma i c A k k' : (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a) bot_typ) -> conv c (bot_r (digamma i k)) (digamma i (fun a => bot_r (k' a))) A.
+  | bot_r_digamma i c A k k' : (forall a a', conv (ctx_cons_OO a a' c) (k a) (k' a') bot_typ) -> conv c (bot_r (digamma i k)) (digamma i (fun a => bot_r (k' a))) A.
 
 
 Inductive Red@{i} : term@{i} -> term@{i} -> Type@{i} :=
@@ -270,28 +270,28 @@ Inductive nat_conv : ctx -> term -> term -> Type :=
     (hneu : Ne n) (hneu' : Ne n') : nat_conv c t t'
   | conv_nat_digamma {i c t t' k k'} (r : Redstar t (digamma i k)) (r' : Redstar t' (digamma i k'))
     (hk : forall a a', nat_conv (ctx_cons_OO a a' c) (k a) (k' a')) : nat_conv c t t'
-  | conv_nat_digamma_left {i a c t t' k u'} (hin : List.In (O i a) (L c)) (r : Redstar t (digamma i k)) (r' : Redstar t' u') (hk : nat_conv c (k a) u') : nat_conv c t t'
-  | conv_nat_digamma_right {i a' c t t' u k'} (hin : List.In (O i a') (L c)) (r : Redstar t u) (r' : Redstar t' (digamma i k')) (hk : nat_conv c u (k' a')) : nat_conv c t t'.
+  | conv_nat_digamma_left {i a c t t' k k'} (hin : List.In (O i a) (L c)) (r : Redstar t (digamma i k)) (r' : Redstar t' (k' a)) (hk : forall a a', nat_conv (ctx_cons_OO a a' c) (k a) (k' a')) : nat_conv c t t'
+  | conv_nat_digamma_right {i a' c t t' k k'} (hin : List.In (O i a') (L c)) (r : Redstar t (k a')) (r' : Redstar t' (digamma i k')) (hk : forall a a', nat_conv (ctx_cons_OO a a' c) (k a) (k' a')) : nat_conv c t t'.
 
 Arguments conv_nat_0 {c t t'}.
 Arguments conv_nat_S {c t t' u u'} r r' hu.
 Arguments conv_nat_Ne {c t t' n n'} r r' hneu hneu'.
 Arguments conv_nat_digamma {i c t t' k k'} r r' hk.
-Arguments conv_nat_digamma_left {i a c t t' k u'} hin r r' hk.
-Arguments conv_nat_digamma_right {i a' c t t' u k'} hin r r' hk.
+Arguments conv_nat_digamma_left {i a c t t' k k'} hin r r' hk.
+Arguments conv_nat_digamma_right {i a' c t t' k k'} hin r r' hk.
 
 Inductive bot_conv : ctx -> term -> term -> Type :=
   | conv_bot_Ne {c t t' n n'} (r : Redstar t n) (r' : Redstar t' n')
     (hneu : Ne n) (hneu' : Ne n') : bot_conv c t t'
   | conv_bot_digamma {i c t t' k k'} (r : Redstar t (digamma i k)) (r' : Redstar t' (digamma i k'))
     (hk : forall a a', bot_conv (ctx_cons_OO a a' c) (k a) (k' a')) : bot_conv c t t'
-  | conv_bot_digamma_left {i a c t t' k u'} (hin : List.In (O i a) (L c)) (r : Redstar t (digamma i k)) (r' : Redstar t' u') (hk : bot_conv c (k a) u') : bot_conv c t t'
-  | conv_bot_digamma_right {i a' c t t' u k'} (hin : List.In (O i a') (L c)) (r : Redstar t u) (r' : Redstar t' (digamma i k')) (hk : bot_conv c u (k' a')) : bot_conv c t t'.
+  | conv_bot_digamma_left {i a c t t' k k'} (hin : List.In (O i a) (L c)) (r : Redstar t (digamma i k)) (r' : Redstar t' (k' a)) (hk : forall a a', bot_conv (ctx_cons_OO a a' c) (k a) (k' a')) : bot_conv c t t'
+  | conv_bot_digamma_right {i a' c t t' k k'} (hin : List.In (O i a') (L c)) (r : Redstar t (k a')) (r' : Redstar t' (digamma i k')) (hk : forall a a', bot_conv (ctx_cons_OO a a' c) (k a) (k' a')) : bot_conv c t t'.
 
 Arguments conv_bot_Ne {c t t' n n'} r r' hneu hneu'.
 Arguments conv_bot_digamma {i c t t' k k'} r r' hk.
-Arguments conv_bot_digamma_left {i a c t t' k u'} hin r r' hk.
-Arguments conv_bot_digamma_right {i a' c t t' u k'} hin r r' hk.
+Arguments conv_bot_digamma_left {i a c t t' k k'} hin r r' hk.
+Arguments conv_bot_digamma_right {i a' c t t' k k'} hin r r' hk.
 
 Inductive list_extend {T} : list T -> list T -> Type :=
   | extend_refl {l} : list_extend l l
@@ -440,37 +440,39 @@ Lemma reification : forall c t t' A, sem_conv c t t' A -> Norm t * Norm t'.
 Proof.
   intros c t t' A. revert c t t'.
   induction A as [ | | A ihA B ihB].
-  - intros c t t' hsem.
-    induction hsem.
+  - intros c t t' ht.
+    induction ht as
+      [c t t' r r' | c t t' u u' r r' hu ihu | c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
     + split; eapply (Norm_Redstar _ Norm_nat_0).
     + split; eapply (Norm_Redstar _ Norm_nat_S).
     + split; eapply (Norm_Redstar _ (Norm_Ne _)).
     + split; eapply (Norm_Redstar _ Norm_digamma).
     + split.
       * apply (Norm_Redstar r Norm_digamma).
-      * destruct IHhsem.
-        apply (Norm_Redstar r' n0).
+      * destruct (ihk a a) as [norm norm'].
+        apply (Norm_Redstar r' norm').
     + split.
-      * destruct IHhsem.
-        apply (Norm_Redstar r n).
+      * destruct (ihk a' a') as [norm norm'].
+        apply (Norm_Redstar r norm).
       * apply (Norm_Redstar r' Norm_digamma).
-  - intros Γ t t' hsem.
-    induction hsem.
+  - intros Γ t t' ht.
+    induction ht as
+      [c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
     + split; eapply (Norm_Redstar _ (Norm_Ne _)).
     + split; eapply (Norm_Redstar _ Norm_digamma).
     + split.
       * apply (Norm_Redstar r Norm_digamma).
-      * destruct IHhsem.
-        apply (Norm_Redstar r' n0).
+      * destruct (ihk a a) as [norm norm'].
+        apply (Norm_Redstar r' norm').
     + split.
-      * destruct IHhsem.
-        apply (Norm_Redstar r n).
+      * destruct (ihk a' a') as [norm norm'].
+        apply (Norm_Redstar r norm).
       * apply (Norm_Redstar r' Norm_digamma).
-  - intros Γ t t' hsem.
-    specialize (hsem _ ctx_refl (Var 0) (Var 0) (reflection Ne_Var Ne_Var)). simpl in hsem.
-    specialize (ihB _ _ _ hsem).
-    destruct ihB as [ht ht'].
-    split; eapply app_norm; [apply ht | apply ht'].
+  - intros c t t' ht.
+    specialize (ht _ ctx_refl (Var 0) (Var 0) (reflection Ne_Var Ne_Var) : sem_conv _ _ _ _).
+    specialize (ihB _ _ _ ht).
+    destruct ihB as [norm norm'].
+    split; eapply app_norm; [apply norm | apply norm'].
   Unshelve. all: try (apply r); try (apply r'); assumption.
 Defined.
 
@@ -483,21 +485,21 @@ Proof.
   induction A as [ | | A ihA B ihB ].
   + intros c t t' ht.
     induction ht as
-      [ c t t' rs rs' | c t t' v v' rs rs' ht _| c t t' n n' rs rs' | i c t t' k k' rs rs' hk _| i a c t t' k v hin rs rs' ht iht | i a' c t t' v k' hin rs rs' ht iht].
+      [ c t t' rs rs' | c t t' v v' rs rs' ht _| c t t' n n' rs rs' | i c t t' k k' rs rs' hk _| i a c t t' k k' hin rs rs' hk ihk | i a' c t t' k k' hin rs rs' hk ihk].
     all: intros u u' r r'.
     - apply (conv_nat_0 (star_comp r rs) (star_comp r' rs')).
     - apply (conv_nat_S (star_comp r rs) (star_comp r' rs') ht).
     - apply (conv_nat_Ne (star_comp r rs) (star_comp r' rs') hneu hneu').
     - apply (conv_nat_digamma (star_comp r rs) (star_comp r' rs') hk).
-    - apply (conv_nat_digamma_left hin (star_comp r rs) (star_comp r' rs') (iht _ _ star_nil star_nil)).
-    - apply (conv_nat_digamma_right hin (star_comp r rs) (star_comp r' rs') (iht _ _ star_nil star_nil)).
+    - apply (conv_nat_digamma_left hin (star_comp r rs) (star_comp r' rs') (fun _ _ => ihk _ _ _ _ star_nil star_nil)).
+    - apply (conv_nat_digamma_right hin (star_comp r rs) (star_comp r' rs') (fun _ _ => ihk _ _ _ _ star_nil star_nil)).
   + intros c t t' ht.
-    induction ht as [ c t t' n n' rs rs'| i c t t' k k' rs rs' hk _ | i a c t t' k v hin rs rs' ht iht | i a' c t t' v k' hin rs rs' ht iht].
+    induction ht as [ c t t' n n' rs rs'| i c t t' k k' rs rs' hk _ | i a c t t' k k' hin rs rs' hk ihk | i a' c t t' k k' hin rs rs' hk ihk].
     all: intros u u' r r'.
     - apply (conv_bot_Ne (star_comp r rs) (star_comp r' rs') hneu hneu').
     - apply (conv_bot_digamma (star_comp r rs) (star_comp r' rs') hk).
-    - apply (conv_bot_digamma_left hin (star_comp r rs) (star_comp r' rs') (iht _ _ star_nil star_nil)).
-    - apply (conv_bot_digamma_right hin (star_comp r rs) (star_comp r' rs') (iht _ _ star_nil star_nil)).
+    - apply (conv_bot_digamma_left hin (star_comp r rs) (star_comp r' rs') (fun _ _ => ihk _ _ _ _ star_nil star_nil)).
+    - apply (conv_bot_digamma_right hin (star_comp r rs) (star_comp r' rs') (fun _ _ => ihk _ _ _ _ star_nil star_nil)).
   + intros c t t' ht u u' r r' c' hgeq v v' hv.
     apply (ihB c' (t v) (t' v') (ht _ hgeq _ _ hv)).
     - apply (congstar r).
@@ -529,31 +531,35 @@ Proof. exact (ctx_extend (ctx_extend hgeq)). Defined.
 Lemma sem_conv_map : forall {c c'}, ctx_geq c c' -> forall {t t' A}, sem_conv c t t' A -> sem_conv c' t t' A.
 Proof.
   intros c c' hgeq t t' A. revert c c' hgeq t t'.
-  induction A.
+  induction A as [ | | A ihA B ihB ].
   all: intros c c' hgeq t t' ht.
   + revert c' hgeq.
-    induction ht as [ | | | i c t t' k k' r r' hk ihk | | ]; intros c' hgeq.
+    induction ht as
+      [c t t' r r' | c t t' u u' r r' hu ihu | c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
+    all: intros c' hgeq.
     - apply (conv_nat_0 r r').
-    - refine (conv_nat_S r r' (IHht _ hgeq)).
-    - refine (conv_nat_Ne r r' hneu hneu').
+    - refine (conv_nat_S r r' (ihu _ hgeq)).
+    - refine (conv_nat_Ne r r' neu neu').
     - apply (conv_nat_digamma r r').
       intros a a'.
       apply ihk.
       apply (ctx_extend_OO hgeq).
-    - eapply (conv_nat_digamma_left (L_geq hgeq _ hin) r r' (IHht _ hgeq)).
-    - eapply (conv_nat_digamma_right (L_geq hgeq _ hin) r r' (IHht _ hgeq)).
+    - eapply (conv_nat_digamma_left (L_geq hgeq _ hin) r r' (fun _ _ => (ihk _ _ _ (ctx_extend_OO hgeq)))).
+    - eapply (conv_nat_digamma_right (L_geq hgeq _ hin) r r' (fun _ _ => (ihk _ _ _ (ctx_extend_OO hgeq)))).
   + revert c' hgeq.
-    induction ht as [ | i c t t' k k' r r' hk ihk | | ]; intros c' hgeq.
-    - refine (conv_bot_Ne r r' hneu hneu').
+    induction ht as
+      [c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
+    all: intros c' hgeq.
+    - refine (conv_bot_Ne r r' neu neu').
     - apply (conv_bot_digamma r r').
       intros a a'.
       apply ihk.
       apply (ctx_extend_OO hgeq).
-    - eapply (conv_bot_digamma_left (L_geq hgeq _ hin) r r' (IHht _ hgeq)).
-    - eapply (conv_bot_digamma_right (L_geq hgeq _ hin) r r' (IHht _ hgeq)).
+    - eapply (conv_bot_digamma_left (L_geq hgeq _ hin) r r' (fun _ _ => (ihk _ _ _ (ctx_extend_OO hgeq)))).
+    - eapply (conv_bot_digamma_right (L_geq hgeq _ hin) r r' (fun _ _ => (ihk _ _ _ (ctx_extend_OO hgeq)))).
   + intros c'' hgeq' u u' hu.
     apply (ht _ (ctx_trans hgeq hgeq')).
-    apply (IHA1 c'' _ ctx_refl).
+    apply (ihA c'' _ ctx_refl).
     apply hu.
 Defined.
 
@@ -609,34 +615,40 @@ Proof.
     * apply (sem_conv_map ctx_tl_OO hu).
 Defined.
 
-Lemma digamma_left_sound : forall {i a c k t' A}, List.In (O i a) (L c) -> sem_conv c (k a) t' A -> sem_conv c (digamma i k) t' A.
+Lemma digamma_left_sound : forall {i a c k k' A}, List.In (O i a) (L c) -> (forall a a', sem_conv (ctx_cons_OO a a' c) (k a) (k' a') A) -> sem_conv c (digamma i k) (k' a) A.
 Proof.
-  intros i a c k t' A. revert i a c k t'.
+  intros i a c k k' A. revert i a c k k'.
   induction A.
-  all: intros i a c k t' hin hk.
+  all: intros i a c k k' hin hk.
   - apply (conv_nat_digamma_left hin star_nil star_nil).
     apply hk.
   - apply (conv_bot_digamma_left hin star_nil star_nil).
     apply hk.
   - intros c' hgeq u u' hu.
     refine (antireduction _ (star_cons App_digamma_Red star_nil) star_nil).
-    apply (IHA2 _ _ _ _ _ (L_geq hgeq _ hin)).
-    apply (sem_conv_map hgeq hk _ ctx_refl _ _ hu).
+    apply (IHA2 _ _ _ (fun a => k a u) (fun a => k' a u') (L_geq hgeq _ hin)).
+    intros a' a''.
+    apply hk.
+    apply (ctx_extend_OO hgeq).
+    apply (sem_conv_map ctx_tl_OO hu).
 Defined.
 
-Lemma digamma_right_sound : forall {i a' c t k' A}, List.In (O i a') (L c) -> sem_conv c t (k' a') A -> sem_conv c t (digamma i k') A.
+Lemma digamma_right_sound : forall {i a' c k k' A}, List.In (O i a') (L c) -> (forall a a', sem_conv (ctx_cons_OO a a' c) (k a) (k' a') A)-> sem_conv c (k a') (digamma i k') A.
 Proof.
-  intros i a' c t k' A. revert i a' c t k'.
+  intros i a' c k k' A. revert i a' c k k'.
   induction A.
-  all: intros i a' c t k' hin hk'.
+  all: intros i a' c k k' hin hk'.
   - apply (conv_nat_digamma_right hin star_nil star_nil).
     apply hk'.
   - apply (conv_bot_digamma_right hin star_nil star_nil).
     apply hk'.
   - intros c' hgeq u u' hu.
     refine (antireduction _ star_nil (star_cons App_digamma_Red star_nil)).
-    apply (IHA2 _ _ _ _ _ (L_geq hgeq _ hin)).
-    apply (sem_conv_map hgeq hk' _ ctx_refl _ _ hu).
+    apply (IHA2 _ _ _ (fun a' => k a' u) _ (L_geq hgeq _ hin)).
+    intros a a''.
+    apply hk'.
+    apply (ctx_extend_OO hgeq).
+    apply (sem_conv_map ctx_tl_OO hu).
 Defined.
 
 Lemma nat_r_sound : forall {c t0 t0' A}, sem_conv c t0 t0' A ->
@@ -645,13 +657,14 @@ Lemma nat_r_sound : forall {c t0 t0' A}, sem_conv c t0 t0' A ->
   sem_conv c (nat_r t0 tS t) (nat_r t0' tS' t') A.
 Proof.
   intros c t0 t0' A h0 tS tS' hS t t' ht.
-  induction ht as [ | | | i c t t' k k' r r' hk ihk | |].
+  induction ht as
+    [c t t' r r' | c t t' u u' r r' hu ihu | c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
   all: refine (antireduction _ (r_nat_congstar r) (r_nat_congstar r')).
   + refine (antireduction _ (star_cons r_nat_0 star_nil) (star_cons r_nat_0 star_nil)).
     exact h0.
   + refine (antireduction _ (star_cons r_nat_S star_nil) (star_cons r_nat_S star_nil)).
-    apply (hS _ ctx_refl _ _ ht _ ctx_refl _ _ (IHht h0 hS)).
-  + apply (reflection (Ne_nat_r hneu) (Ne_nat_r hneu')).
+    apply (hS _ ctx_refl _ _ hu _ ctx_refl _ _ (ihu h0 hS)).
+  + apply (reflection (Ne_nat_r neu) (Ne_nat_r neu')).
   + refine (antireduction _ (star_cons r_nat_digamma star_nil) (star_cons r_nat_digamma star_nil)).
     apply digamma_sound.
     intros a a'.
@@ -659,30 +672,32 @@ Proof.
     all: apply (sem_conv_map ctx_tl_OO).
     all: assumption.
   + refine (antireduction _ (star_cons r_nat_digamma star_nil) star_nil).
-    apply (digamma_left_sound hin).
-    apply (IHht h0 hS).
+    apply (digamma_left_sound (k:= fun a => nat_r t0 tS (k a)) (k':= fun a => nat_r t0' tS' (k' a)) hin).
+    refine (fun _ _ => ihk _ _ (sem_conv_map ctx_tl_OO h0) (sem_conv_map ctx_tl_OO hS)).
   + refine (antireduction _ star_nil (star_cons r_nat_digamma star_nil)).
-    apply (digamma_right_sound hin).
-    apply (IHht h0 hS).
+    apply (digamma_right_sound (k:= fun a => nat_r t0 tS (k a)) (k':= fun a => nat_r t0' tS' (k' a)) hin).
+    refine (fun _ _ => ihk _ _ (sem_conv_map ctx_tl_OO h0) (sem_conv_map ctx_tl_OO hS)).
 Defined.
 
-Lemma bot_r_sound : forall {Γ t t' A}, sem_conv Γ t t' bot_typ ->
-  sem_conv Γ (bot_r t) (bot_r t') A.
+Lemma bot_r_sound : forall {c t t' A}, sem_conv c t t' bot_typ ->
+  sem_conv c (bot_r t) (bot_r t') A.
 Proof.
-  intros Γ t t' A ht.
-  induction ht as [ | i c t t' k k' r r' hk ihk | | ].
-  all:refine (antireduction _ (r_bot_congstar r) (r_bot_congstar r')).
-  + apply (reflection (Ne_bot_r hneu) (Ne_bot_r hneu')).
+  intros c t t' A ht.
+  induction ht as
+    [c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
+  all: refine (antireduction _ (r_bot_congstar r) (r_bot_congstar r')).
+  + apply (reflection (Ne_bot_r neu) (Ne_bot_r neu')).
   + refine (antireduction _ (star_cons r_bot_digamma star_nil) (star_cons r_bot_digamma star_nil)).
     apply digamma_sound.
+    intros a a'.
     apply ihk.
   + refine (antireduction _ (star_cons r_bot_digamma star_nil) star_nil).
-    apply (digamma_left_sound hin).
-    apply IHht.
+    apply (digamma_left_sound (k:= fun a => bot_r (k a)) (k':= fun a => bot_r (k' a)) hin).
+    apply ihk.
   + refine (antireduction _ star_nil (star_cons r_bot_digamma star_nil)).
-    apply (digamma_right_sound hin).
-    apply IHht.
-Defined.
+    apply (digamma_right_sound (k:= fun a => bot_r (k a)) (k':= fun a => bot_r (k' a)) hin).
+    apply ihk.
+Qed.
 
 Inductive sub_conv Γ σ σ' : list type -> Type :=
   | sub_conv_nil : sub_conv Γ σ σ' nil
@@ -719,27 +734,38 @@ Defined.
 Lemma sem_sym : forall {Γ t t' A}, sem_conv Γ t t' A -> sem_conv Γ t' t A.
 Proof.
   intros Γ t t' A. revert Γ t t'.
-  induction A; intros Γ t t' ht.
-  + induction ht as [ | | | i c t t' k k' r r' hk ihk | | ].
+  induction A.
+  all: intros Γ t t' ht.
+  + induction ht as
+      [c t t' r r' | c t t' u u' r r' hu ihu | c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
     - apply (conv_nat_0 r' r).
-    - apply (conv_nat_S r' r IHht).
-    - apply (conv_nat_Ne r' r hneu' hneu).
+    - apply (conv_nat_S r' r ihu).
+    - apply (conv_nat_Ne r' r neu' neu).
     - apply (conv_nat_digamma r' r).
       intros a' a.
       change (sem_conv (ctx_cons_OO a' a c) (k' a') (k a) nat_typ).
       apply (sem_conv_map ctx_swap_OO).
       apply ihk.
-    - apply (conv_nat_digamma_right hin r' r IHht).
-    - apply (conv_nat_digamma_left hin r' r IHht).
-  + induction ht as [ | i c t t' k k' r r' hk ihk | |].
-    - apply (conv_bot_Ne r' r hneu' hneu).
+    - apply (conv_nat_digamma_right hin r' r).
+      clear a hin r'. intros a' a.
+      apply (sem_conv_map (A:= nat_typ) ctx_swap_OO (ihk _ _)).
+    - apply (conv_nat_digamma_left hin r' r).
+      clear a' hin r. intros a' a.
+      apply (sem_conv_map (A:= nat_typ) ctx_swap_OO (ihk _ _)).
+  + induction ht as
+      [c t t' n n' r r' neu neu' | i c t t' k k' r r' hk ihk |i a c t t' k k' hin r r' hk ihk | i a' c t t' k k' hin r r' hk ihk ].
+    - apply (conv_bot_Ne r' r neu' neu).
     - apply (conv_bot_digamma r' r).
       intros a' a.
       change (sem_conv (ctx_cons_OO a' a c) (k' a') (k a) bot_typ).
       apply (sem_conv_map ctx_swap_OO).
       apply ihk.
-    - apply (conv_bot_digamma_right hin r' r IHht).
-    - apply (conv_bot_digamma_left hin r' r IHht).
+    - apply (conv_bot_digamma_right hin r' r).
+      clear a hin r'. intros a a'.
+      apply (sem_conv_map (A:= bot_typ) ctx_swap_OO (ihk _ _)).
+    - apply (conv_bot_digamma_left hin r' r).
+      clear a' hin r. intros a a'.
+      apply (sem_conv_map (A:= bot_typ) ctx_swap_OO (ihk _ _)).
   + intros Δ hgeq u u' hu.
     apply IHA2.
     apply (ht _ hgeq).
@@ -792,154 +818,290 @@ Ltac2 inversion_Redstar () :=
 
 Ltac inversion_Redstar := ltac2:(inversion_Redstar ()).
 
+Lemma ctx_right_OO {i c} {a a' : Arity i} : ctx_geq (ctx_cons_OO a' a' c) (ctx_cons_OO a a' c).
+Proof.
+  constructor.
+  apply List.incl_tl.
+  apply List.incl_cons.
+  left. reflexivity.
+  apply List.incl_refl.
+  apply extend_refl.
+Defined.
 
+Lemma ctx_left_OO {i c} {a a' : Arity i} : ctx_geq (ctx_cons_OO a a c) (ctx_cons_OO a a' c).
+Proof.
+  constructor.
+  apply List.incl_cons.
+  left. reflexivity.
+  apply List.incl_cons.
+  left. reflexivity.
+  apply List.incl_tl.
+  apply List.incl_tl.
+  apply List.incl_refl.
+  apply extend_refl.
+Defined.
+
+Lemma ctx_In_right {i c} {a a' a'' : Arity i} : List.In (O i a) (L c) -> ctx_geq (ctx_cons_OO a a' c) (ctx_cons_OO a'' a' c).
+Proof.
+  constructor.
+  apply List.incl_tl.
+  apply List.incl_cons.
+  right. apply H.
+  apply List.incl_refl.
+  apply extend_refl.
+Defined.
+
+Lemma ctx_left_In {i c} {a a' a'' : Arity i} : List.In (O i a') (L c) -> ctx_geq (ctx_cons_OO a a' c) (ctx_cons_OO a a'' c).
+Proof.
+  constructor.
+  apply List.incl_cons.
+  left. reflexivity.
+  apply List.incl_cons.
+  right. right. apply H.
+  apply List.incl_tl.
+  apply List.incl_tl.
+  apply List.incl_refl.
+  apply extend_refl.
+Defined.
+
+Lemma nat_trans : forall {c t t' t''}, nat_conv c t t' -> nat_conv c t' t'' -> nat_conv c t t''.
+Proof.
+  intros c t t' t'' ht.
+  assert (forall c', ctx_geq c c' -> nat_conv c' t' t'' -> nat_conv c' t t'') as hgen.
+  2: apply (hgen _ ctx_refl).
+  revert t''.
+  induction ht as
+    [c t t' r r'l | c t t' u u'l r r'l hu ihu | c t t' n n'l r r'l neu neu'l | i c t t' k k'l r r'l hk ihk |i al c t t' k k' hin r r'l hk ihk | i a'l c t t' k k'l hin r r'l hk ihk ].
+  all: intros t'' c' hgeq ht'.
+  all: refine (antireduction (A:= nat_typ) _ r star_nil).
+  all: simpl.
+  - induction ht' as
+      [c' t' t'' r'r r'' | | | | | i' a' c' t' t'' k' k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * apply (conv_nat_0 star_nil r'').
+    * apply (conv_nat_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:=nat_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_nat_0 r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ | c' t' t'' u'r u'' r'r r'' hu' ihu'| | | | i' a' c' t' t'' k' k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * assert (nat_S u'l = nat_S u'r) by apply (Redstar_Normal_eq r'l Normal_nat_S r'r Normal_nat_S).
+      inversion H; subst.
+      apply (conv_nat_S star_nil r'' (ihu _ _ hgeq hu')).
+    * apply (conv_nat_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:= nat_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_nat_S r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ | | c' t' t'' n'r n'' r'r r'' neu'r neu'' | | | i' a' c' t' t'' k' k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * apply (conv_nat_Ne star_nil r'' neu neu'').
+    * apply (conv_nat_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:= nat_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l (Normal_Ne neu'l) r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ | | | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' a c' t' t'' k'r k'' hin r'r r'' hk' ihk' | i' a' c' t' t'' k'r k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_nat_digamma star_nil r'').
+      intros a a'.
+      eapply ihk.
+      2: apply hk'.
+      apply (ctx_trans (ctx_extend_OO hgeq) ctx_left_OO).
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_nat_digamma_left hin star_nil r'').
+      intros a' a''.
+      eapply ihk.
+      2: apply hk'.
+      apply (ctx_trans (ctx_extend_OO hgeq) ctx_left_OO).
+    * apply (conv_nat_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:= nat_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_digamma r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ c' t' t'' r'r r'' | c' t' t'' u'r u'' r'r r'' hu' ihu' | c' t' t'' n'r n'' r'r r'' neu'r neu'' | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' ar c' t' t'' k'r k'' hin' r'r r'' hk' ihk' | i' a' c' t' t'' k'r k'' hin' r'r r'' hk' ihk' ].
+      1-5 : apply (conv_nat_digamma_left (L_geq hgeq _ hin) star_nil r'').
+      1-5 : intros a' a''.
+      1-5 : apply (ihk _ _ _ _ (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq))).
+      * refine (conv_nat_0 _ star_nil).
+        apply (Redstar_Normal r'r Normal_nat_0 r'l).
+      * apply (sem_conv_map (A:=nat_typ) ctx_tl_OO). 
+        refine (conv_nat_S _ star_nil hu').
+        apply (Redstar_Normal r'r Normal_nat_S r'l).
+      * refine (conv_nat_Ne _ star_nil neu'r neu'').
+        apply (Redstar_Normal r'r (Normal_Ne neu'r) r'l).
+      * apply (conv_nat_digamma (Redstar_Normal r'r Normal_digamma r'l) star_nil).
+        intros a0 a'0.
+        apply (sem_conv_map (A:= nat_typ) (ctx_extend_OO ctx_tl_OO)).
+        apply hk'.
+      * refine (conv_nat_digamma_left _ (Redstar_Normal r'r Normal_digamma r'l) star_nil _).
+        apply (L_geq ctx_tl_OO _ hin').
+        intros a1 a'1.
+        apply (sem_conv_map (A:= nat_typ) (ctx_extend_OO ctx_tl_OO)).
+        apply hk'.
+      * destruct (Redstar_noNormal r'r r'l) as [r'rl | r'lr].
+        + apply (conv_nat_digamma_right hin' star_nil r'').
+          intros a0 a'0.
+          apply (sem_conv_map (A:=nat_typ) (ctx_In_right hin')).
+          apply (ihk' _ _ r'rl (ctx_trans hgeq ctx_tl_OO)).
+        + apply (conv_nat_digamma_left (L_geq hgeq _ hin) star_nil r'').
+          intros a0 a'0.
+          apply (ihk _ al).
+          apply (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq)).
+          apply (conv_nat_digamma_right (L_geq ctx_tl_OO _ hin') r'lr star_nil).
+          intros a1 a'1.
+          apply (sem_conv_map (A:= nat_typ) (ctx_extend_OO ctx_tl_OO)).
+          apply hk'.
+  - induction ht' as
+      [ | | | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' a c' t' t'' k'r k'' hin' r'r r'' hk' ihk' | i' a'r c' t' t'' k'r k'' hin' r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_nat_digamma_right (L_geq hgeq _ hin) star_nil r'').
+      intros a a''.
+      apply (ihk _ a'l).
+      apply (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq)).
+      apply (sem_conv_map (A:=nat_typ) (ctx_In_right (L_geq hgeq _ hin))).
+      apply hk'.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (ihk _ a'l).
+      apply (ctx_trans (ctx_tl'_OO hin hin) hgeq).
+      refine (antireduction (A:=nat_typ) _ star_nil r'').
+      apply (sem_conv_map (ctx_tl'_OO (L_geq hgeq _ hin) hin')).
+      apply hk'.
+    * apply (conv_nat_digamma_right hin' star_nil r'').
+      intros a a''.
+      apply (sem_conv_map (A:=nat_typ) (ctx_In_right hin')).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_digamma r'r)).
+      apply (ctx_trans hgeq ctx_tl_OO).
+Defined.
+
+Lemma bot_trans : forall {c t t' t''}, bot_conv c t t' -> bot_conv c t' t'' -> bot_conv c t t''.
+Proof.
+  intros c t t' t'' ht.
+  assert (forall c', ctx_geq c c' -> bot_conv c' t' t'' -> bot_conv c' t t'') as hgen.
+  2: apply (hgen _ ctx_refl).
+  revert t''.
+  induction ht as
+    [c t t' n n'l r r'l neu neu'l | i c t t' k k'l r r'l hk ihk |i al c t t' k k' hin r r'l hk ihk | i a'l c t t' k k'l hin r r'l hk ihk ].
+  all: intros t'' c' hgeq ht'.
+  all: refine (antireduction (A:= bot_typ) _ r star_nil).
+  all: simpl.
+  - induction ht' as
+      [ c' t' t'' n'r n'' r'r r'' neu'r neu'' | | | i' a' c' t' t'' k' k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * apply (conv_bot_Ne star_nil r'' neu neu'').
+    * apply (conv_bot_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:= bot_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l (Normal_Ne neu'l) r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' a c' t' t'' k'r k'' hin r'r r'' hk' ihk' | i' a' c' t' t'' k'r k'' hin r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_bot_digamma star_nil r'').
+      intros a a'.
+      eapply ihk.
+      2: apply hk'.
+      apply (ctx_trans (ctx_extend_OO hgeq) ctx_left_OO).
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_bot_digamma_left hin star_nil r'').
+      intros a' a''.
+      eapply ihk.
+      2: apply hk'.
+      apply (ctx_trans (ctx_extend_OO hgeq) ctx_left_OO).
+    * apply (conv_bot_digamma_right hin star_nil r'').
+      intros a a''.
+      refine (sem_conv_map (A:= bot_typ) (ctx_In_right hin) _).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_digamma r'r) (ctx_trans hgeq ctx_tl_OO)).
+  - induction ht' as
+      [ c' t' t'' n'r n'' r'r r'' neu'r neu'' | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' ar c' t' t'' k'r k'' hin' r'r r'' hk' ihk' | i' a' c' t' t'' k'r k'' hin' r'r r'' hk' ihk' ].
+      1-3 : apply (conv_bot_digamma_left (L_geq hgeq _ hin) star_nil r'').
+      1-3 : intros a' a''.
+      1-3 : apply (ihk _ _ _ _ (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq))).
+      * refine (conv_bot_Ne _ star_nil neu'r neu'').
+        apply (Redstar_Normal r'r (Normal_Ne neu'r) r'l).
+      * apply (conv_bot_digamma (Redstar_Normal r'r Normal_digamma r'l) star_nil).
+        intros a0 a'0.
+        apply (sem_conv_map (A:= bot_typ) (ctx_extend_OO ctx_tl_OO)).
+        apply hk'.
+      * refine (conv_bot_digamma_left _ (Redstar_Normal r'r Normal_digamma r'l) star_nil _).
+        apply (L_geq ctx_tl_OO _ hin').
+        intros a1 a'1.
+        apply (sem_conv_map (A:= bot_typ) (ctx_extend_OO ctx_tl_OO)).
+        apply hk'.
+      * destruct (Redstar_noNormal r'r r'l) as [r'rl | r'lr].
+        + apply (conv_bot_digamma_right hin' star_nil r'').
+          intros a0 a'0.
+          apply (sem_conv_map (A:=bot_typ) (ctx_In_right hin')).
+          apply (ihk' _ _ r'rl (ctx_trans hgeq ctx_tl_OO)).
+        + apply (conv_bot_digamma_left (L_geq hgeq _ hin) star_nil r'').
+          intros a0 a'0.
+          apply (ihk _ al).
+          apply (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq)).
+          apply (conv_bot_digamma_right (L_geq ctx_tl_OO _ hin') r'lr star_nil).
+          intros a1 a'1.
+          apply (sem_conv_map (A:= bot_typ) (ctx_extend_OO ctx_tl_OO)).
+          apply hk'.
+  - induction ht' as
+      [ | i' c' t' t'' k'r k'' r'r r'' hk' ihk'|  i' a c' t' t'' k'r k'' hin' r'r r'' hk' ihk' | i' a'r c' t' t'' k'r k'' hin' r'r r'' hk' ihk' ].
+    all: try inversion_Redstar.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (conv_bot_digamma_right (L_geq hgeq _ hin) star_nil r'').
+      intros a a''.
+      apply (ihk _ a'l).
+      apply (ctx_trans (ctx_left_In hin) (ctx_extend_OO hgeq)).
+      apply (sem_conv_map (A:=bot_typ) (ctx_In_right (L_geq hgeq _ hin))).
+      apply hk'.
+    * assert (digamma i k'l = digamma i' k'r) by apply (Redstar_Normal_eq r'l Normal_digamma r'r Normal_digamma).
+      inversion H; subst.
+      apply (inj_right_pair (H:=eqdec)) in H2.
+      destruct H2.
+      apply (ihk _ a'l).
+      apply (ctx_trans (ctx_tl'_OO hin hin) hgeq).
+      refine (antireduction (A:=bot_typ) _ star_nil r'').
+      apply (sem_conv_map (ctx_tl'_OO (L_geq hgeq _ hin) hin')).
+      apply hk'.
+    * apply (conv_bot_digamma_right hin' star_nil r'').
+      intros a a''.
+      apply (sem_conv_map (A:=bot_typ) (ctx_In_right hin')).
+      apply (ihk' _ _ (Redstar_Normal r'l Normal_digamma r'r)).
+      apply (ctx_trans hgeq ctx_tl_OO).
+Defined.
 
 Lemma sem_trans : forall {c t t' t'' A}, sem_conv c t t' A -> sem_conv c t' t'' A -> sem_conv c t t'' A.
 Proof.
   intros c t t' t'' A. revert c t t' t''.
   induction A; intros c t t' t'' ht ht'.
-  - revert t'' ht'.
-    induction ht; intros t'' ht'.
-    all: refine (antireduction _ r star_nil). all: clear t r.
-    + induction ht'; try inversion_Redstar.
-      * apply (conv_nat_0 star_nil r'0).
-      * apply (conv_nat_digamma_right hin star_nil r'0).
-        apply IHht'.
-        apply (Redstar_Normal r' Normal_nat_0 r).
-    + induction ht'; try inversion_Redstar.
-      * assert (nat_S u' = nat_S u0) by apply (Redstar_Normal_eq r' Normal_nat_S r Normal_nat_S).
-        inversion H; subst.
-        apply (conv_nat_S star_nil r'0 (IHht _ ht')).
-      * apply (conv_nat_digamma_right hin star_nil r'0).
-        refine (IHht' _ ht IHht).
-        apply (Redstar_Normal r' Normal_nat_S r).
-    + induction ht'; try inversion_Redstar.
-      * apply (conv_nat_Ne star_nil r'0 hneu hneu'0).
-      * apply (conv_nat_digamma_right hin star_nil r'0).
-        apply IHht'.
-        apply (Redstar_Normal r' (Normal_Ne hneu') r).
-    + induction ht'; try inversion_Redstar.
-      * assert (digamma i k' = digamma i0 k0) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (inj_right_pair (H:=eqdec)) in H2.
-        destruct H2.
-        apply (conv_nat_digamma star_nil r'0).
-        intros a a'.
-        apply X.
-        refine (sem_conv_map _ (hk0 a' a' : sem_conv _ _ _ nat_typ)).
-        constructor.
-        apply List.incl_tl.
-        apply List.incl_cons.
-        left. reflexivity.
-        apply List.incl_refl.
-        apply extend_refl.
-      * assert (digamma i k' = digamma i0 k0) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (inj_right_pair (H:=eqdec)) in H2.
-        destruct H2.
-        apply (conv_nat_digamma_left hin star_nil r'0).
-        change (sem_conv c (k a) u' nat_typ).
-        apply (sem_conv_map (ctx_tl'_OO hin hin)).
-        change (sem_conv c (k' a) u' nat_typ) in ht'.
-        apply X.
-        apply (sem_conv_map ctx_tl_OO).
-        apply ht'.
-      * apply (conv_nat_digamma_right hin star_nil r'0).
-        refine (IHht' _ hk X).
-        apply (Redstar_Normal r' Normal_digamma r).
-    + induction ht'; try inversion_Redstar.
-      1-5 : apply (conv_nat_digamma_left hin star_nil r'0).
-      1-5 : apply IHht.
-      * refine (conv_nat_0 _ star_nil).
-        apply (Redstar_Normal r Normal_nat_0 r').
-      * refine (conv_nat_S _ star_nil ht').
-        apply (Redstar_Normal r Normal_nat_S r').
-      * refine (conv_nat_Ne _ star_nil hneu hneu').
-        apply (Redstar_Normal r (Normal_Ne hneu) r').
-      * refine (conv_nat_digamma _ star_nil hk).
-        apply (Redstar_Normal r Normal_digamma r').
-      * refine (conv_nat_digamma_left hin0 _ star_nil ht').
-        apply (Redstar_Normal r Normal_digamma r').
-      * destruct (Redstar_noNormal r r').
-        ++  apply (conv_nat_digamma_right hin0 star_nil r'0).
-            apply (IHht' hin r0 ht IHht).
-        ++  apply (conv_nat_digamma_left hin star_nil r'0).
-            apply IHht.
-            refine (conv_nat_digamma_right hin0 r0 star_nil ht').
-    + induction ht'; try inversion_Redstar.
-      * assert (digamma i k' = digamma i0 k) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (inj_right_pair (H:=eqdec)) in H2.
-        destruct H2.
-        apply (conv_nat_digamma_right hin star_nil r'0).
-        apply IHht.
-        apply (sem_conv_map (ctx_tl'_OO hin hin)).
-        apply hk.
-      * assert (digamma i k' = digamma i0 k) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (inj_right_pair (H:=eqdec)) in H2.
-        destruct H2.
-        apply IHht.
-        refine (antireduction _ star_nil r'0).
-      * apply (conv_nat_digamma_right hin0 star_nil r'0).
-        refine (IHht' hin _ ht IHht).
-        apply (Redstar_Normal r' Normal_digamma r).
-  - revert t'' ht'.
-    induction ht; intros t'' ht'.
-    all: refine (antireduction _ r star_nil). all: clear t r.
-    + induction ht'; try inversion_Redstar.
-      * apply (conv_bot_Ne star_nil r'0 hneu hneu'0).
-      * apply (conv_bot_digamma_right hin star_nil r'0).
-        apply IHht'.
-        apply (Redstar_Normal r' (Normal_Ne hneu') r).
-    + induction ht'; try inversion_Redstar.
-      * assert (digamma i k' = digamma i0 k0) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (conv_bot_digamma star_nil r'0 (IHht _ ht')).
-      * assert (digamma i k' = digamma i0 k0) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (conv_bot_digamma_left hin star_nil r'0).
-        change (sem_conv c k u' bot_typ).
-        apply (sem_conv_map (ctx_tl' hin)).
-        change (sem_conv c k0 u' bot_typ) in ht'.
-        apply (IHht _ (sem_conv_map ctx_tl ht')).
-      * apply (conv_bot_digamma_right hin star_nil r'0).
-        refine (IHht' _ ht IHht).
-        apply (Redstar_Normal r' Normal_digamma r).
-    + induction ht'; try inversion_Redstar.
-      1-3 : apply (conv_bot_digamma_left hin star_nil r'0).
-      1-3 : apply IHht.
-      * refine (conv_bot_Ne _ star_nil hneu hneu').
-        apply (Redstar_Normal r (Normal_Ne hneu) r').
-      * refine (conv_bot_digamma _ star_nil ht').
-        apply (Redstar_Normal r Normal_digamma r').
-      * refine (conv_bot_digamma_left hin0 _ star_nil ht').
-        apply (Redstar_Normal r Normal_digamma r').
-      * destruct (Redstar_noNormal r r').
-        ++  apply (conv_bot_digamma_right hin0 star_nil r'0).
-            apply (IHht' hin r0 ht IHht).
-        ++  apply (conv_bot_digamma_left hin star_nil r'0).
-            apply IHht.
-            refine (conv_bot_digamma_right hin0 r0 star_nil ht').
-    + induction ht'; try inversion_Redstar.
-      * assert (digamma i k' = digamma i0 k) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply (conv_bot_digamma_right hin star_nil r'0).
-        apply IHht.
-        apply (sem_conv_map (ctx_tl' hin)).
-        apply ht'.
-      * assert (digamma i k' = digamma i0 k) by apply (Redstar_Normal_eq r' Normal_digamma r Normal_digamma).
-        inversion H; subst.
-        apply IHht.
-        apply (antireduction (ht': sem_conv _ _ _ bot_typ) star_nil r'0).
-      * apply (conv_bot_digamma_right hin0 star_nil r'0).
-        refine (IHht' hin _ ht IHht).
-        apply (Redstar_Normal r' Normal_digamma r).
+  - apply (nat_trans ht ht').
+  - apply (bot_trans ht ht').
   - intros c' hgeq u u'' hu.
     eapply IHA2.
     * apply (ht _ hgeq _ _ (IHA1 _ _ _ _ hu (sem_sym hu))).
     * apply (ht' _ hgeq _ _ hu).
-Defined.
+Qed.
 
 Lemma sem_refl : forall {Γ t t' A}, sem_conv Γ t t' A -> sem_conv Γ t t A.
 Proof.
@@ -1010,27 +1172,37 @@ Proof.
   + apply (sem_trans (IHht1 _ _ _ hin (sub_sem_refl hσ))).
     apply (IHht2 _ _ _ hin hσ).
   + apply digamma_sound. simpl in *.
-    apply (IHht (ctx_pair (i:: L c') (Γ c')) _ _ (incl_cons_cons hin)).
-    eapply (sub_sem_conv_map ctx_tl hσ).
-  + refine (digamma_left_sound _ (IHht _ _ _ hin hσ)).
+    intros a a'.
+    apply (X _ _  (ctx_pair (O i a :: O i a' :: L c') (Γ c')) _ _ (incl_cons_cons (incl_cons_cons hin))).
+    eapply (sub_sem_conv_map ctx_tl_OO hσ).
+  + change (sem_conv c' (digamma i k..[σ]) (k'..[σ'] a) A).
+    apply digamma_left_sound.
     apply (hin _ i0).
+    intros a' a''.
+    apply X.
+    repeat apply incl_cons_cons. apply hin.
+    apply (sub_sem_conv_map ctx_tl_OO hσ).
   + refine (antireduction _ (star_cons App_digamma_Red star_nil) star_nil).
     apply digamma_sound.
-    apply (IHht1 (ctx_pair (i:: L c') (Γ c')) _ _ (incl_cons_cons hin) (sub_sem_conv_map ctx_tl hσ) _ ctx_refl).
-    change (sem_conv (ctx_pair (i::(L c')) (Γ c')) u.[σ] u'.[σ'] A).
-    apply (sem_conv_map ctx_tl).
-    apply (IHht2 _ _ _ hin hσ).
+    intros a a'. change (sem_conv (ctx_cons_OO a a' c') (k..[σ] a u.[σ]) (k'..[σ'] a' u'.[σ']) B).
+    apply (X a a' (ctx_cons_OO a a' c') σ σ' (incl_cons_cons (incl_cons_cons hin)) (sub_sem_conv_map ctx_tl_OO hσ) (ctx_cons_OO a a' c') ctx_refl u.[σ] u'.[σ']).
+    apply (IHht).
+    repeat apply List.incl_tl.
+    apply hin.
+    apply (sub_sem_conv_map ctx_tl_OO hσ).
   + refine (antireduction _ (star_cons r_nat_digamma star_nil) star_nil).
     apply digamma_sound.
+    intros a a'.
     apply nat_r_sound.
-    1-2:apply (sem_conv_map ctx_tl).
+    1-2:apply (sem_conv_map ctx_tl_OO).
+    - apply (IHht1 _ _ _ hin hσ).
     - apply (IHht2 _ _ _ hin hσ).
-    - apply (IHht3 _ _ _ hin hσ).
-    - apply (IHht1 (ctx_pair (i:: L c') (Γ c')) _ _ (incl_cons_cons hin) (sub_sem_conv_map ctx_tl hσ)).
+    - apply (X _ _ (ctx_cons_OO a a' c') _ _ (incl_cons_cons (incl_cons_cons hin)) (sub_sem_conv_map ctx_tl_OO hσ)).
   + refine (antireduction _ (star_cons r_bot_digamma star_nil) star_nil).
     apply digamma_sound.
+    intros a a'.
     apply bot_r_sound.
-    apply (IHht (ctx_pair (i:: L c') (Γ c')) _ _ (incl_cons_cons hin) (sub_sem_conv_map ctx_tl hσ)).
+    apply (X _ _ (ctx_cons_OO a a' c') _ _ (incl_cons_cons (incl_cons_cons hin)) (sub_sem_conv_map ctx_tl_OO hσ)).
 Defined.
 
 Lemma sem_conv_ren : forall {c n}, sub_sem_conv c (ren (+n)) (ren (+n)) (Γ c).
@@ -1059,7 +1231,6 @@ Proof.
   apply (soundness ht (List.incl_refl _) sem_conv_ids).
   asimpl in X. apply X.
 Defined.
-
 
 
 
