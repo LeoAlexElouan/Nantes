@@ -31,6 +31,7 @@
 \newtheorem{theorem}{Theorem}[section]
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{definition}[theorem]{Definition}
+\newtheorem{ndefinition}[theorem]{Not-a-Definition}
 
 \DeclareMathOperator{\colim}{colim}
 \DeclareMathOperator{\Prop}{\mathsf{Prop}}
@@ -251,6 +252,32 @@ A $j$-Sheaf is up to isomorphism the result of sheafifying an object.
 
 $j$-Sheaves form a topos. The sheaves on a presheaf topos correspond to Beth semantics.
 
+\subsection{Geometric formulas}
+In the litterature around sheaves and forcing, we find the following definitions.
+\begin{ndefinition}
+A \emph{geometric formula} is a formula built from $\exists, \wedge,\bigvee$, and atomic formulas.
+\end{ndefinition}
+\begin{ndefinition}
+A \emph{geometric implication} is a formula of shape $\forall \overrightarrow{x}, \phi(\overrightarrow{x}) -> \psi(\overrightarrow{x})$, where $\phi$ and $\psi$ are geometric.
+\end{ndefinition}
+\begin{ndefinition}
+    A \emph{geometric theory} is a set geometric implication.
+\end{ndefinition}
+We rather use the following definition
+
+\begin{definition}
+    A \emph{geometric formula} is a formula of the form $$\bigwedge_{i\in I}\left(\forall \overrightarrow{x}, \bigwedge_{j \in J_i} O_{i,j}(\overrightarrow{x}) -> \bigvee_{k\in K_i}\exists \overrightarrow{y},\bigwedge_{l\in L_{i,k}} Q_{i,k,l}(\overrightarrow{x},\overrightarrow{y})\right)$$
+    Where $O_{i,j}$ and $Q_{i,k,l}$ are atomic formulas, and both every $J_i$ and every $L_{i,k}$ are finite.
+\end{definition}
+
+Every \guillemetleft geometric theory \guillemetright can be written as a single geometric formula.
+
+We'd like to note that they define covers and be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as : 
+$$
+    \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1})|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}})|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x})|-\mathcal{J}}
+$$
+
+
 \subsection{Sheaves in type theory}
 
 Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \textsc{Rocq} with $\SProp$.
@@ -279,21 +306,20 @@ $$
 \end{array}
 $$
 
-We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$, a sheaf is then a
+We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$, a sheaf is then defined as
+\begin{definition}\label{IOshf}
+    A \emph{sheaf} or \emph{$(I,O)$-sheaf}, is given by
 \begin{itemize}
     \item A type $T$
     \item A map $\ask_T : \Pi (i:I), (O\ i -> T) -> T$
     \item A coherence map $\varepsilon_T : \Pi(i:I)\ (x:T), \ask_T\ i\ (\lambda o:O\  i.x) = x$
 \end{itemize}
-and simimlarily for sheafification. This is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
 
-\subsection{Geometric formulas}
-
-\begin{definition}
-    A \emph{geometric formula} is a formula of the form $\forall \overrightarrow{x}, \bigwedge_{i \in I} O_i(\overrightarrow{x}) -> \bigvee_{j\in J}\exists \overrightarrow{y}\bigwedge_{k\in K_j} Q_{j,k}(\overrightarrow{x},\overrightarrow{y})$
 \end{definition}
 
-Where $O_i$ and $Q_{j,k}$ are atomic formulas.
+$(I,O)$-Sheafification can be defined similarily. This definition is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
+
+It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, and as such be used as the basis for sheaves.
 
 \section{Models}
 
@@ -302,9 +328,17 @@ A significant part of my internship was dedicated to contructing models of type 
 \begin{enumerate}
     \item A model of a variant of Baclofen TT using dialogue trees. Predicates must be linearized before eliminating an inductive into them.
     \item An exceptional model, with a type of exceptions $E$. A special type of dialogue trees where $I = E$ and $O i = \mathbf{0}$, the resulting theory is inconsistent (when $E$ is inhabited), as always when $O i -> \mathbf{0}$ for some $i$.
-    \item A model using sheaves, which requires univalence, and quotient inductive types to model positive types.
+    \item A model using $(I,O)$-sheaves, which requires univalence, and quotient inductive types to model positive types.
     \item A incomplete model using presheaves.
 \end{enumerate}
+
+The most important one is of course the model using sheaves.
+
+The model requires univalence and used rewrite rules to simulate HIT, which are absent in \textsc{Rocq} 9.0.0. \textsc{Rocq} served as both the meta-theory and the target, as with all the other models.
+
+Types were interpreted as sheaves as described in definition \ref{IOshf}. Product types are relatively easy as an aribtray product of sheaves is still a sheaf. Positives types, in my case boolean, where contructed as the QIT with the same constructor as the original (true and false), together with $\ask$ and $\varepsilon$. The resulting type is equivalent to the sheafification of booleans but does not compute exactly the same.
+
+One of the interest of type theory is that it yield meaningful computations from proof, so we were careful about that.
 
 
 \section{System T and MLTT}
@@ -498,10 +532,15 @@ $$
 Amongst other thing, this theory can be used to show that any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT has a continuity proof.
 \subsection{ShTT}
 
-The prototype of theory that I defined and hoped to study is as follows :
+Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$
 
 We imagine we have a set $\Omega$ of \emph{atoms}.
-We first set a set $I$ with decidable equality, and a (morally finite) set $A i$ for each $i \in I$ standing for arity, and finally a family $((O_{i,\alpha})_{\alpha \in A i})_{i\in I}$ of elements of $\Omega$. The term extend those of MLTT as follows :
+We first set a set $I$ with decidable equality, and a (morally finite) set $A i$ for each $i \in I$ standing for arity, and finally a family $((O_{i,\alpha})_{\alpha \in A i})_{i\in I}$ of elements of $\Omega$.
+
+This roughly correspond to the geometric formula : 
+$\bigwedge_{i\in I} \top -> \bigvee_{\alpha \in A\ i}O_{i,\alpha}$
+
+The term extend those of MLTT as follows :
 
 $$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha\in A i}$$
 
@@ -536,8 +575,9 @@ This theory is still incomplete. For example, to instantiate it with \ref{MBshtt
 
 \section{Logical relations}
 
-
 \subsection{System T extension}
+
+To get a hang of $\digamma$ and logical relations I started by studying a extension of system with $\digamma$
 
 \section{Meta-informations}
 
