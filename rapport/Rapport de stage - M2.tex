@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass[11pt]{article}
 \usepackage{graphicx} % Required for inserting images
 \usepackage[a4paper, lmargin = 1cm, rmargin =1cm, tmargin = 1cm, bmargin = 2cm]{geometry}
 
@@ -110,9 +110,8 @@
 \newcommand{\Uniform}{\mathsf{uniform}}
 
 
-\title{Internship report M2\\ Parisian Master of Research in Computer Science Level 
-2\vspace{1cm}\\  Non-singleton Elimination\\}
-\author{\textbf{Soudant L\'eo}\\ fourth year student at ENS Paris Saclay}
+\title{Internship report M2\\  Non-singleton Elimination\\}
+\author{\textbf{Soudant L\'eo}, supervised by \textbf{Pierre-Marie P\'edrot}, Galinette team}
 \date{2025}
 
 
@@ -120,16 +119,23 @@
 
 
 \begin{titlepage}
-    \maketitle
-    \centering
-    Supervisor
     
-    \textbf{Pierre-Merie P\'edrot}, chargé de recherche at Inria Rennes-Bretagne-Atlantique, 
+\maketitle
 
 \end{titlepage}
 
-\begin{abstract}
-\end{abstract}
+
+\subsection*{General context}
+We attempt to create type theories corresponding with the properties of the internal languages of sheaf topoï. Martin Baillon succeeded for some instance of the problem.
+\subsection*{Research problem}
+An element of a topological sheaf may be defined over an open whenever it is defined on a cover of that open, so long as they are compatible over the intersections. We hope to be able to do something similar in a type theory, where open set correspond to proof irrelevant propositions. This requires special attention to the compatibility condition : when a disjunction covers a proposition, it should be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
+\subsection*{Your contribution}
+I have proved using \textsc{Rocq} that a system T with a part of the wanted features normalises. I also have a model in \textsc{Rocq} where types are interpreted as sheaves, even though some other variant probably exists.
+\subsection*{Arguments supporting its validity}
+The type theory devellopped by Martin Baillon, which I aim to generalise, proved continuity of all functional $(\nat -> \bool) -> \bool$. I hope to find similar results at term.
+\subsection*{Summary and future works}
+I will refine the type theory further as well as study other instances like the one Martin Baillon studied. I should also make a fork of the logrel \textsc{Rocq} project, and adapt it to my theory.
+\newpage
 \tableofcontents
 \newpage
 
@@ -142,6 +148,62 @@
 \subsection{The outline}
 
 \section{Sheaves}
+
+\subsection{Sheaves on topological spaces}
+
+We fix a topological space $X$, in this case presheves on that space are presheaves on the category underlying its poset of open subsets. More precisely :
+
+\begin{definition}[Presheaf on a topology]
+    A \emph{presheaf} $P$ is given by
+    \begin{itemize}
+        \item For every open $U \in \mathcal{O}(X)$, a set $P(U)$ of \emph{sections}
+        \item For every open $U$, section $s\in P(U)$, and open subset $V\subseteq U$, a \emph{restriction} $s|_V\in P(V)$
+        \item If $s\in P(U)$, $s|_U = s$
+        \item If $s\in P(U)$, $W\subseteq V \subseteq U$, $(s|_V)|_W = s|_W$
+    \end{itemize}
+\end{definition}
+The $\lambda (s\in P(U)), s|_V : P(U) -> P(V)$ function gives the $P(f)$ necessary to construct the functor $P : \mathcal{O}(X)^{op} -> \mathbf{Set}$ justifying the use of the same term presheaf here and in the categorical context.
+
+While in general presheaves are unrelated to sheaves, we can introduce what sheaves look like in the topos (see definition \ref{topos}) of presheaves.
+
+\begin{definition}[Sheaf on a topology]
+    A \emph{sheaf} $\mathcal{F}$ is a presheaf such that given any open  $U$ and family of open $(U_i)_i$ such that $U = \bigcup_i U_i$, there is a bijection between :
+    \begin{itemize}
+        \item Sections $s$ of $U$
+        \item Families $(s_i\in \mathcal{F}(U_i))_i$ of sections where $s_i|_{U_i\cap U_j} = s_j|_{U_i\cap U_j}$
+    \end{itemize}
+    where the forward direction is given by $s \mapsto (s|_{U_i})_i$.
+\end{definition}
+
+Since the definition only acces the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as we are concerned, this means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$.
+
+\subsection{Kripke and Beth semantics}
+
+Presheaves give a classical tool to study intuitionistic logic through Kripke models. 
+
+Formula are relativised to an open subset (in general an object in a small category) or \emph{forcing condition} $U$ : $U \models \phi$, and the requirement for the formula to be verified is strengthened by asking for it to be verified on every $V\leq U$. This requirement degenerates back to the usual except in the $=>$ and $\forall$ case : 
+\begin{itemize}
+    \item $U |= \phi \wedge \psi$ iff for all $V\leq U$, $V |= \phi$ and $V |= \psi$ iff $U |= \phi$ and $U |= \psi$
+    \item $U |= \phi => \psi$ iff for all $V \leq U$, if $V |= \phi$ then $V |= \psi $
+    \item $U |= \forall x : P, \phi$ iff for all $V \leq U$ and $s\in P(V)$, $V |= \phi(s/x) $
+\end{itemize}
+
+Since the key example of forcing condition is the context, it is perhaps unsurprising that the only connectors affected by are the one affecting the context (including the free variables in the context).
+
+Where presheaves and their Kripke semantics strengthened the requirements (not unlike intuitionistic logic has less tools), sheaves and their Beth semantics lower them again.
+
+Again, this weakened requirements degenerates in most cases.
+
+\begin{itemize}
+    \item $U |= \phi \wedge \psi$ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ and $U_i |= \psi $ iff $U |= \phi$ and $U |= \psi$.
+    \item $U |= \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ or $U_i |= \psi $.
+    \item $U |= \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i |= \phi(s_i/x)$.
+\end{itemize}
+
+We note that $U |= \phi$ iff for all $V\leq U$, $V |= \phi$ in the case of kripke semantics and iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ in the case of Beth semantics, as can be shown by induction on $\phi$ in both cases.
+
+The goal of this stage may be formulated as bringing this weakening of condition into type theory.
+
 \subsection{Topoï and sheaves in topoï}
 
 
@@ -153,7 +215,7 @@ Proofs, results and details for this section can often be found in \emph{Sheaves
 
 We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of subobjects of $X$, and $\mathbf{Sub}(f) : \mathbf{Sub}(Y) -> \mathbf{Sub}(X)$ sends $m : A -> Y$ to its pullback by $f : X -> Y $. 
 
-\begin{definition}[Topos]
+\begin{definition}[Topos]\label{topos}
     A \emph{topos} is a cartesian closed category with all finite limits and a suboject \emph{classifier} $\Omega$ and an isomorphism $\mathbf{Sub}(X)\cong \mathbf{Hom}(X, \Omega)$ natural in $X$.
 \end{definition}
 
@@ -225,6 +287,14 @@ We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$
 \end{itemize}
 and simimlarily for sheafification. This is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
 
+\subsection{Geometric formulas}
+
+\begin{definition}
+    A \emph{geometric formula} is a formula of the form $\forall \overrightarrow{x}, \bigwedge_{i \in I} O_i(\overrightarrow{x}) -> \bigvee_{j\in J}\exists \overrightarrow{y}\bigwedge_{k\in K_j} Q_{j,k}(\overrightarrow{x},\overrightarrow{y})$
+\end{definition}
+
+Where $O_i$ and $Q_{j,k}$ are atomic formulas.
+
 \section{Models}
 
 A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}.
@@ -268,7 +338,7 @@ $$
 
 
 $$
-    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B &\tctx |- A == A : \square_\ell}{\tctx |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \qquad
+    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B &\tctx |- A == A : \square_\ell}{\tctx |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \quad
     \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : \Pi x:A, B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B(N/x)}
 $$
 
@@ -428,7 +498,7 @@ $$
 Amongst other thing, this theory can be used to show that any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT has a continuity proof.
 \subsection{ShTT}
 
-The prototype of theory I have defined and hoped to study is as follows :
+The prototype of theory that I defined and hoped to study is as follows :
 
 We imagine we have a set $\Omega$ of \emph{atoms}.
 We first set a set $I$ with decidable equality, and a (morally finite) set $A i$ for each $i \in I$ standing for arity, and finally a family $((O_{i,\alpha})_{\alpha \in A i})_{i\in I}$ of elements of $\Omega$. The term extend those of MLTT as follows :
@@ -444,13 +514,13 @@ The conversion rules also copy those from MLTT by adding a forcing context as in
 The new conversion rules are as follows :
 
 $$
-    \inference[\textsc{Dig}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
+    \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
 
 This rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a purre typing judgement.
 
 $$
-    \inference[\textsc{Ask}-i]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
+    \inference[\textsc{Ask}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
 $$
 $$
     \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
@@ -462,7 +532,7 @@ $$
     \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}M_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-This theory is still missing a few things. Notably, to instantiate it with \ref{MBshtt}, we would proceed as follows $\Omega = \1 + \nat \times \bool$
+This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \true, n\mapsto \false |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
 
 \section{Logical relations}
 
