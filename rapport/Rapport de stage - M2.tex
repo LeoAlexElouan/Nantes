@@ -47,6 +47,7 @@
 \DeclareMathOperator{\trm}{\mathsf{Trm}}
 \DeclareMathOperator{\true}{\mathsf{tt}}
 \DeclareMathOperator{\false}{\mathsf{ff}}
+\DeclareMathOperator{\neu}{Ne}
 
 
 \newcommand{\ovarr}{\overrightarrow}
@@ -98,6 +99,7 @@
 \mathlig{|->}{\mapsto}
 \mathlig{=>}{\Rightarrow}
 \mathlig{|-}{\vdash}
+\mathlig{||-}{\Vdash}
 \mathlig{[|}{\llbracket}
 \mathlig{|]}{\rrbracket}
 
@@ -180,28 +182,28 @@ Since the definition only acces the open subsets and not the points of the space
 
 \subsection{Kripke and Beth semantics}
 
-Presheaves give a classical tool to study intuitionistic logic through Kripke models. 
+Presheaves give a classical tool to study intuitionistic logic through Kripke models. They help to determine what formula can't be proven using intuitionistic logic.
 
 Formula are relativised to an open subset (in general an object in a small category) or \emph{forcing condition} $U$ : $U \models \phi$, and the requirement for the formula to be verified is strengthened by asking for it to be verified on every $V\leq U$. This requirement degenerates back to the usual except in the $=>$ and $\forall$ case : 
 \begin{itemize}
-    \item $U |= \phi \wedge \psi$ iff for all $V\leq U$, $V |= \phi$ and $V |= \psi$ iff $U |= \phi$ and $U |= \psi$
+    \item $U |= \phi \wedge \psi$ iff for all $V\leq U$, $V |= \phi$ and $V |= \psi$ iff $U |= \phi$ and $U |= \psi$ (Degenerate cases)
     \item $U |= \phi => \psi$ iff for all $V \leq U$, if $V |= \phi$ then $V |= \psi $
     \item $U |= \forall x : P, \phi$ iff for all $V \leq U$ and $s\in P(V)$, $V |= \phi(s/x) $
 \end{itemize}
 
 Since the key example of forcing condition is the context, it is perhaps unsurprising that the only connectors affected by are the one affecting the context (including the free variables in the context).
 
-Where presheaves and their Kripke semantics strengthened the requirements (not unlike intuitionistic logic has less tools), sheaves and their Beth semantics lower them again.
+Where presheaves and their Kripke semantics strengthened the requirements, sheaves and their Beth semantics weaken them again.
 
 Again, this weakened requirements degenerates in most cases.
 
 \begin{itemize}
-    \item $U |= \phi \wedge \psi$ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ and $U_i |= \psi $ iff $U |= \phi$ and $U |= \psi$.
-    \item $U |= \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ or $U_i |= \psi $.
-    \item $U |= \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i |= \phi(s_i/x)$.
+    \item $U |= \phi \wedge \psi$ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ and $U_i |= \psi $ iff $U |= \phi$ and $U |= \psi$. (Degenerate case)
+    \item $U |= \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ or $U_i |= \psi $.
+    \item $U |= \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i |= \phi(s_i/x)$.
 \end{itemize}
 
-We note that $U |= \phi$ iff for all $V\leq U$, $V |= \phi$ in the case of kripke semantics and iff there exists $(U_i)_i$ with $U = \bigwedge_i U_i$, such that for all $i$, $U_i |= \phi$ in the case of Beth semantics, as can be shown by induction on $\phi$ in both cases.
+We note that $U |= \phi$ iff for all $V\leq U$, $V |= \phi$ in the case of kripke semantics and iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ in the case of Beth semantics, as can be shown by induction on $\phi$ in both cases.
 
 The goal of this stage may be formulated as bringing this weakening of condition into type theory.
 
@@ -494,8 +496,11 @@ $$
 
 \section{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$.
+My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$, based on the geometric formula 
 
+$$ \left(\bigwedge_{n\in\nat} \top -> \alpha n = \true \vee \alpha n = \false\right) \wedge \left(\bigwedge_{n\in \nat} \alpha n = \true \wedge \alpha n = \false -> \bot \right)$$
+
+The term then extends those of MLTT with
 $$ M, N ::= \dots |\alpha$$
 
 With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
@@ -504,11 +509,11 @@ We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\map
 
 And conversion rules :
 $$
-    \inference[name]{\fctx,\tctx |- ?_0 & \cdots & \fctx,\tctx |- ?_n}{\fctx,\tctx |- ?}
+    \inference[name]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
 $$
 whenever the following is a rule of MLTT (with booleans)
 $$
-    \inference[name]{\tctx |- ?_0 & \cdots & \tctx |- ?_n}{\tctx |- ?}
+    \inference[name]{\tctx |- \mathcal{J}_0 & \cdots & \tctx |- \mathcal{J}_n}{\tctx |- \mathcal{J}}
 $$
 
 Exception made of \textsc{Wf-Empty}, which becomes
@@ -565,10 +570,10 @@ $$
     \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
 $$
 $$
-    \inference[\textsc{Int-Rec-Dig}]{\fctx,\tctx |- A == A : \nat -> \square_\slvl & \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \Pi n : \nat, A n -> A (S n)\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} AM_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\nat_{\rec}M_0M_SM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+    \inference[\textsc{Int-Rec-Dig}]{\fctx,\tctx |- A == A : \nat -> \square_\slvl & \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \Pi n : \nat, A n -> A (S n)\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} AM_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\nat_{\rec}AM_0M_SM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 $$
-    \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}M_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
+    \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}AM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
 This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \true, n\mapsto \false |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
@@ -579,16 +584,103 @@ This theory is still incomplete. For example, to instantiate it with \ref{MBshtt
 
 To get a hang of $\digamma$ and logical relations I started by studying a extension of system with $\digamma$
 
-\section{Meta-informations}
+Again the terms simply extend those of system T :
 
-\subsection{Time expenditure}
+$$ M,N ::= \dots | \digamma_i(M_\alpha)_\alpha$$
 
+And rules from system are appropriately completed with a forcing context.
+$$
+    \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
+$$
 
-\subsection{Difficulties}
+$$
+    \inference[\textsc{Ask}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
+$$
+$$
+    \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : A -> B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B}
+$$
+$$
+    \inference[\textsc{Int-Rec-Dig}]{ \fctx,\tctx |- M_0 == M'_0 : \nat & \fctx,\tctx |- M_S == M'_S : \nat -> A -> A\\ \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \nat}{\fctx,\tctx |- \nat_{\rec} M_0M_S(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\nat_{\rec}M_0M_SM_\alpha)_\alpha : A}
+$$
+$$
+    \inference[\textsc{Emp-Rec-Dig}]{\forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec}(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}M_\alpha)_\alpha : A }
+$$
 
-The subject is rather vast and a bit unclear.
+\subsection{Reducibility}
 
-Doing logical relations for MLTT is a large task, even before adding sheaves. My next attempt will probably start from logrel rocq insted of nothing
+We define our reduction relation as follows :
+
+$$
+    \inference{M\leadsto M'}{MN \leadsto M'N} \qquad
+    \inference{}{(\lambda x. M)N \leadsto M(N/x)}
+$$
+$$
+    \inference{M \leadsto M'}{\nat_{\rec}M_0M_S M\leadsto\nat_{\rec}M_0M_SM'}\qquad
+    \inference{}{\nat_{\rec}M_0M_SO \leadsto M_0}\qquad
+    \inference{}{\nat_{\rec} M_0M_S (S M) \leadsto M_SM(\nat_{\rec}M_0M_SM )}
+$$
+$$
+    \inference{M \leadsto M'}{\bot_{\rec}M\leadsto\nat_{\rec}M'}
+$$
+
+And our neutrals as follows, through the predicate $\neu$ :
+
+$$
+    \inference{}{\neu x} \qquad
+    \inference{\neu n}{\neu n M} \qquad
+    \inference{\neu n}{\neu \nat_{\rec}M_0M_S n} \qquad
+    \inference{\neu n}{\neu \bot_{\rec}n}
+$$
+
+We can then define a reducibility predicate $||-$ as follows, by induction on the type.
+\begin{itemize}
+    \item For type $A -> B$, $\fctx,\tctx ||- M == M' : A -> B$, if for all $\fctx',\tctx'$ such that $\fctx\subset\fctx'$, and $\tctx$ is a prefix of $\tctx'$, if $\fctx',\tctx' ||- N == N' : A$, then $\fctx', \tctx' ||- MN == M'N'$.
+    \item For type $\nat$, we define inductively :
+$$
+    \inference{M \leadsto 0&M' \leadsto 0}{\fctx,\tctx ||- M == M' : \nat}\qquad
+    \inference{M \leadsto SN&M' \leadsto SN' &\fctx,\tctx ||- N == N' : \nat}{\fctx,\tctx ||- M == M' : \nat}
+$$
+$$
+    \inference{M \leadsto n&M' \leadsto n' &\neu n & \neu n'}{\fctx,\tctx ||- M == M' : \nat}
+$$
+$$
+    \inference{M \leadsto \digamma_i (M_\alpha)_\alpha&M' \leadsto \digamma_i({M'_\alpha})_\alpha & \forall \alpha,\alpha' ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+$$
+$$
+    \inference{M \leadsto \digamma_i(M_\alpha)_\alpha&M' \leadsto M'_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+$$
+$$
+    \inference{M \leadsto M_\alpha&M' \leadsto \digamma_i (M'_\alpha)_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+$$
+    \item For type $\bot$, we use a similar definition as above excluding the case mentioning $0$ and the case mentioning $S$ 
+\end{itemize}
+
+We can then show the usual results, all proven in $\textsc{Rocq}$ :
+
+\begin{lemma}[reflection]
+    If $\neu n$ and $\neu n'$, then $\fctx,\tctx ||- n == n' : A$.
+\end{lemma}
+\begin{lemma}[reification]
+    If $\fctx,\tctx ||- M == M' : A$, then $M$ and $M'$ normalise.
+\end{lemma}
+
+\begin{theorem}[soundness]
+    If $\fctx,\tctx |- M == M' : A$, then if $\fctx \subset \fctx'$, $\fctx',\tctx'||-\sigma == \sigma' : \Gamma$, $\fctx',\tctx' ||- M\sigma == M'\sigma' : A$
+\end{theorem}
+Where substitution are encoded as lists of terms and reducibility of substitution is reducubility of each of these terms.
+
+We can then deduce that at least our theory normalises.
+
+%\section{Meta-informations}
+%
+%\subsection{Time expenditure}
+%I spent a lot of time tinkering with \textsc{Rocq}
+%
+%\subsection{Difficulties}
+%
+%The subject is rather vast and a bit unclear.
+%
+%Doing logical relations for MLTT is a large task, even before adding sheaves. My next attempt will probably start from logrel rocq insted of nothing
 
 %\subsection{Activities}
 
