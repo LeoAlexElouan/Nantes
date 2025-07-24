@@ -664,6 +664,8 @@ This theory is still incomplete. For example, to instantiate it with \ref{MBshtt
 
 \section{Logical relations}
 
+A rather standard manner of studying the property of a type theory is through following a recipe {\color{red} CITE GIRARD ?}
+
 \subsection{System T extension}
 
 To get a hang of $\digamma$ and logical relations I started by studying a extension of system with $\digamma$
@@ -751,7 +753,7 @@ We can then show the usual results, all proven in $\textsc{Rocq}$ :
 \begin{theorem}[soundness]
     If $\fctx,\tctx |- M == M' : A$, then if $\fctx \subset \fctx'$, $\fctx',\tctx'||-\sigma == \sigma' : \Gamma$, $\fctx',\tctx' ||- M\sigma == M'\sigma' : A$
 \end{theorem}
-Where substitution are encoded as lists of terms and reducibility of substitution is reducubility of each of these terms.
+Where substitution are encoded as lists of terms and reducibility of substitution is reducibility of each of these terms.
 
 We can then deduce that at least our theory normalises.
 
@@ -770,14 +772,14 @@ We can then deduce that at least our theory normalises.
 
 \section{Conclusion}
 
+This constitutes a very imcomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$, by contrast of Martin Baillon's work, or find a simple enough theory with non-empty intersections.
 
-
-\newpage
-
-\appendix
-\appendixname
-
-\section{Dummy}
+%\newpage
+%
+%\appendix
+%\appendixname
+%
+%\section{Dummy}
 
 \printbibliography
 \end{document}
