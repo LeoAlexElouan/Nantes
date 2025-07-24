@@ -145,16 +145,182 @@ I will refine the type theory further as well as study other instances like the 
 
 \section{Introduction}
 
-
-
-
 \subsection{The outline}
+
+In section 2 we explain what type theory is and detail the basic type theory we will study. Section 3 present the construction we would like to make appear in type theory, and why we think it is possible and useful. Section 4 present work done on models of type theory, though the important part is precisely the model of sheaf, since its theory is what we ar etrying to build syntactically. Section 5 exposes 2 sheaf theories, one which comes from previous work and is an important inspiration, and the other which is a prototype of a generalisation. The last section, section 6, uses the recipe of logical relation to make a proof of concept using a weaker theory, which normalises.
+
+\section{Type theory}
+
+Type theory is a manner of formalising mathematics with a very different design from say set theory, and quite a bit closer in structure to a purely logical system like natural deduction.
+
+
+\subsection{MLTT}
+We present a variant of MLTT, a very standard type theory
+
+It is also the theory that we will seek to extend.
+
+We consider two levels of universes $\slvl$ and $\llvl$ for small and large.
+
+We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, meaning their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
+
+With terms :
+
+$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\slvl | \square_\llvl$$
+
+
+Contexts :
+$$ \tctx ::= \tctx, x : A | \cdot $$
+
+And conversion rules :
+
+$$
+    \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
+    \inference[\textsc{Wf-Ext}]{\tctx |- A == A & \tctx |- \Wf}{ \tctx, x : A |- \Wf}
+$$
+$$
+    \inference[\textsc{Int-Typ}]{\tctx |- \Wf}{\tctx |- \nat == \nat : \square_\ell} \qquad
+    \inference[\textsc{Emp-Typ}]{\tctx |- \Wf}{\tctx |- \bot == \bot : \square_\ell}
+$$
+$$
+    \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_\ell}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
+    \inference[\textsc{Typ-Typ}]{\tctx |- \Wf}{\tctx |- \square_\slvl == \square_\slvl: \square_\llvl}
+$$
+
+
+$$
+    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B &\tctx |- A == A : \square_\ell}{\tctx |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \quad
+    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : \Pi x:A, B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B(N/x)}
+$$
+
+$$
+    \inference[\textsc{Axiom}]{\tctx |- \Wf & x : A \in \tctx }{\tctx |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M'(N'/x) : B(N/x)}
+$$
+
+$$
+    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
+$$
+
+$$
+    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : \Pi A : \nat \to \square_\ell, A 0 \to \left(\Pi n:\nat, A n \to A (S n)\right) \to \Pi n :\nat, A n}
+$$
+
+
+$$
+    \inference[\textsc{Int-Rec-Zero}]{\tctx |- A == A : \nat -> \square_\ell & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N_S : \Pi n:\nat, A n -> A(S n)}{\tctx |- \nat_{\rec} A N_0N_S0 == N'_0 : A 0}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\tctx |- A == A' : \nat -> \square_\ell & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N'_S : \Pi n:\nat, A n -> A(S n) & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} A N_0N_S (S N) == N'_S N' (\nat_{\rec}A' N'_0 N'_S N') : A (S N)}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{\tctx |- \Wf}{\tctx |- \bot_{\rec} == \bot_{\rec} : \Pi A : \bot \to \square_\ell,\Pi e :\bot, A e}
+$$
+
+$$
+    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
+    \inference[\textsc{Trans}]
+    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
+$$
+
+$$
+    \inference[\textsc{Conv}]
+    {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
+$$
+
+But it is useful to consider the extension with a type of booleans $\bool$, with new terms :
+ $ M,N ::= \dots | \bool|\bool_{\rec}|\true|\false$
+
+ And conversion rules
+
+$$
+    \inference[\textsc{Bool-True}]{\tctx |- \Wf}{\tctx |- \true == \true : \bool} \qquad
+    \inference[\textsc{Bool-False}]{\tctx |- \Wf}{\tctx |- \false == \false : \bool}
+$$
+
+$$
+    \inference[\textsc{Bool-Rec}]{\tctx |- \Wf}{\tctx |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \true \to A\false \to \Pi b :\bool, A b}
+$$
+
+
+$$
+    \inference[\textsc{Bool-Rec-True}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\true} == M'_{\true} == A {\true} & \tctx |- M_{\false} == M_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \true == M'_{\true} : A \true}
+$$
+$$
+    \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\true} == M_{\true} == A \true & \tctx |- M_{\false} == M'_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \false == M'_{\false} : A \false}
+$$
+
+%\subsection{Elimination}
+
+%It is worth commenting further on elimination. Elimination is the process by which a constructor(respectively $\lambda.$ or $S$) are placed below a eliminator (resp. concatenation or $\nat_{\rec}$) so they combine and disappear (resp. rule \textsc{Beta} or \textsc{Int-Rec-Succ})
+
+
+\subsection{System T}
+
+To identify and solve problems in a simpler envirronement, we studied a modified System T before, based on the following variant.
+
+With types :
+
+$$ A ::= A -> A | \nat | \bot $$
+
+Terms :
+
+$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
+
+
+Contexts :
+$$ \tctx ::= \tctx, x : A | \cdot $$
+
+And conversion rules :
+
+
+$$
+    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B }{\tctx |- \lambda x. M == \lambda x. M' : A -> B} \qquad
+    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : A -> B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B}
+$$
+
+$$
+    \inference[\textsc{Axiom}]{x : A \in \tctx }{\tctx |- x == x : A} \qquad
+    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M' : B}
+$$
+
+$$
+    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
+$$
+
+$$
+    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
+$$
+
+
+$$
+    \inference[\textsc{Int-Rec-Zero}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N_S : \nat -> A  -> A}{\tctx |- \nat_{\rec} N_0N_S0 == N'_0 : A}
+$$
+$$
+    \inference[\textsc{Int-Rec-Succ}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N'_S : \nat -> A  -> A & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} N_0N_S (S N) == N'_S N' (\nat_{\rec}N'_0 N'_S N') : A}
+$$
+
+
+$$
+    \inference[\textsc{Emp-Rec}]{}{\tctx |- \bot_{\rec} == \bot_{\rec} : \bot -> A}
+$$
+
+$$
+    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
+    \inference[\textsc{Trans}]
+    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
+$$
 
 \section{Sheaves}
 
 \subsection{Sheaves on topological spaces}
 
-We fix a topological space $X$, in this case presheves on that space are presheaves on the category underlying its poset of open subsets. More precisely :
+While the notion of sheaves on topological space is the most distant from my own, I find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail. Treating proof irrelevant proposition as subset of a space is a notion I like to keep in mind.
+
+We fix a topological space $X$, in this case presheaves on that space are presheaves on the category underlying its poset of open subsets. More precisely :
 
 \begin{definition}[Presheaf on a topology]
     A \emph{presheaf} $P$ is given by
@@ -173,39 +339,49 @@ While in general presheaves are unrelated to sheaves, we can introduce what shea
     A \emph{sheaf} $\mathcal{F}$ is a presheaf such that given any open  $U$ and family of open $(U_i)_i$ such that $U = \bigcup_i U_i$, there is a bijection between :
     \begin{itemize}
         \item Sections $s$ of $U$
-        \item Families $(s_i\in \mathcal{F}(U_i))_i$ of sections where $s_i|_{U_i\cap U_j} = s_j|_{U_i\cap U_j}$
+        \item \emph{Compatible} families $(s_i\in \mathcal{F}(U_i))_i$ of sections where $s_i|_{U_i\cap U_j} = s_j|_{U_i\cap U_j}$
     \end{itemize}
     where the forward direction is given by $s \mapsto (s|_{U_i})_i$.
 \end{definition}
 
-Since the definition only acces the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as we are concerned, this means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$.
+Since the definitions only access the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as we are concerned, this means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$. I will stick with calling their elements opens, however.
 
 \subsection{Kripke and Beth semantics}
 
-Presheaves give a classical tool to study intuitionistic logic through Kripke models. They help to determine what formula can't be proven using intuitionistic logic.
+Kripke models are models of intuitionistic logic, and come from interpreting the sorts of the language as presheaves.
 
-Formula are relativised to an open subset (in general an object in a small category) or \emph{forcing condition} $U$ : $U \models \phi$, and the requirement for the formula to be verified is strengthened by asking for it to be verified on every $V\leq U$. This requirement degenerates back to the usual except in the $=>$ and $\forall$ case : 
+To construct a Kripke model, we consider a locale (or in general, a small category). We consider a language and associate a downward closed set of opens to each of its proposititional variables.
+
+We can then define $U ||- \phi$, meaning $U$ forces $\phi$, by induction on the structure of $\phi$.
 \begin{itemize}
-    \item $U |= \phi \wedge \psi$ iff for all $V\leq U$, $V |= \phi$ and $V |= \psi$ iff $U |= \phi$ and $U |= \psi$ (Degenerate cases)
-    \item $U |= \phi => \psi$ iff for all $V \leq U$, if $V |= \phi$ then $V |= \psi $
-    \item $U |= \forall x : P, \phi$ iff for all $V \leq U$ and $s\in P(V)$, $V |= \phi(s/x) $
+    \item $U ||- \phi \wedge \psi$ iff for all $V\leq U$, $V ||- \phi$ and $V ||- \psi$
+    \item $U ||- \phi => \psi$ iff for all $V \leq U$, if $V ||- \phi$ then $V ||- \psi $
+    \item $U ||- \forall x : P, \phi$ iff for all $V \leq U$ and $s\in P(V)$, $V ||- \phi(s/x) $
+\end{itemize}
+And all other case are similar. We can then prove that for all $\phi$, $U||-\phi$ iff for all $V \leq U$, $V ||- \phi$, making all cases but $ => $ and $\forall$ degenerate. For example, $U ||- \phi \wedge \psi$ iff for all $V \leq U$, $ V||- \phi$ and $V ||- \psi$ iff $U||- \phi$ and $V||- \psi$. This recovers the usual definition.
+
+We note that by using the poset of contexts, Kripke model done with small categories is (only classicaly) complete for intuitionistic logic.
+
+Sheaves also yield a more general kind of model, Beth models, where sorts are interpreted as sheaves.
+
+$U ||- \phi$ is now defined as follows :
+\begin{itemize}
+    \item $U ||- \phi \wedge \psi$ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ and $V_i ||- \psi $.
+    \item $U ||- \phi \vee \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ or $U_i ||- \psi $.
+    \item $U ||- \exists x : \mathcal{F}, \phi $ iff for all $V\leq U$, there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(V_i)$, $V_i ||- \phi(s_i/x)$.
+    \item $U ||- \phi => \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, if $V_i ||- \phi$ then $U_i ||- \psi $.
+    \item $U ||- \forall x : \mathcal{F}, \phi $ iff for all $V\leq U$, there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$ and $s_i\in \mathcal{F}(V_i)$, $V_i ||- \phi(s_i/x)$.
+\end{itemize}
+Now it can also be proved that $U ||- \phi$ iff there exists $(V_i)_i$ with $V = \bigvee_i V_i$, for all $i$ $V_i||- \phi$, and the above degenerates into :
+\begin{itemize}
+    \item $U ||- \phi \wedge \psi$ iff $U ||- \phi$ and $U ||- \psi $.
+    \item $U ||- \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i ||- \phi$ or $U_i ||- \psi $.
+    \item $U ||- \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i ||- \phi(s_i/x)$.
+    \item $U ||- \phi => \psi $ iff for all $V \leq U$, if $V ||- \phi$ then $V ||- \psi $.
+    \item $U ||- \forall x : \mathcal{F}, \phi $ iff for all $V\leq U$ and $s\in \mathcal{F}(V)$, $V ||- \phi(s/x)$.
 \end{itemize}
 
-Since the key example of forcing condition is the context, it is perhaps unsurprising that the only connectors affected by are the one affecting the context (including the free variables in the context).
-
-Where presheaves and their Kripke semantics strengthened the requirements, sheaves and their Beth semantics weaken them again.
-
-Again, this weakened requirements degenerates in most cases.
-
-\begin{itemize}
-    \item $U |= \phi \wedge \psi$ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ and $U_i |= \psi $ iff $U |= \phi$ and $U |= \psi$. (Degenerate case)
-    \item $U |= \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ or $U_i |= \psi $.
-    \item $U |= \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i |= \phi(s_i/x)$.
-\end{itemize}
-
-We note that $U |= \phi$ iff for all $V\leq U$, $V |= \phi$ in the case of kripke semantics and iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i |= \phi$ in the case of Beth semantics, as can be shown by induction on $\phi$ in both cases.
-
-The goal of this stage may be formulated as bringing this weakening of condition into type theory.
+They are other variant of Beth semantics, relying on different notion of \emph{cover} in small categories.
 
 \subsection{Topoï and sheaves in topoï}
 
@@ -224,9 +400,9 @@ We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of su
 
 We note that topoï also have finite colimits.
 
-A topos serves to give models of intuitionistic logic in classical mathematical language. It has an internal logic which is higher order.
+Topoï form a class of models of type theory. However, the properties verified by their theories, are either too strong, like proposititional extensionality and the axiom of unique choice, or too weak {\color{red} TO COMPLETE}.
 
-For example, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoï. In particular categories of presheaves are topoï, and correspond to Kripke models. 
+To give a few examples of topoï, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoï. In particular categories of presheaves are topoï, and their internal language are given by Kripke models. The categories of sheaves over topological spaces also form topoï, and their internal language are given by Beth models.
 
 The subobject classifier $\Omega$ is equipped with an internal meet-semilattice structure inherited from the meet-semilattice structure on each $\mathbf{Sub}(X)$, which is natural in $X$.
 
@@ -252,7 +428,9 @@ A topology can be lifted to a left exact idempotent monad on the entirety of the
 
 A $j$-Sheaf is up to isomorphism the result of sheafifying an object.
 
-$j$-Sheaves form a topos. The sheaves on a presheaf topos correspond to Beth semantics.
+$j$-Sheaves form a topos.
+
+In the topos of presheaf over $X$, elements of $\Omega$ are downward closed sets of open. The $j$ operator send such set to the set of sub-open of their union. A subobject $A$ of $P$ is then dense if for every open $U$ and every section $s$ of $P(U)$, there is a family of opens and sections $s_i\in U_i$ which can be glued back into $s$, \emph{i.e.} $U = \bigvee U_i$ and $s_i = s|_{U_i}$. Although, to recover the earlier sheaf definition, one can simply look at presheaves $P$ where $P(U)$ has at most one element, since morphisms out of these presheaves directly yield compatible families.
 
 \subsection{Geometric formulas}
 In the litterature around sheaves and forcing, we find the following definitions.
@@ -325,174 +503,79 @@ It is also possible to see geometric formulas as being of the form $\Pi i : I, O
 
 \section{Models}
 
-A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}.
+\subsection{Categories with family}
 
+A common manner to construct models of type theory is through categories with families.
+
+They are constituted of :
+\begin{itemize}
+    \item A category of context and substitution
+    \item For every context a type of inner types, and for every context and inner type in that context, a type of terms, both accompanied by the action of the substitution upon those, and the corresponding rules.
+    \item A way to append a type to a context, substitution weakening, lifting and extension.
+\end{itemize}
+They may be complemented by :
+\begin{itemize}
+    \item Dependent function inner types, with their constructor, eliminator, and their substitution laws.
+    \item A universe inner type, and its element function and their substitution laws.
+    \item Some positive types, like a boolean type, its eliminator and constructors, and their substitution laws.
+    \item Dependent pair inner types, eliminators, constructors, and laws.
+\end{itemize}
+
+A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}, using categories with families.
+
+The most notable being :
 \begin{enumerate}
-    \item A model of a variant of Baclofen TT using dialogue trees. Predicates must be linearized before eliminating an inductive into them.
-    \item An exceptional model, with a type of exceptions $E$. A special type of dialogue trees where $I = E$ and $O i = \mathbf{0}$, the resulting theory is inconsistent (when $E$ is inhabited), as always when $O i -> \mathbf{0}$ for some $i$.
+    \item A model using dialogue trees.
+    \item An exceptional model.
+    \item A model using presheaves.
     \item A model using $(I,O)$-sheaves, which requires univalence, and quotient inductive types to model positive types.
-    \item A incomplete model using presheaves.
 \end{enumerate}
+
+None of them completely implement all the feature listed above, but only the model using presheaves as no dependent function type.
+
+\textsc{Rocq} served as both the meta-theory and the target.
+
+\subsection{Dialogue trees}
+
+An $(I,O)$-dialogue tree, is a type $A$ together with a map $\Pi i : I, (O\ i-> A) -> A$. More important, maybe, are how free dialogue tree are defined : 
+
+$$
+\begin{array}{l}
+    \Inductive\ \mathcal{D}_{I,O}\ T : \Type := \\
+    | \ret : T -> \mathcal{D}_{I,O}\ T\\
+    | \ask : \Pi (i : I),(O\ i -> \mathcal{D}_{I,O}\ T) -> \mathcal{D}_{I,O}\ T\\
+\end{array}
+$$
+
+They encode a fairly large family of monads. They are quite similar to sheaves, however, unlike sheaves, a model interpreting types as dialogue trees do not require no univalence nor HITs, but cannot implement booleans (or in general, inductive types) as usual.
+
+Instead, they implement them in the way of Baclofen TT, meaning $\textsf{if } b \textsf{ then } (p_t : P \true) \textsf{ else } (p_f : P \false)$ is of type $\textsf{if } b \textsf{ then } P\true \textsf{ else } P\false$ rather than $P b$ (except if $P$ is constant).
+
+This models highlights how sheaves do not need to weaken the theory down to Baclofen TT to add effects
+
+\subsection{Exceptional}
+
+The exceptional model (for exception type $E$) interprets a type as a pair of a type and a map $E -> A$. It is inconsistent, however, together with parametricity, a consistent model can be recovered.
+
+This models highlights the importance of computations, since an inconsitent type theory can still be used to state a few thing as long as it computes properly.
+
+\subsection{Presheaves}
+
+The most time consuming model, where neither universes nor dependant function types could be implemented. The main issue is the straightforward implementation is not strict, meaning equalities have to be proven, and transport along them must be handled.
+
+This model highlights why studying sheaves separately from presheaves is interesting.
+
+\subsection{Sheaves}
 
 The most important one is of course the model using sheaves.
 
-The model requires univalence and used rewrite rules to simulate HIT, which are absent in \textsc{Rocq} 9.0.0. \textsc{Rocq} served as both the meta-theory and the target, as with all the other models.
+The model requires univalence and used rewrite rules to simulate HIT, which are absent in \textsc{Rocq} 9.0.0.
 
 Types were interpreted as sheaves as described in definition \ref{IOshf}. Product types are relatively easy as an aribtray product of sheaves is still a sheaf. Positives types, in my case boolean, where contructed as the QIT with the same constructor as the original (true and false), together with $\ask$ and $\varepsilon$. The resulting type is equivalent to the sheafification of booleans but does not compute exactly the same.
 
 One of the interest of type theory is that it yield meaningful computations from proof, so we were careful about that.
 
 
-\section{System T and MLTT}
-\subsection{MLTT}
-We sought to extend the following variant of MLTT.
-
-We consider a type of levels containing two elements $\slvl$ and $\llvl$ for small and large, with generic $\ell$
-
-With terms :
-
-$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\slvl | \square_\llvl$$
-
-
-Contexts :
-$$ \tctx ::= \tctx, x : A | \cdot $$
-
-And conversion rules :
-
-$$
-    \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
-    \inference[\textsc{Wf-Ext}]{\tctx |- A == A & \tctx |- \Wf}{ \tctx, x : A |- \Wf}
-$$
-$$
-    \inference[\textsc{Int-Typ}]{\tctx |- \Wf}{\tctx |- \nat == \nat : \square_\ell} \qquad
-    \inference[\textsc{Emp-Typ}]{\tctx |- \Wf}{\tctx |- \bot == \bot : \square_\ell}
-$$
-$$
-    \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_\ell}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
-    \inference[\textsc{Typ-Typ}]{\tctx |- \Wf}{\tctx |- \square_\slvl : \square_\llvl}
-$$
-
-
-$$
-    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B &\tctx |- A == A : \square_\ell}{\tctx |- \lambda x. M == \lambda x. M' : \Pi x : A, B} \quad
-    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : \Pi x:A, B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B(N/x)}
-$$
-
-$$
-    \inference[\textsc{Axiom}]{\tctx |- \Wf & x : A \in \tctx }{\tctx |- x == x : A} \qquad
-    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M'(N'/x) : B(N/x)}
-$$
-
-$$
-    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
-    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
-$$
-
-$$
-    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : \Pi A : \nat \to \square_\slvl, A 0 \to \left(\Pi n:\nat, A n \to A (S n)\right) \to \Pi n :\nat, A n}
-$$
-
-
-$$
-    \inference[\textsc{Int-Rec-Zero}]{\tctx |- A == A : \nat -> square_\slvl & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N_S : \Pi n:\nat, A n -> A(S n)}{\tctx |- \nat_{\rec} A N_0N_S0 == N'_0 : A 0}
-$$
-$$
-    \inference[\textsc{Int-Rec-Succ}]{\tctx |- A == A' : \nat -> square_\slvl & \tctx |- N_0 == N'_0 == A 0\\ \tctx |- N_S == N'_S : \Pi n:\nat, A n -> A(S n) & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} A N_0N_S (S N) == N'_S N' (\nat_{\rec}A' N'_0 N'_S N') : A (S N)}
-$$
-
-
-$$
-    \inference[\textsc{Emp-Rec}]{\tctx |- \Wf}{\tctx |- \bot_{\rec} == \bot_{\rec} : \Pi A : \bot \to \square_\slvl,\Pi e :\bot, A e}
-$$
-
-$$
-    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
-    \inference[\textsc{Trans}]
-    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
-$$
-
-$$
-    \inference[\textsc{Conv}]
-    {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
-$$
-
-But it is useful to consider the extension, with new terms :
- $ M,N ::= \dots | \bool|\bool_{\rec}|\ovl\true|\ovl\false$
-
- And conversion rules
-
-$$
-    \inference[\textsc{Bool-True}]{\tctx |- \Wf}{\tctx |- \ovl\true == \ovl\true : \bool} \qquad
-    \inference[\textsc{Bool-False}]{\tctx |- \Wf}{\tctx |- \ovl\false == \ovl\false : \bool}
-$$
-
-$$
-    \inference[\textsc{Bool-Rec}]{\tctx |- \Wf}{\tctx |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \ovl\true \to A\ovl\false \to \Pi b :\bool, A b}
-$$
-
-
-$$
-    \inference[\textsc{Bool-Rec-True}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\ovl\true} == M'_{\ovl\true} == A {\ovl\true} & \tctx |- M_{\ovl\false} == M_{\ovl\false} : A \ovl\false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \ovl\true == M'_{\ovl\true} : A \ovl\true}
-$$
-$$
-    \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\ovl\true} == M_{\ovl\true} == A \ovl\true & \tctx |- M_{\ovl\false} == M'_{\ovl\false} : A \ovl\false}{\tctx |- \bool_{\rec} A M_{\ovl\true} M_{\ovl\false} \ovl\false == M'_{\ovl\false} : A \ovl\false}
-$$
-\subsection{System T}
-
-To identify and solve problems in a simpler envirronement, we studied a modified System T before, based on the following variant.
-
-With types :
-
-$$ A ::= A -> A | \nat | \bot $$
-
-Terms :
-
-$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
-
-
-Contexts :
-$$ \tctx ::= \tctx, x : A | \cdot $$
-
-And conversion rules :
-
-
-$$
-    \inference[\textsc{Fun-Intro}]{\tctx, x : A |- M == M' : B }{\tctx |- \lambda x. M == \lambda x. M' : A -> B} \qquad
-    \inference[\textsc{Fun-Elim}]{\tctx |- M == M' : A -> B& \tctx |- N == N' : A}{\tctx |- MN == M'N' : B}
-$$
-
-$$
-    \inference[\textsc{Axiom}]{x : A \in \tctx }{\tctx |- x == x : A} \qquad
-    \inference[\textsc{Beta}]{\tctx, x : A |- M == M' : B & \tctx |- N == N' : A}{\tctx |- (\lambda x. M)N == M' : B}
-$$
-
-$$
-    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
-    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
-$$
-
-$$
-    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
-$$
-
-
-$$
-    \inference[\textsc{Int-Rec-Zero}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N_S : \nat -> A  -> A}{\tctx |- \nat_{\rec} N_0N_S0 == N'_0 : A}
-$$
-$$
-    \inference[\textsc{Int-Rec-Succ}]{\tctx |- N_0 == N'_0 == A\\ \tctx |- N_S == N'_S : \nat -> A  -> A & \tctx |- N == N' :\nat}{\tctx |- \nat_{\rec} N_0N_S (S N) == N'_S N' (\nat_{\rec}N'_0 N'_S N') : A}
-$$
-
-
-$$
-    \inference[\textsc{Emp-Rec}]{}{\tctx |- \bot_{\rec} == \bot_{\rec} : \bot -> A}
-$$
-
-$$
-    \inference[\textsc{Sym}]{\tctx |- M == M' : A}{\tctx |- M' == M : A} \qquad
-    \inference[\textsc{Trans}]
-    {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
-$$
 
 \section{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
@@ -534,7 +617,8 @@ $$
     \inference[\textsc{Split}]{\fctx,n\mapsto \true,\tctx |-M == M' :A & \fctx, n\mapsto\false, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
-Amongst other thing, this theory can be used to show that any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT has a continuity proof.
+Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\cdot |- \{M\} == \{M\} : \mathsf{continuous} M$ of MLTT proving its continuity can be constructed.
+
 \subsection{ShTT}
 
 Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$
