@@ -47,6 +47,8 @@
 \DeclareMathOperator{\trm}{\mathsf{Trm}}
 \DeclareMathOperator{\true}{\mathsf{tt}}
 \DeclareMathOperator{\false}{\mathsf{ff}}
+\DeclareMathOperator{\mtrue}{\mathfrak{tt}}
+\DeclareMathOperator{\mfalse}{\mathfrak{ff}}
 \DeclareMathOperator{\neu}{Ne}
 
 
@@ -57,7 +59,9 @@
 \newcommand{\0}{\mathbf{0}}
 \newcommand{\1}{\mathbf{1}}
 \newcommand{\nat}{\mathbf{N}}
+\newcommand{\mnat}{\mathfrak{N}}
 \newcommand{\bool}{\mathbf{B}}
+\newcommand{\mbool}{\mathfrak{B}}
 \newcommand{\C}{\mathcal{C}}
 \newcommand{\D}{\mathcal{D}}
 \newcommand{\SBS}{\mathbf{SBS}}
@@ -85,7 +89,7 @@
 \newcommand{\Bool}{\mathsf{Bool}}
 \newcommand{\Real}{\mathsf{Real}}
 \newcommand{\Nat}{\mathsf{Nat}}
-\newcommand{\List}{\textsf{List}}
+\DeclareMathOperator{\List}{\textsf{List}}
 \newcommand{\Stream}{\textsf{Stream}}
 
 \newcommand{\Wf}{\textsf{well-formed}}
@@ -151,21 +155,22 @@ In section 2 we explain what type theory is and detail the basic type theory we 
 
 \section{Type theory}
 
-Type theory is a manner of formalising mathematics with a very different design from say set theory, and quite a bit closer in structure to a purely logical system like natural deduction.
+Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction.
 
+Our meta-theory should be a type theory, with $\mnat$ denoting its natural numbers, $\mbool$ its boolean type with constants $\mtrue$ and $\mfalse$ and $\Type$ its type of type.
 
 \subsection{MLTT}
 We present a variant of MLTT, a very standard type theory
 
 It is also the theory that we will seek to extend.
 
-We consider two levels of universes $\slvl$ and $\llvl$ for small and large.
+We give ourself a poset of universe levels $\ell$, with strict upper bounds to any finite subsets.
 
-We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, meaning their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
+We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, which means, in particular, that their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
 
 With terms :
 
-$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\slvl | \square_\llvl$$
+$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\ell $$
 
 
 Contexts :
@@ -183,7 +188,7 @@ $$
 $$
 $$
     \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_\ell}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
-    \inference[\textsc{Typ-Typ}]{\tctx |- \Wf}{\tctx |- \square_\slvl == \square_\slvl: \square_\llvl}
+    \inference[\textsc{Typ-Typ}]{\tctx |- \Wf & \ell < \ell' }{\tctx |- \square_\ell == \square_\ell: \square_{\ell'}}
 $$
 
 
@@ -241,15 +246,15 @@ $$
 $$
 
 $$
-    \inference[\textsc{Bool-Rec}]{\tctx |- \Wf}{\tctx |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\slvl, A \true \to A\false \to \Pi b :\bool, A b}
+    \inference[\textsc{Bool-Rec}]{\tctx |- \Wf}{\tctx |- \bool_{\rec} == \bool_{\rec} : \Pi A : \bool \to \square_\ell, A \true \to A\false \to \Pi b :\bool, A b}
 $$
 
 
 $$
-    \inference[\textsc{Bool-Rec-True}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\true} == M'_{\true} == A {\true} & \tctx |- M_{\false} == M_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \true == M'_{\true} : A \true}
+    \inference[\textsc{Bool-Rec-True}]{\tctx |- A == A : \bool -> \square_\ell \\ \tctx |- M_{\true} == M'_{\true} == A {\true} & \tctx |- M_{\false} == M_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \true == M'_{\true} : A \true}
 $$
 $$
-    \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\slvl \\ \tctx |- M_{\true} == M_{\true} == A \true & \tctx |- M_{\false} == M'_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \false == M'_{\false} : A \false}
+    \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\ell \\ \tctx |- M_{\true} == M_{\true} == A \true & \tctx |- M_{\false} == M'_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \false == M'_{\false} : A \false}
 $$
 
 %\subsection{Elimination}
@@ -316,7 +321,10 @@ $$
 
 \section{Sheaves}
 
-\subsection{Sheaves on topological spaces}
+Since I refer to more historical notion of sheaves and topoï are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
+Since the definition are presented by way of example, this should not be an issue.
+
+\subsection{Sheaves on topological spaces}\label{topsheaves}
 
 While the notion of sheaves on topological space is the most distant from my own, I find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail. Treating proof irrelevant proposition as subset of a space is a notion I like to keep in mind.
 
@@ -383,7 +391,7 @@ Now it can also be proved that $U ||- \phi$ iff there exists $(V_i)_i$ with $V =
 
 They are other variant of Beth semantics, relying on different notion of \emph{cover} in small categories.
 
-\subsection{Topoï and sheaves in topoï}
+\subsection{Topoï and sheaves in topoï}\label{topoi}
 
 
 Proofs, results and details for this section can often be found in \emph{Sheaves in geometry and logic: A first introduction to topos theory} by Saunders Maclane and Ieke Moerdijk \cite{maclane2012sheaves}.
@@ -446,13 +454,13 @@ A \emph{geometric implication} is a formula of shape $\forall \overrightarrow{x}
 We rather use the following definition
 
 \begin{definition}
-    A \emph{geometric formula} is a formula of the form $$\bigwedge_{i\in I}\left(\forall \overrightarrow{x}, \bigwedge_{j \in J_i} O_{i,j}(\overrightarrow{x}) -> \bigvee_{k\in K_i}\exists \overrightarrow{y},\bigwedge_{l\in L_{i,k}} Q_{i,k,l}(\overrightarrow{x},\overrightarrow{y})\right)$$
+    A \emph{geometric formula} is a formula of the form $$\bigwedge_{i : I}\left(\forall \overrightarrow{x}, \bigwedge_{j : J_i} O_{i,j}(\overrightarrow{x}) -> \bigvee_{k : K_i}\exists \overrightarrow{y},\bigwedge_{l : L_{i,k}} Q_{i,k,l}(\overrightarrow{x},\overrightarrow{y})\right)$$
     Where $O_{i,j}$ and $Q_{i,k,l}$ are atomic formulas, and both every $J_i$ and every $L_{i,k}$ are finite.
 \end{definition}
 
 Every \guillemetleft geometric theory \guillemetright can be written as a single geometric formula.
 
-We'd like to note that they define covers and be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as : 
+We'd like to note that they define covers and can be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as : 
 $$
     \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1})|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}})|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x})|-\mathcal{J}}
 $$
@@ -537,7 +545,7 @@ None of them completely implement all the feature listed above, but only the mod
 
 \subsection{Dialogue trees}
 
-An $(I,O)$-dialogue tree, is a type $A$ together with a map $\Pi i : I, (O\ i-> A) -> A$. More important, maybe, are how free dialogue tree are defined : 
+Given a $I : \Type$ and $O : I -> \Type$, an $(I,O)$-dialogue tree, is a type $A$ together with a map $\Pi i : I, (O\ i-> A) -> A$. More important, maybe, are how free dialogue tree are defined : 
 
 $$
 \begin{array}{l}
@@ -579,26 +587,30 @@ One of the interest of type theory is that it yield meaningful computations from
 
 \section{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha$, based on the geometric formula 
+My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha: \nat -> \bool$, which is known only through finite approximation.
 
-$$ \left(\bigwedge_{n\in\nat} \top -> \alpha n = \true \vee \alpha n = \false\right) \wedge \left(\bigwedge_{n\in \nat} \alpha n = \true \wedge \alpha n = \false -> \bot \right)$$
+The sheaf structure is the one appearing in this geometric formula :
+
+$$ \left(\bigwedge_{n : \mnat} \top -> \alpha \ovl{n} = \true \vee \alpha \ovl{n} = \false\right) \wedge \left(\bigwedge_{n : \mnat} \alpha \ovl{n} = \true \wedge \alpha \ovl{n} = \false -> \bot \right)$$
+
+Where $\ovl{n}$ is the term $S (\cdots (S\ 0)\cdots)$, with $n$ occurrences of $S$.
 
 The term then extends those of MLTT with
 $$ M, N ::= \dots |\alpha$$
 
 With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
 $$ \fctx ::= \fctx, n \mapsto b | \cdot$$
-We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \true$ nor $n\mapsto \false$ do.
+We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \mtrue$ nor $n\mapsto \mfalse$ do.
 
 And conversion rules :
 $$
-    \inference[name]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
+    \inference[n]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
 $$
 whenever the following is a rule of MLTT (with booleans)
 $$
-    \inference[name]{\tctx |- \mathcal{J}_0 & \cdots & \tctx |- \mathcal{J}_n}{\tctx |- \mathcal{J}}
+    \inference[n]{\tctx |- \mathcal{J}_0 & \cdots & \tctx |- \mathcal{J}_n}{\tctx |- \mathcal{J}}
 $$
-
+With $\mathcal{J}$ a judgment, (conversion or well formation) and $\text{n}$ the name of the rule.
 Exception made of \textsc{Wf-Empty}, which becomes
 $$
     \inference[\textsc{Wf-Empty}]{}{\cdot,\cdot |- \Wf}
@@ -614,28 +626,28 @@ $$
     \inference[\textsc{Ask}]{\fctx,\tctx|- \Wf &n\mapsto_\fctx b}{\fctx, \tctx |- \alpha \ovl n == \ovl b}
 $$
 $$
-    \inference[\textsc{Split}]{\fctx,n\mapsto \true,\tctx |-M == M' :A & \fctx, n\mapsto\false, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
+    \inference[\textsc{Split}]{\fctx,n\mapsto \mtrue,\tctx |-M == M' :A & \fctx, n\mapsto\mfalse, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
-Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\cdot |- \{M\} == \{M\} : \mathsf{continuous} M$ of MLTT proving its continuity can be constructed.
+Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\cdot |- \{M\} == \{M\} : \mathsf{continuous}\ M$ of MLTT proving its continuity can be constructed.
 
 \subsection{ShTT}
 
 Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$
 
-We imagine we have a set $\Omega$ of \emph{atoms}.
-We first set a set $I$ with decidable equality, and a (morally finite) set $A i$ for each $i \in I$ standing for arity, and finally a family $((O_{i,\alpha})_{\alpha \in A i})_{i\in I}$ of elements of $\Omega$.
+We suppose we have a type $\Omega$ of \emph{atoms}.
+We then set a type $I$ with decidable equality, and a (morally pointwise finite) type family $A : I -> \Type$ standing for arities, and finally a family $O : \Pi i:I, A\ i -> \Omega$, writing $O_{i,\alpha}$ instead of $O\ i\ \alpha$ for space concerns.
 
 This roughly correspond to the geometric formula : 
-$\bigwedge_{i\in I} \top -> \bigvee_{\alpha \in A\ i}O_{i,\alpha}$
+$\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alpha}\right)$
 
-The term extend those of MLTT as follows :
+The terms extend those of MLTT as follows :
 
-$$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha\in A i}$$
+$$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha : A\ i}$$
 
 When instanciating with finite $A i$, it would rather be  $\digamma_i M_1 \cdots M_n$.
 
-The forcing contexts $\fctx$ are now subset of $\Omega$, and never cause ill-formation.
+The forcing contexts $\fctx$ are now subset of $\Omega$ (lists accessed only through wether they include some elements), and never cause ill-formation.
 
 The conversion rules also copy those from MLTT by adding a forcing context as in \ref{MBshtt}, without the \textsc{WF-Empty} exception.
 
@@ -645,7 +657,7 @@ $$
     \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
 
-This rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a purre typing judgement.
+This rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a pure typing judgement.
 
 $$
     \inference[\textsc{Ask}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
@@ -660,7 +672,7 @@ $$
     \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}AM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \true, n\mapsto \false |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
+This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
 
 \section{Logical relations}
 

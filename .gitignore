@@ -8,5 +8,6 @@
 *.run.xml
 *.synctex.gz
 *.toc
+*.v.crashrocqide
 forcing1.pdf
 RSS.pdf
