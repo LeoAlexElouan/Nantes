@@ -147,15 +147,15 @@ I will refine the type theory further as well as study other instances like the 
 \newpage
 
 
-\section{Introduction}
+%\section{Introduction}
 
-\subsection{The outline}
+\subsection*{Outline}
 
-In section 2 we explain what type theory is and detail the basic type theory we will study. Section 3 present the construction we would like to make appear in type theory, and why we think it is possible and useful. Section 4 present work done on models of type theory, though the important part is precisely the model of sheaf, since its theory is what we ar etrying to build syntactically. Section 5 exposes 2 sheaf theories, one which comes from previous work and is an important inspiration, and the other which is a prototype of a generalisation. The last section, section 6, uses the recipe of logical relation to make a proof of concept using a weaker theory, which normalises.
+In section \ref{TT} we explain what type theory is and detail the basic type theory we will study. Section \ref{Sheaves} present the construction we would like to make appear in type theory, and why we think it is possible and useful. Section \ref{Models} present work done on models of type theory, though the important part is precisely the model of sheaf, since its theory is what we ar etrying to build syntactically. Section \ref{ShTT} exposes two sheaf theories, one which comes from previous work and is an important inspiration, and the other which is a prototype of a generalisation. The last section, section \ref{LogRel}, uses the recipe of logical relation to make a proof of concept using a weaker theory, which normalises.
 
-\section{Type theory}
+\section{Type theory}\label{TT}
 
-Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction.
+Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction. They are also more adapted to mechanising proof than ZFC.
 
 Our meta-theory should be a type theory, with $\mnat$ denoting its natural numbers, $\mbool$ its boolean type with constants $\mtrue$ and $\mfalse$ and $\Type$ its type of type.
 
@@ -187,7 +187,7 @@ $$
     \inference[\textsc{Emp-Typ}]{\tctx |- \Wf}{\tctx |- \bot == \bot : \square_\ell}
 $$
 $$
-    \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_\ell}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_\ell} \qquad
+    \inference[\textsc{Fun-Typ}]{\tctx |- A == A' : \square_\ell & \tctx, x : A |- B == B' : \square_{\ell'} & \ell \leq \ell'' & \ell' \leq \ell''}{\tctx |- \Pi x  : A, B == \Pi x: A', B' : \square_{\ell''}} \qquad
     \inference[\textsc{Typ-Typ}]{\tctx |- \Wf & \ell < \ell' }{\tctx |- \square_\ell == \square_\ell: \square_{\ell'}}
 $$
 
@@ -319,7 +319,7 @@ $$
     {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
 $$
 
-\section{Sheaves}
+\section{Sheaves}\label{Sheaves}
 
 Since I refer to more historical notion of sheaves and topoï are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
 Since the definition are presented by way of example, this should not be an issue.
@@ -509,7 +509,7 @@ $(I,O)$-Sheafification can be defined similarily. This definition is marginally 
 
 It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, and as such be used as the basis for sheaves.
 
-\section{Models}
+\section{Models}\label{Models}
 
 \subsection{Categories with family}
 
@@ -585,7 +585,7 @@ One of the interest of type theory is that it yield meaningful computations from
 
 
 
-\section{ShTT}
+\section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
 My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha: \nat -> \bool$, which is known only through finite approximation.
 
@@ -674,7 +674,7 @@ $$
 
 This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
 
-\section{Logical relations}
+\section{Logical relations}\label{LogRel}
 
 A rather standard manner of studying the property of a type theory is through following a recipe {\color{red} CITE GIRARD ?}
 
@@ -769,22 +769,10 @@ Where substitution are encoded as lists of terms and reducibility of substitutio
 
 We can then deduce that at least our theory normalises.
 
-%\section{Meta-informations}
-%
-%\subsection{Time expenditure}
-%I spent a lot of time tinkering with \textsc{Rocq}
-%
-%\subsection{Difficulties}
-%
-%The subject is rather vast and a bit unclear.
-%
-%Doing logical relations for MLTT is a large task, even before adding sheaves. My next attempt will probably start from logrel rocq insted of nothing
-
-%\subsection{Activities}
 
 \section{Conclusion}
 
-This constitutes a very imcomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$, by contrast of Martin Baillon's work, or find a simple enough theory with non-empty intersections.
+This constitutes a very imcomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
 
 %\newpage
 %
