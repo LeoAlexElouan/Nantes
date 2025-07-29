@@ -42,6 +42,7 @@
 \DeclareMathOperator{\Inductive}{\mathsf{Inductive}}
 \DeclareMathOperator{\ret}{\mathsf{ret}}
 \DeclareMathOperator{\rec}{rec}
+\DeclareMathOperator{\ind}{ind}
 \DeclareMathOperator{\ctx}{\mathsf{ctx}}
 \DeclareMathOperator{\Typ}{\mathsf{Typ}}
 \DeclareMathOperator{\trm}{\mathsf{Trm}}
@@ -539,7 +540,7 @@ The most notable being :
     \item A model using $(I,O)$-sheaves, which requires univalence, and quotient inductive types to model positive types.
 \end{enumerate}
 
-None of them completely implement all the feature listed above, but only the model using presheaves as no dependent function type.
+None of them completely implement all the feature listed above, but only the model using presheaves has no dependent function type.
 
 \textsc{Rocq} served as both the meta-theory and the target.
 
@@ -557,7 +558,12 @@ $$
 
 They encode a fairly large family of monads. They are quite similar to sheaves, however, unlike sheaves, a model interpreting types as dialogue trees do not require no univalence nor HITs, but cannot implement booleans (or in general, inductive types) as usual.
 
-Instead, they implement them in the way of Baclofen TT, meaning $\textsf{if } b \textsf{ then } (p_t : P \true) \textsf{ else } (p_f : P \false)$ is of type $\textsf{if } b \textsf{ then } P\true \textsf{ else } P\false$ rather than $P b$ (except if $P$ is constant).
+Instead, they implement them in the way of Baclofen TT, meaning that, using booleans as an example, the eliminator for types $\bool_{\ind} : \Pi P : \square_\ell, P -> P -> \bool -> P $ is separate from the eliminator for type families $\bool_{\rec} : \Pi P : \bool -> \square_\ell, P \true -> P \false -> \Pi b : \bool, \theta P b$. $\bool_{\ind}$ behaves like the usual eliminator applied to a constant predicate. $\bool_{\rec}$ involves $\theta P$, the linearisation of $P$ defined as $\theta:= \lambda P n, \bool_{\ind} ((\bool ->\square_\ell) -> \square_\ell) (\lambda Q, Q \true) (\lambda Q, Q \false) b P$, or, more clearly, $\theta P \true := P \true$ and $\theta P \false :=  P \false$.
+
+
+While our model doesn't model integer, it should also be possible, with the eliminator for types as $\nat_{\ind} : \Pi P : \square_\ell, P -> (\nat ->P -> P) -> \nat -> P $ and the eliminator for type families as $\nat_{\rec} : \Pi P : \nat -> \square_\ell, P 0 -> (\Pi n :\nat, P n -> P (S n)) -> \Pi n : \nat, \theta P n$. $\nat_{\ind}$ also behaves like the usual eliminator applied to a constant predicate. $\nat_{\rec}$ also involves its linearisation of $P$ named $\theta P$, defined as $\theta:= \lambda P n, \nat_{\ind} ((\nat ->\square_\ell) -> \square_\ell) (\lambda Q, Q 0) (\lambda n \theta' Q, \theta' (Q\circ S)) n P$, or, more clearly, $\theta P 0 := P 0$ and $\theta P (S n) := \theta (P\circ S) n$. In particular, they coincide on (the usual) closed integers.
+
+Other writer may swap $\ind$ and $\rec$.
 
 This models highlights how sheaves do not need to weaken the theory down to Baclofen TT to add effects
 
