@@ -134,11 +134,15 @@
 
 
 \subsection*{General context}
-We attempt to create type theories corresponding with the properties of the internal languages of sheaf topoï. Martin Baillon succeeded for some instance of the problem.
+To efficiently formalise mathematics, we need strong permissive theories, however, when attempting to mechanising proofs, strong computational properties, like typing decidability, are also expected.
+We seek to augment the expressiveness of type theory without damaging its computational ability.
+To that goal, we attempt to create type theories corresponding some of the good properties of the theories underlying sheaf topoï. Martin Baillon succeeded for some instance of the problem.
 \subsection*{Research problem}
-An element of a topological sheaf may be defined over an open whenever it is defined on a cover of that open, so long as they are compatible over the intersections. We hope to be able to do something similar in a type theory, where open set correspond to proof irrelevant propositions. This requires special attention to the compatibility condition : when a disjunction covers a proposition, it should be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
+An element of a topological sheaf may be defined over an open whenever it is defined on a cover of that open, so long as they are compatible over the intersections.
+We hope to be able to do something similar in a type theory, where open set correspond to proof irrelevant propositions.
+This requires special attention to the compatibility condition : when a disjunction covers a proposition, it could be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
 \subsection*{Your contribution}
-I have proved using \textsc{Rocq} that a system T with a part of the wanted features normalises. I also have a model in \textsc{Rocq} where types are interpreted as sheaves, even though some other variant probably exists.
+I have proved using \textsc{Rocq} that a system T with a part of the wanted features normalises. I also have a model in \textsc{Rocq} where types are interpreted as sheaves, though some other variant probably existed before.
 \subsection*{Arguments supporting its validity}
 The type theory devellopped by Martin Baillon, which I aim to generalise, proved continuity of all functional $(\nat -> \bool) -> \bool$. I hope to find similar results at term.
 \subsection*{Summary and future works}
@@ -158,7 +162,7 @@ In section \ref{TT} we explain what type theory is and detail the basic type the
 
 Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction. They are also more adapted to mechanising proof than ZFC.
 
-Our meta-theory should be a type theory, with $\mnat$ denoting its natural numbers, $\mbool$ its boolean type with constants $\mtrue$ and $\mfalse$ and $\Type$ its type of type.
+Our meta-theory should be a type theory, with $\mnat$ denoting its natural numbers, $\mbool$ its boolean type with constants $\mtrue$ and $\mfalse$ and $\Type$ its type of types.
 
 \subsection{MLTT}
 We present a variant of MLTT, a very standard type theory
@@ -322,12 +326,13 @@ $$
 
 \section{Sheaves}\label{Sheaves}
 
-Since I refer to more historical notion of sheaves and topoï are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
+Since we refer to more historical notion of sheaves and topoï are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
 Since the definition are presented by way of example, this should not be an issue.
 
 \subsection{Sheaves on topological spaces}\label{topsheaves}
 
-While the notion of sheaves on topological space is the most distant from my own, I find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail. Treating proof irrelevant proposition as subset of a space is a notion I like to keep in mind.
+While the notion of sheaves on topological space is the most distant from my own, we find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail.
+Treating proof irrelevant proposition as subset of a space is a notion we like to keep in mind.
 
 We fix a topological space $X$, in this case presheaves on that space are presheaves on the category underlying its poset of open subsets. More precisely :
 
@@ -353,7 +358,7 @@ While in general presheaves are unrelated to sheaves, we can introduce what shea
     where the forward direction is given by $s \mapsto (s|_{U_i})_i$.
 \end{definition}
 
-Since the definitions only access the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as we are concerned, this means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$. I will stick with calling their elements opens, however.
+Since the definitions only access the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as the reader is concerned, this only means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$. We will stick with calling their elements opens, however.
 
 \subsection{Kripke and Beth semantics}
 
@@ -409,7 +414,9 @@ We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of su
 
 We note that topoï also have finite colimits.
 
-Topoï form a class of models of type theory. However, the properties verified by their theories, are either too strong, like proposititional extensionality and the axiom of unique choice, or too weak {\color{red} TO COMPLETE}.
+Topoï form a class of models of type theory.
+However, they are reasoned upon as though they were a type theory with \emph{e.g.} equality reflection, proposititional extensionnality, strict propositions and the axiom of unique choice. This properties form a very strong, but also undecidable, system. In particular they are no implementation of type theory with both unique choice and strict propositions. They also have no universe in general, which, on the other hand, make them very weak.
+
 
 To give a few examples of topoï, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoï. In particular categories of presheaves are topoï, and their internal language are given by Kripke models. The categories of sheaves over topological spaces also form topoï, and their internal language are given by Beth models.
 
@@ -558,12 +565,12 @@ $$
 
 They encode a fairly large family of monads. They are quite similar to sheaves, however, unlike sheaves, a model interpreting types as dialogue trees do not require no univalence nor HITs, but cannot implement booleans (or in general, inductive types) as usual.
 
-Instead, they implement them in the way of Baclofen TT, meaning that, using booleans as an example, the eliminator for types $\bool_{\ind} : \Pi P : \square_\ell, P -> P -> \bool -> P $ is separate from the eliminator for type families $\bool_{\rec} : \Pi P : \bool -> \square_\ell, P \true -> P \false -> \Pi b : \bool, \theta P b$. $\bool_{\ind}$ behaves like the usual eliminator applied to a constant predicate. $\bool_{\rec}$ involves $\theta P$, the linearisation of $P$ defined as $\theta:= \lambda P n, \bool_{\ind} ((\bool ->\square_\ell) -> \square_\ell) (\lambda Q, Q \true) (\lambda Q, Q \false) b P$, or, more clearly, $\theta P \true := P \true$ and $\theta P \false :=  P \false$.
+Instead, they implement them in the way of Baclofen TT, meaning that, using booleans as an example, the eliminator for types $\bool_{\ind} : \Pi P : \square_\ell, P -> P -> \bool -> P $ is separate from the eliminator for type families $\bool_{\rec} : \Pi P : \bool -> \square_\ell, P \true -> P \false -> \Pi b : \bool, \theta_\bool P b$. $\bool_{\ind}$ behaves like the usual eliminator applied to a constant predicate. $\bool_{\rec}$ involves $\theta_\bool P$, the linearisation of $P$ defined as $\theta_\bool:= \lambda P n, \bool_{\ind} ((\bool ->\square_\ell) -> \square_\ell) (\lambda Q, Q \true) (\lambda Q, Q \false) b P$, or, more clearly, $\theta_\bool P \true := P \true$ and $\theta_\bool P \false :=  P \false$.
 
 
-While our model doesn't model integer, it should also be possible, with the eliminator for types as $\nat_{\ind} : \Pi P : \square_\ell, P -> (\nat ->P -> P) -> \nat -> P $ and the eliminator for type families as $\nat_{\rec} : \Pi P : \nat -> \square_\ell, P 0 -> (\Pi n :\nat, P n -> P (S n)) -> \Pi n : \nat, \theta P n$. $\nat_{\ind}$ also behaves like the usual eliminator applied to a constant predicate. $\nat_{\rec}$ also involves its linearisation of $P$ named $\theta P$, defined as $\theta:= \lambda P n, \nat_{\ind} ((\nat ->\square_\ell) -> \square_\ell) (\lambda Q, Q 0) (\lambda n \theta' Q, \theta' (Q\circ S)) n P$, or, more clearly, $\theta P 0 := P 0$ and $\theta P (S n) := \theta (P\circ S) n$. In particular, they coincide on (the usual) closed integers.
+While our model doesn't model integers, it should also be possible, with the eliminator for types as $\nat_{\ind} : \Pi P : \square_\ell, P -> (\nat ->P -> P) -> \nat -> P $ and the eliminator for type families as $\nat_{\rec} : \Pi P : \nat -> \square_\ell, P 0 -> (\Pi n :\nat, P n -> P (S n)) -> \Pi n : \nat, \theta_\nat P n$. $\nat_{\ind}$ also behaves like the usual eliminator applied to a constant predicate, and $\nat_{\rec}$ also involves its linearisation of $P$ named $\theta_\nat P$, defined as $\theta_\nat:= \lambda P n, \nat_{\ind} ((\nat ->\square_\ell) -> \square_\ell) (\lambda Q, Q 0) (\lambda n \theta' Q, \theta' (Q\circ S)) n P$, or, more clearly, $\theta_\nat P 0 := P 0$ and $\theta_\nat P (S n) := \theta_\nat (P\circ S) n$. In particular, they coincide on  integers of the form $S( \cdots (S 0)\cdots)$.
 
-Other writer may swap $\ind$ and $\rec$.
+Other writers may swap $\ind$ and $\rec$.
 
 This models highlights how sheaves do not need to weaken the theory down to Baclofen TT to add effects
 
@@ -741,20 +748,20 @@ We can then define a reducibility predicate $||-$ as follows, by induction on th
     \item For type $A -> B$, $\fctx,\tctx ||- M == M' : A -> B$, if for all $\fctx',\tctx'$ such that $\fctx\subset\fctx'$, and $\tctx$ is a prefix of $\tctx'$, if $\fctx',\tctx' ||- N == N' : A$, then $\fctx', \tctx' ||- MN == M'N'$.
     \item For type $\nat$, we define inductively :
 $$
-    \inference{M \leadsto 0&M' \leadsto 0}{\fctx,\tctx ||- M == M' : \nat}\qquad
-    \inference{M \leadsto SN&M' \leadsto SN' &\fctx,\tctx ||- N == N' : \nat}{\fctx,\tctx ||- M == M' : \nat}
+    \inference{M \leadsto^\ast 0&M' \leadsto^\ast 0}{\fctx,\tctx ||- M == M' : \nat}\qquad
+    \inference{M \leadsto^\ast SN&M' \leadsto^\ast SN' &\fctx,\tctx ||- N == N' : \nat}{\fctx,\tctx ||- M == M' : \nat}
 $$
 $$
-    \inference{M \leadsto n&M' \leadsto n' &\neu n & \neu n'}{\fctx,\tctx ||- M == M' : \nat}
+    \inference{M \leadsto^\ast n&M' \leadsto^\ast n' &\neu n & \neu n'}{\fctx,\tctx ||- M == M' : \nat}
 $$
 $$
-    \inference{M \leadsto \digamma_i (M_\alpha)_\alpha&M' \leadsto \digamma_i({M'_\alpha})_\alpha & \forall \alpha,\alpha' ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+    \inference{M \leadsto^\ast \digamma_i (M_\alpha)_\alpha&M' \leadsto^\ast \digamma_i({M'_\alpha})_\alpha & \forall \alpha,\alpha' ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
 $$
 $$
-    \inference{M \leadsto \digamma_i(M_\alpha)_\alpha&M' \leadsto M'_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+    \inference{M \leadsto^\ast \digamma_i(M_\alpha)_\alpha&M' \leadsto^\ast M'_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
 $$
 $$
-    \inference{M \leadsto M_\alpha&M' \leadsto \digamma_i (M'_\alpha)_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
+    \inference{M \leadsto^\ast M_\alpha&M' \leadsto^\ast \digamma_i (M'_\alpha)_\alpha & O_{i,\alpha}\in \fctx & \forall \alpha,\alpha', \fctx,\tctx ||- M_\alpha == M'_{\alpha'} : \nat}{\fctx,\tctx ||- M == M' : \nat}
 $$
     \item For type $\bot$, we use a similar definition as above excluding the case mentioning $0$ and the case mentioning $S$ 
 \end{itemize}
@@ -771,9 +778,9 @@ We can then show the usual results, all proven in $\textsc{Rocq}$ :
 \begin{theorem}[soundness]
     If $\fctx,\tctx |- M == M' : A$, then if $\fctx \subset \fctx'$, $\fctx',\tctx'||-\sigma == \sigma' : \Gamma$, $\fctx',\tctx' ||- M\sigma == M'\sigma' : A$
 \end{theorem}
-Where substitution are encoded as lists of terms and reducibility of substitution is reducibility of each of these terms.
+Where substitution are encoded as lists of terms and reducibility of substitution is reducibility of each of these terms. Transitivity (\textsc{Trans}) made up the bulk of the proof.
 
-We can then deduce that at least our theory normalises.
+We can then deduce that our theory normalises.
 
 
 \section{Conclusion}
