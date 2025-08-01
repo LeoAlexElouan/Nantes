@@ -15,7 +15,7 @@
 \usepackage{amsmath}
 \usepackage{amssymb}
 \usepackage{amsthm}
-\usepackage{stmaryrd }
+\usepackage{stmaryrd}
 \usepackage[T1]{fontenc}
 \usepackage{euscript}
 
@@ -119,7 +119,7 @@
 
 
 \title{Internship report M2\\  Non-singleton Elimination\\}
-\author{\textbf{Soudant L\'eo}, supervised by \textbf{Pierre-Marie P\'edrot}, Galinette team}
+\author{\textbf{Soudant L\'eo}, supervised by \textbf{Pierre-Marie P\'edrot}, Galinette team at LS2N}
 \date{2025}
 
 
@@ -136,11 +136,11 @@
 \subsection*{General context}
 To efficiently formalise mathematics, we need strong permissive theories, however, when attempting to mechanising proofs, strong computational properties, like typing decidability, are also expected.
 We seek to augment the expressiveness of type theory without damaging its computational ability.
-To that goal, we attempt to create type theories corresponding some of the good properties of the theories underlying sheaf topoï. Martin Baillon succeeded for some instance of the problem.
+To that goal, we attempt to create type theories corresponding some of the good properties of the theories underlying sheaf topoï. Martin Baillon succeeded for some instance of the problem \cite{baillon:tel-04617881}.
 \subsection*{Research problem}
 An element of a topological sheaf may be defined over an open whenever it is defined on a cover of that open, so long as they are compatible over the intersections.
 We hope to be able to do something similar in a type theory, where open set correspond to proof irrelevant propositions.
-This requires special attention to the compatibility condition : when a disjunction covers a proposition, it could be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
+This requires special attention to the compatibility condition~: when a disjunction covers a proposition, it could be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
 \subsection*{Your contribution}
 I have proved using \textsc{Rocq} that a system T with a part of the wanted features normalises. I also have a model in \textsc{Rocq} where types are interpreted as sheaves, though some other variant probably existed before.
 \subsection*{Arguments supporting its validity}
@@ -151,9 +151,6 @@ I should also make a fork of the logrel \textsc{Rocq} project, and adapt it to s
 \newpage
 \tableofcontents
 \newpage
-
-
-%\section{Introduction}
 
 \subsection*{Outline}
 
@@ -166,7 +163,7 @@ Type theory is a manner of formalising mathematics with a very different design 
 Our meta-theory should be a type theory, with $\mnat$ denoting its natural numbers, $\mbool$ its boolean type with constants $\mtrue$ and $\mfalse$ and $\Type$ its type of types.
 
 \subsection{MLTT}
-We present a variant of MLTT, a very standard type theory
+We present a variant of MLTT (Martin-Löf Type Theory), a very standard type theory
 
 It is also the theory that we will seek to extend.
 
@@ -174,15 +171,15 @@ We give ourself a poset of universe levels $\ell$, with strict upper bounds to a
 
 We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, which means, in particular, that their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
 
-With terms :
+With terms~:
 
 $$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\ell $$
 
 
-Contexts :
+Contexts~:
 $$ \tctx ::= \tctx, x : A | \cdot $$
 
-And conversion rules :
+And conversion rules~:
 
 $$
     \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
@@ -241,7 +238,7 @@ $$
     {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
 $$
 
-But it is useful to consider the extension with a type of booleans $\bool$, with new terms :
+But it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
  $ M,N ::= \dots | \bool|\bool_{\rec}|\true|\false$
 
  And conversion rules
@@ -263,28 +260,23 @@ $$
     \inference[\textsc{Bool-Rec-False}]{\tctx |- A == A : \bool -> \square_\ell \\ \tctx |- M_{\true} == M_{\true} == A \true & \tctx |- M_{\false} == M'_{\false} : A \false}{\tctx |- \bool_{\rec} A M_{\true} M_{\false} \false == M'_{\false} : A \false}
 $$
 
-%\subsection{Elimination}
-
-%It is worth commenting further on elimination. Elimination is the process by which a constructor(respectively $\lambda.$ or $S$) are placed below a eliminator (resp. concatenation or $\nat_{\rec}$) so they combine and disappear (resp. rule \textsc{Beta} or \textsc{Int-Rec-Succ})
-
-
 \subsection{System T}
 
-To identify and solve problems in a simpler envirronement, we studied a modified System T before, based on the following variant.
+To identify and solve problems in a simpler environment, we studied a modified System T before, based on the following variant.
 
-With types :
+With types~:
 
 $$ A ::= A -> A | \nat | \bot $$
 
-Terms :
+Terms~:
 
 $$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
 
 
-Contexts :
+Contexts~:
 $$ \tctx ::= \tctx, x : A | \cdot $$
 
-And conversion rules :
+And conversion rules~:
 
 
 $$
@@ -335,7 +327,7 @@ Since the definition are presented by way of example, this should not be an issu
 While the notion of sheaves on topological space is the most distant from my own, we find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail.
 Treating proof irrelevant proposition as subset of a space is a notion we like to keep in mind.
 
-We fix a topological space $X$, in this case presheaves on that space are presheaves on the category underlying its poset of open subsets. More precisely :
+We fix a topological space $X$, in this case presheaves on that space are presheaves on the category underlying its poset of open subsets. More precisely~:
 
 \begin{definition}[Presheaf on a topology]
     A \emph{presheaf} $P$ is given by
@@ -351,7 +343,7 @@ The $\lambda (s\in P(U)), s|_V : P(U) -> P(V)$ function gives the $P(f)$ necessa
 While in general presheaves are unrelated to sheaves, we can introduce what sheaves look like in the topos (see definition \ref{topos}) of presheaves.
 
 \begin{definition}[Sheaf on a topology]
-    A \emph{sheaf} $\mathcal{F}$ is a presheaf such that given any open  $U$ and family of open $(U_i)_i$ such that $U = \bigcup_i U_i$, there is a bijection between :
+    A \emph{sheaf} $\mathcal{F}$ is a presheaf such that given any open  $U$ and family of open $(U_i)_i$ such that $U = \bigcup_i U_i$, there is a bijection between~:
     \begin{itemize}
         \item Sections $s$ of $U$
         \item \emph{Compatible} families $(s_i\in \mathcal{F}(U_i))_i$ of sections where $s_i|_{U_i\cap U_j} = s_j|_{U_i\cap U_j}$
@@ -375,11 +367,11 @@ We can then define $U ||- \phi$, meaning $U$ forces $\phi$, by induction on the 
 \end{itemize}
 And all other case are similar. We can then prove that for all $\phi$, $U||-\phi$ iff for all $V \leq U$, $V ||- \phi$, making all cases but $ => $ and $\forall$ degenerate. For example, $U ||- \phi \wedge \psi$ iff for all $V \leq U$, $ V||- \phi$ and $V ||- \psi$ iff $U||- \phi$ and $V||- \psi$. This recovers the usual definition.
 
-We note that by using the poset of contexts, Kripke model done with small categories is (only classicaly) complete for intuitionistic logic.
+We note that by using the poset of contexts, Kripke models done with small categories are (only classicaly) complete for intuitionistic logic.
 
 Sheaves also yield a more general kind of model, Beth models, where sorts are interpreted as sheaves.
 
-$U ||- \phi$ is now defined as follows :
+$U ||- \phi$ is now defined as follows~:
 \begin{itemize}
     \item $U ||- \phi \wedge \psi$ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ and $V_i ||- \psi $.
     \item $U ||- \phi \vee \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ or $U_i ||- \psi $.
@@ -387,7 +379,7 @@ $U ||- \phi$ is now defined as follows :
     \item $U ||- \phi => \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, if $V_i ||- \phi$ then $U_i ||- \psi $.
     \item $U ||- \forall x : \mathcal{F}, \phi $ iff for all $V\leq U$, there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$ and $s_i\in \mathcal{F}(V_i)$, $V_i ||- \phi(s_i/x)$.
 \end{itemize}
-Now it can also be proved that $U ||- \phi$ iff there exists $(V_i)_i$ with $V = \bigvee_i V_i$, for all $i$ $V_i||- \phi$, and the above degenerates into :
+Now it can also be proved that $U ||- \phi$ iff there exists $(V_i)_i$ with $V = \bigvee_i V_i$, for all $i$ $V_i||- \phi$, and the above degenerates into~:
 \begin{itemize}
     \item $U ||- \phi \wedge \psi$ iff $U ||- \phi$ and $U ||- \psi $.
     \item $U ||- \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i ||- \phi$ or $U_i ||- \psi $.
@@ -467,9 +459,9 @@ We rather use the following definition
     Where $O_{i,j}$ and $Q_{i,k,l}$ are atomic formulas, and both every $J_i$ and every $L_{i,k}$ are finite.
 \end{definition}
 
-Every \guillemetleft geometric theory \guillemetright can be written as a single geometric formula.
+Every \guillemetleft~geometric theory~\guillemetright\ can be written as a single geometric formula.
 
-We'd like to note that they define covers and can be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as : 
+We'd like to note that they define covers and can be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as~: 
 $$
     \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1})|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}})|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x})|-\mathcal{J}}
 $$
@@ -492,7 +484,7 @@ Then a sheaf is just a type $T$ with
     \item A coherence $\varepsilon_T : \Pi (P:\Prop)\ (j : \mathsf{J}\ P)\ (x:T).\ \ask_T\ P\ j\ (\lambda p:P.x) = x$
 \end{itemize}
 
-Now, the sheafified of a type doesn't exists in general, if the theory admits quotient inductive types, it can then be defined as follow :
+Now, the sheafified of a type doesn't exists in general, if the theory admits quotient inductive types, it can then be defined as follow~:
 
 $$
 \begin{array}{l}
@@ -524,13 +516,13 @@ It is also possible to see geometric formulas as being of the form $\Pi i : I, O
 
 A common manner to construct models of type theory is through categories with families.
 
-They are constituted of :
+They are constituted of~:
 \begin{itemize}
     \item A category of context and substitution
     \item For every context a type of inner types, and for every context and inner type in that context, a type of terms, both accompanied by the action of the substitution upon those, and the corresponding rules.
     \item A way to append a type to a context, substitution weakening, lifting and extension.
 \end{itemize}
-They may be complemented by :
+They may be complemented by~:
 \begin{itemize}
     \item Dependent function inner types, with their constructor, eliminator, and their substitution laws.
     \item A universe inner type, and its element function and their substitution laws.
@@ -540,7 +532,7 @@ They may be complemented by :
 
 A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}, using categories with families.
 
-The most notable being :
+The most notable being~:
 \begin{enumerate}
     \item A model using dialogue trees.
     \item An exceptional model.
@@ -554,7 +546,7 @@ None of them completely implement all the feature listed above, but only the mod
 
 \subsection{Dialogue trees}
 
-Given a $I : \Type$ and $O : I -> \Type$, an $(I,O)$-dialogue tree, is a type $A$ together with a map $\Pi i : I, (O\ i-> A) -> A$. More important, maybe, are how free dialogue tree are defined : 
+Given a $I : \Type$ and $O : I -> \Type$, an $(I,O)$-dialogue tree, is a type $A$ together with a map $\Pi i : I, (O\ i-> A) -> A$. More important, maybe, are how free dialogue tree are defined~: 
 
 $$
 \begin{array}{l}
@@ -597,13 +589,11 @@ Types were interpreted as sheaves as described in definition \ref{IOshf}. Produc
 
 One of the interest of type theory is that it yield meaningful computations from proof, so we were careful about that.
 
-
-
 \section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-My work was meant to generalise the work of my supervisor past PhD student, Martin Baillon. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha: \nat -> \bool$, which is known only through finite approximation.
+My work was meant to generalise the work my supervisor past PhD student, Martin Baillon, did in his thesis \cite{baillon:tel-04617881}. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha: \nat -> \bool$, which is known only through finite approximation.
 
-The sheaf structure is the one appearing in this geometric formula :
+The sheaf structure is the one appearing in this geometric formula~:
 
 $$ \left(\bigwedge_{n : \mnat} \top -> \alpha \ovl{n} = \true \vee \alpha \ovl{n} = \false\right) \wedge \left(\bigwedge_{n : \mnat} \alpha \ovl{n} = \true \wedge \alpha \ovl{n} = \false -> \bot \right)$$
 
@@ -616,7 +606,7 @@ With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respective
 $$ \fctx ::= \fctx, n \mapsto b | \cdot$$
 We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \mtrue$ nor $n\mapsto \mfalse$ do.
 
-And conversion rules :
+And conversion rules~:
 $$
     \inference[n]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
 $$
@@ -630,7 +620,7 @@ $$
     \inference[\textsc{Wf-Empty}]{}{\cdot,\cdot |- \Wf}
 $$
 
-The new conversion rules are :
+The new conversion rules are~:
 $$
     \inference[\textsc{Wf-Ext-Forc}]{\fctx,\tctx |- \Wf & n\not\mapsto_\fctx}{\fctx, n\mapsto b, \tctx |- \Wf}
 $$
@@ -655,7 +645,7 @@ We then set a type $I$ with decidable equality, and a (morally pointwise finite)
 This roughly correspond to the geometric formula : 
 $\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alpha}\right)$
 
-The terms extend those of MLTT as follows :
+The terms extend those of MLTT as follows~:
 
 $$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha : A\ i}$$
 
@@ -665,7 +655,7 @@ The forcing contexts $\fctx$ are now subset of $\Omega$ (lists accessed only thr
 
 The conversion rules also copy those from MLTT by adding a forcing context as in \ref{MBshtt}, without the \textsc{WF-Empty} exception.
 
-The new conversion rules are as follows :
+The new conversion rules are as follows~:
 
 $$
     \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
@@ -690,13 +680,13 @@ This theory is still incomplete. For example, to instantiate it with \ref{MBshtt
 
 \section{Logical relations}\label{LogRel}
 
-A rather standard manner of studying the property of a type theory is through following a recipe {\color{red} CITE GIRARD ?}
+A rather standard manner of studying the property of a type theory is through following a recipe {\color{red} CITE GIRARD\,?}
 
 \subsection{System T extension}
 
 To get a hang of $\digamma$ and logical relations I started by studying a extension of system with $\digamma$
 
-Again the terms simply extend those of system T :
+Again the terms simply extend those of system T~:
 
 $$ M,N ::= \dots | \digamma_i(M_\alpha)_\alpha$$
 
@@ -720,7 +710,7 @@ $$
 
 \subsection{Reducibility}
 
-We define our reduction relation as follows :
+We define our reduction relation as follows~:
 
 $$
     \inference{M\leadsto M'}{MN \leadsto M'N} \qquad
@@ -735,7 +725,7 @@ $$
     \inference{M \leadsto M'}{\bot_{\rec}M\leadsto\nat_{\rec}M'}
 $$
 
-And our neutrals as follows, through the predicate $\neu$ :
+And our neutrals as follows, through the predicate $\neu$~:
 
 $$
     \inference{}{\neu x} \qquad
@@ -767,7 +757,7 @@ $$
     \item For type $\bot$, we use a similar definition as above excluding the case mentioning $0$ and the case mentioning $S$ 
 \end{itemize}
 
-We can then show the usual results, all proven in $\textsc{Rocq}$ :
+We can then show the usual results, all proven in $\textsc{Rocq}$~:
 
 \begin{lemma}[reflection]
     If $\neu n$ and $\neu n'$, then $\fctx,\tctx ||- n == n' : A$.
