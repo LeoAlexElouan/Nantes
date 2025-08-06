@@ -170,9 +170,11 @@ We present a variant of MLTT (Martin-Löf Type Theory), a very standard type the
 
 It is also the theory that we will seek to extend.
 
-We give ourself a poset of universe levels $\ell$, with strict upper bounds to any finite subsets.
+We give ourself a poset of universe levels $\ell$, which, for all intents and purposes, is $\mnat$.
 
 We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, which means, in particular, that their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
+
+We ignore any issue that could stem from bound variables, and assume different binders use variables different from one another and from free variables.
 
 With terms~:
 
@@ -182,8 +184,7 @@ $$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \b
 Contexts~:
 $$ \tctx ::= \tctx, x : A | \cdot $$
 
-And conversion rules~:
-
+We finally give rules for conversion and well formation of contexts. Typing is given by self-conversion, a term $M$ is of type $A$ in context $\Gamma$ whenever $\Gamma |- M == M : A$ is derivable.
 $$
     \inference[\textsc{Wf-Empty}]{}{\cdot |- \Wf} \qquad
     \inference[\textsc{Wf-Ext}]{\tctx |- A == A & \tctx |- \Wf}{ \tctx, x : A |- \Wf}
@@ -265,7 +266,7 @@ $$
 
 \subsection{System T}
 
-To identify and solve problems in a simpler environment, we studied a modified System T before, based on the following variant.
+To identify and solve problems in a simpler environment, with no universes, where types and terms are well-separated, we chose to study beforehand a modified System T, based on the following variant.
 
 With types~:
 
@@ -322,12 +323,12 @@ $$
 
 \section{Sheaves}\label{Sheaves}
 
-Since we refer to more historical notion of sheaves and topoï are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
+Since we refer to more historical notion of sheaves and topoi are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
 Since the definition are presented by way of example, this should not be an issue.
 
 \subsection{Sheaves on topological spaces}\label{topsheaves}
 
-While the notion of sheaves on topological space is the most distant from my own, we find that they offer a clearer insight on what sheaves are going to be used than sheaves on a grothendieck topology, and as such present the first and not the second in detail.
+While sheaves on topological space are the hardest form of sheaves to connect to the $(I,O)$-sheaves we study (defined in \ref{shfinTT}), we find that they offer a clearer insight on how sheaves are going to be used than sheaves on a grothendieck topology do, and as such present the first and not the second in detail.
 Treating proof irrelevant proposition as subset of a space is a notion we like to keep in mind.
 
 We fix a topological space $X$, in this case presheaves on that space are presheaves on the category underlying its poset of open subsets. More precisely~:
@@ -343,8 +344,7 @@ We fix a topological space $X$, in this case presheaves on that space are preshe
 \end{definition}
 The $\lambda (s\in P(U)), s|_V : P(U) -> P(V)$ function gives the $P(f)$ necessary to construct the functor $P : \mathcal{O}(X)^{op} -> \mathbf{Set}$ justifying the use of the same term presheaf here and in the categorical context.
 
-While in general presheaves are unrelated to sheaves, we can introduce what sheaves look like in the topos (see definition \ref{topos}) of presheaves.
-
+In the context of topologies, sheaves are simply refinements of presheaves~:
 \begin{definition}[Sheaf on a topology]
     A \emph{sheaf} $\mathcal{F}$ is a presheaf such that given any open  $U$ and family of open $(U_i)_i$ such that $U = \bigcup_i U_i$, there is a bijection between~:
     \begin{itemize}
@@ -358,43 +358,45 @@ Since the definitions only access the open subsets and not the points of the spa
 
 \subsection{Kripke and Beth semantics}
 
-Kripke models are models of intuitionistic logic, and come from interpreting the sorts of the language as presheaves.
+Kripke models are models of propositional intuitionistic logic.
 
-To construct a Kripke model, we consider a locale (or in general, a small category). We consider a language and associate a downward closed set of opens to each of its proposititional variables.
+To construct a Kripke model, we consider a locale (or in general, a small category). We consider a set of proposititional variables and to $P$ one of them, associate a downward closed set of opens, or \emph{sieve} $S_P$.
 
 We can then define $U ||- \phi$, meaning $U$ forces $\phi$, by induction on the structure of $\phi$.
 \begin{itemize}
+    \item $U ||- P$ iff for all $V\leq U$, $V \in S_P$
     \item $U ||- \phi \wedge \psi$ iff for all $V\leq U$, $V ||- \phi$ and $V ||- \psi$
     \item $U ||- \phi => \psi$ iff for all $V \leq U$, if $V ||- \phi$ then $V ||- \psi $
-    \item $U ||- \forall x : P, \phi$ iff for all $V \leq U$ and $s\in P(V)$, $V ||- \phi(s/x) $
+    \item $U ||- \phi \vee \psi $ iff for all $V \leq U$, $V ||- \phi$ or $V ||- \psi$
 \end{itemize}
-And all other case are similar. We can then prove that for all $\phi$, $U||-\phi$ iff for all $V \leq U$, $V ||- \phi$, making all cases but $ => $ and $\forall$ degenerate. For example, $U ||- \phi \wedge \psi$ iff for all $V \leq U$, $ V||- \phi$ and $V ||- \psi$ iff $U||- \phi$ and $V||- \psi$. This recovers the usual definition.
+We can then prove that for all $\phi$, $U||-\phi$ iff for all $V \leq U$, $V ||- \phi$, making all cases but $ => $ become degenerate. For example, $U ||- \phi \wedge \psi$ iff for all $V \leq U$, $ V||- \phi$ and $V ||- \psi$ iff $U||- \phi$ and $U||- \psi$. This recovers the more common definition.
 
-We note that by using the poset of contexts, Kripke models done with small categories are (only classicaly) complete for intuitionistic logic.
+We note that by using the poset of contexts, Kripke models done with small categories are (only classicaly) complete for prpositional intuitionistic logic.
 
-Sheaves also yield a more general kind of model, Beth models, where sorts are interpreted as sheaves.
+Sheaves themselves yield a more general kind of model, Beth models.
 
-$U ||- \phi$ is now defined as follows~:
+For every propositional variable $P$, $S_P$ must now be stable under union, and $U ||- \phi$ is now defined as follows~:
 \begin{itemize}
+    \item $U ||- P$ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i \in S_P$
     \item $U ||- \phi \wedge \psi$ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ and $V_i ||- \psi $.
     \item $U ||- \phi \vee \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, $V_i ||- \phi$ or $U_i ||- \psi $.
-    \item $U ||- \exists x : \mathcal{F}, \phi $ iff for all $V\leq U$, there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(V_i)$, $V_i ||- \phi(s_i/x)$.
     \item $U ||- \phi => \psi $ iff for all $V \leq U$ there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$, if $V_i ||- \phi$ then $U_i ||- \psi $.
-    \item $U ||- \forall x : \mathcal{F}, \phi $ iff for all $V\leq U$, there exists $(V_i)_i$ with $V = \bigvee_i V_i$, such that for all $i$ and $s_i\in \mathcal{F}(V_i)$, $V_i ||- \phi(s_i/x)$.
 \end{itemize}
 Now it can also be proved that $U ||- \phi$ iff there exists $(V_i)_i$ with $V = \bigvee_i V_i$, for all $i$ $V_i||- \phi$, and the above degenerates into~:
 \begin{itemize}
+    \item $U ||- P$ iff $U \in S_P$
     \item $U ||- \phi \wedge \psi$ iff $U ||- \phi$ and $U ||- \psi $.
     \item $U ||- \phi \vee \psi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, $U_i ||- \phi$ or $U_i ||- \psi $.
-    \item $U ||- \exists x : \mathcal{F}, \phi $ iff there exists $(U_i)_i$ with $U = \bigvee_i U_i$, such that for all $i$, there exists $s_i\in \mathcal{F}(U_i)$, $U_i ||- \phi(s_i/x)$.
     \item $U ||- \phi => \psi $ iff for all $V \leq U$, if $V ||- \phi$ then $V ||- \psi $.
-    \item $U ||- \forall x : \mathcal{F}, \phi $ iff for all $V\leq U$ and $s\in \mathcal{F}(V)$, $V ||- \phi(s/x)$.
 \end{itemize}
 
 They are other variant of Beth semantics, relying on different notion of \emph{cover} in small categories.
 
-\subsection{Topoï and sheaves in topoï}\label{topoi}
+Both Kripke and Beth model can be extended to interpret quantifiers, and even further, since some of them, depending on their base category and notion of cover, even interpret set theory entirely. Notably the completely degenerate 1 object category, which recovers the standard model, and models which negates the axiom of choice and the continuum hypothesis, even in a meta-theory in which they hold.
 
+\subsection{Topoi and sheaves in topoi}\label{topoi}
+
+Those extended models emerge because presheaves and sheaves form topoi. Looking at topoi allows separation of the notion of sheaves from that of presheaves.
 
 Proofs, results and details for this section can often be found in \emph{Sheaves in geometry and logic: A first introduction to topos theory} by Saunders Maclane and Ieke Moerdijk \cite{maclane2012sheaves}.
 
@@ -408,13 +410,13 @@ We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of su
     A \emph{topos} is a cartesian closed category with all finite limits and a suboject \emph{classifier} $\Omega$ and an isomorphism $\mathbf{Sub}(X)\cong \mathbf{Hom}(X, \Omega)$ natural in $X$.
 \end{definition}
 
-We note that topoï also have finite colimits.
+We note that topoi also have finite colimits.
 
-Topoï form a class of models of type theory.
-However, they are reasoned upon as though they were a type theory with \emph{e.g.} equality reflection, proposititional extensionnality, strict propositions and the axiom of unique choice. This properties form a very strong, but also undecidable, system. In particular they are no implementation of type theory with both unique choice and strict propositions. They also have no universe in general, which, on the other hand, make them very weak.
+Topoi form a class of models of some kind of type theory.
+However, this type theory has equality reflection, proposititional extensionnality, strict propositions and the axiom of unique choice. This properties form a very strong, but also undecidable, system. In particular they are no known type theory with both unique choice and strict propositions which preserves canonicity and decidability of type-checking. They also have no universe in general, which, on the other hand, make them very weak.
 
 
-To give a few examples of topoï, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoï. In particular categories of presheaves are topoï, and their internal language are given by Kripke models. The categories of sheaves over topological spaces also form topoï, and their internal language are given by Beth models.
+To give a few examples of topoi, $\mathbf{Set}$ is a topos, and given a topos $\mathcal E$, $\mathcal{E}/X$, the category of maps with codomain $X$ and commuting triangles, as well as $\mathcal{E}^{\mathbf{C}^{op}}$, the category of contravariant functors from a small category $\mathbf{C}$ and natural transformation, are all topoi. In particular categories of presheaves are topoi, and their internal language are extensions of Kripke models. The categories of sheaves over topological spaces also form topoi, and their internal language are extensions of Beth models.
 
 The subobject classifier $\Omega$ is equipped with an internal meet-semilattice structure inherited from the meet-semilattice structure on each $\mathbf{Sub}(X)$, which is natural in $X$.
 
@@ -438,11 +440,11 @@ A topology can be lifted to a left exact idempotent monad on the entirety of the
     An object $F$ is a $j$-\emph{sheaf} in a topos if for any dense subobject $U$ of any object $X$, the morphism $\mathbf{Hom}(X, F) -> \mathbf{Hom}(U, F)$ obtained by precomposition is an isomorphism.
 \end{definition}
 
-A $j$-Sheaf is up to isomorphism the result of sheafifying an object.
+%A $j$-Sheaf is up to isomorphism the result of sheafifying an object, as such, we can deduce that .
 
-$j$-Sheaves form a topos.
+Just like with topological sheaves, $j$-Sheaves form a topos. Note, however, that this definition of sheaves makes no reference to presheaves. They do still specialise to topological presheaves.
 
-In the topos of presheaf over $X$, elements of $\Omega$ are downward closed sets of open. The $j$ operator send such set to the set of sub-open of their union. A subobject $A$ of $P$ is then dense if for every open $U$ and every section $s$ of $P(U)$, there is a family of opens and sections $s_i\in U_i$ which can be glued back into $s$, \emph{i.e.} $U = \bigvee U_i$ and $s_i = s|_{U_i}$. Although, to recover the earlier sheaf definition, one can simply look at presheaves $P$ where $P(U)$ has at most one element, since morphisms out of these presheaves directly yield compatible families.
+In the topos of presheaf over $X$, elements of $\Omega$ are downward closed sets of open. To recover topolgical sheaves, the $j$ operator must send such set to the set of sub-opens of their union \emph{i.e} sub-opens which can be covered by them. A subobject $A$ of $P$ is then dense if for every open $U$ and every section $s$ of $P(U)$, there is a family of opens and sections $s_i\in U_i$ which can be glued back into $s$, \emph{i.e.} $U = \bigvee U_i$ and $s_i = s|_{U_i}$. Although, to recover the earlier sheaf definition, one can simply look at presheaves $P$ where $P(U)$ has at most one element, since morphisms out of these presheaves directly yield compatible families.
 
 \subsection{Geometric formulas}
 In the litterature around sheaves and forcing, we find the following definitions.
@@ -469,8 +471,7 @@ $$
     \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1})|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}})|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x})|-\mathcal{J}}
 $$
 
-
-\subsection{Sheaves in type theory}
+\subsection{Sheaves in type theory}\label{shfinTT}
 
 Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \textsc{Rocq} with $\SProp$.
 
@@ -487,7 +488,7 @@ Then a sheaf is just a type $T$ with
     \item A coherence $\varepsilon_T : \Pi (P:\Prop)\ (j : \mathsf{J}\ P)\ (x:T).\ \ask_T\ P\ j\ (\lambda p:P.x) = x$
 \end{itemize}
 
-Now, the sheafified of a type doesn't exists in general, if the theory admits quotient inductive types, it can then be defined as follow~:
+Now, the sheafified of a type doesn't exists in general, but if the theory admits quotient inductive types, it can then be defined as follow~:
 
 $$
 \begin{array}{l}
