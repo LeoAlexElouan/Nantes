@@ -185,11 +185,11 @@ We ignore any issue that could stem from bound variables, and assume different b
 
 With terms~:
 
-$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} | \nat | \bot | \Pi x :A.B | \square_\ell $$
+$$ M,N ::= x \mid \lambda x. M \mid MN \mid 0 \mid S \mid \nat_{\rec} \mid \bot_{\rec} \mid \nat \mid \bot \mid \Pi x :A.B \mid \square_\ell $$
 
 
 Contexts~:
-$$ \tctx ::= \tctx, x : A | \cdot $$
+$$ \tctx ::= \tctx, x : A \mid \cdot $$
 
 We finally give rules for conversion and well formation of contexts. Typing is given by self-conversion, a term $M$ is of type $A$ in context $\Gamma$ whenever $\Gamma |- M == M : A$ is derivable.
 $$
@@ -250,7 +250,7 @@ $$
 $$
 
 But it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
- $ M,N ::= \dots | \bool|\bool_{\rec}|\true|\false$
+ $ M,N ::= \dots \mid \bool\mid \bool_{\rec}\mid \true\mid \false$
 
  And conversion rules
 
@@ -277,15 +277,15 @@ To identify and solve problems in a simpler environment, with no universes, wher
 
 With types~:
 
-$$ A ::= A -> A | \nat | \bot $$
+$$ A ::= A -> A \mid \nat \mid \bot $$
 
 Terms~:
 
-$$ M,N ::= x | \lambda x. M | MN | 0 | S | \nat_{\rec} | \bot_{\rec} $$
+$$ M,N ::= x \mid \lambda x. M \mid MN \mid 0 \mid S \mid \nat_{\rec} \mid \bot_{\rec} $$
 
 
 Contexts~:
-$$ \tctx ::= \tctx, x : A | \cdot $$
+$$ \tctx ::= \tctx, x : A \mid \cdot $$
 
 And conversion rules~:
 
@@ -514,9 +514,9 @@ In this context, sheafification doesn't exist in general, but if the theory admi
 $$
 \begin{array}{l}
     \Inductive\ \mathcal{S}_{\mathsf{J}}\ T : \Type := \\
-    | \ret : T -> \mathcal{S}_{\mathsf{J}}\ T\\
-    | \ask : \Pi (P:\Prop), \mathsf{J}\ P -> (P -> \mathcal{S}_{\mathsf{J}}\ T) -> \mathcal{S}_{\mathsf{J}}\ T\\
-    |\ \varepsilon : \Pi (P:\Prop)\ (j : \mathsf J\ P)\ (x : \mathcal{S}_{\mathsf{J}}\ T). \ask\ P\ j\ (\lambda p:P. x) = x
+    \mid \ret : T -> \mathcal{S}_{\mathsf{J}}\ T\\
+    \mid \ask : \Pi (P:\Prop), \mathsf{J}\ P -> (P -> \mathcal{S}_{\mathsf{J}}\ T) -> \mathcal{S}_{\mathsf{J}}\ T\\
+    \mid \varepsilon : \Pi (P:\Prop)\ (j : \mathsf J\ P)\ (x : \mathcal{S}_{\mathsf{J}}\ T). \ask\ P\ j\ (\lambda p:P. x) = x
 \end{array}
 $$
 
@@ -630,8 +630,8 @@ Given a $I : \Type$ and $O : I -> \Type$, an $(I,O)$-dialogue tree, is a type $A
 $$
 \begin{array}{l}
     \Inductive\ \mathcal{D}_{I,O}\ T : \Type := \\
-    | \ret : T -> \mathcal{D}_{I,O}\ T\\
-    | \ask : \Pi (i : I),(O\ i -> \mathcal{D}_{I,O}\ T) -> \mathcal{D}_{I,O}\ T\\
+    \mid \ret : T -> \mathcal{D}_{I,O}\ T\\
+    \mid \ask : \Pi (i : I),(O\ i -> \mathcal{D}_{I,O}\ T) -> \mathcal{D}_{I,O}\ T\\
 \end{array}
 $$
 
@@ -656,13 +656,13 @@ $$
         \Trm\ \Gamma\ A := & \Pi (\gamma:\Gamma), \mathfrak{p}_1 (A\ \gamma)
     \end{array}
 $$
-The rest follows.
+The rest follows. As is the case with the other models here besides presheaves, contexts are just types.
 
-This models highlights how sheaves do not need to weaken the theory down to Baclofen TT to add effects
+This models contrasts with how sheaves do not need to weaken the theory down to Baclofen TT to add effects
 
 \subsection{Exceptional}
 
-The exceptional model (for exception type $E$) interprets a type as a pair of a type and a map $E -> A$. It is inconsistent, however, together with parametricity, a consistent model can be recovered.
+The exceptional model (for exception type $E$) interprets a type as a pair of a type and a map $E -> A$. It is inconsistent, at least when $E$ is inhabited, however, together with parametricity, a consistent model can be recovered.
 
 This models highlights the importance of computations, since an inconsitent type theory can still be used to state a few thing as long as it computes properly.
 
@@ -720,18 +720,19 @@ My work was meant to generalise the work my supervisor past PhD student, Martin 
 
 The sheaf structure is the one appearing in this geometric formula~:
 
-$$ \left(\bigwedge_{n : \mnat} \top -> \alpha \ovl{n} = \true \vee \alpha \ovl{n} = \false\right) \wedge \left(\bigwedge_{n : \mnat} \alpha \ovl{n} = \true \wedge \alpha \ovl{n} = \false -> \bot \right)$$
+$$ \left(\bigwedge_{n : \mnat} \top -> n \mapsto_\alpha \mtrue \vee n \mapsto_\alpha \mfalse\right) \wedge \left(\bigwedge_{n : \mnat} n\mapsto_\alpha \mtrue \wedge  n \mapsto_\alpha \mfalse -> \bot \right)$$
 
-Where $\ovl{n}$ is the term $S (\cdots (S\ 0)\cdots)$, with $n$ occurrences of $S$.
+With atoms $n \mapsto_\alpha b$.
+
 
 The term then extends those of MLTT with
-$$ M, N ::= \dots |\alpha$$
+$$ M, N ::= \dots \mid \alpha$$
 
 With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
-$$ \fctx ::= \fctx, n \mapsto b | \cdot$$
+$$ \fctx ::= \fctx, n \mapsto b \mid \cdot$$
 We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \mtrue$ nor $n\mapsto \mfalse$ do.
 
-And conversion rules~:
+And rules~:
 $$
     \inference[n]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
 $$
@@ -745,7 +746,7 @@ $$
     \inference[\textsc{Wf-Empty}]{}{\cdot,\cdot |- \Wf}
 $$
 
-The new conversion rules are~:
+The new rules, using overlining to turn meta-theoretical integers and booleans into the corresponding terms, are~:
 $$
     \inference[\textsc{Wf-Ext-Forc}]{\fctx,\tctx |- \Wf & n\not\mapsto_\fctx}{\fctx, n\mapsto b, \tctx |- \Wf}
 $$
@@ -762,7 +763,7 @@ Amongst other thing, this theory can be used to show that from any term $\cdot |
 
 \subsection{ShTT}
 
-Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$
+Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$. Such map could be obtained in \ref{MBshtt} as $\ask \bool_{\rec} P (\alpha\ n)$
 
 We suppose we have a type $\Omega$ of \emph{atoms}.
 We then set a type $I$ with decidable equality, and a (morally pointwise finite) type family $A : I -> \Type$ standing for arities, and finally a family $O : \Pi i:I, A\ i -> \Omega$, writing $O_{i,\alpha}$ instead of $O\ i\ \alpha$ for space concerns.
@@ -772,7 +773,7 @@ $\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alph
 
 The terms extend those of MLTT as follows~:
 
-$$ M, N ::= \dots | \digamma_i (M_\alpha)_{\alpha : A\ i}$$
+$$ M, N ::= \dots \mid\digamma_i (M_\alpha)_{\alpha : A\ i}$$
 
 When instanciating with finite $A i$, it would rather be  $\digamma_i M_1 \cdots M_n$.
 
@@ -813,7 +814,7 @@ To get a hang of $\digamma$ and logical relations I started by studying a extens
 
 Again the terms simply extend those of system T~:
 
-$$ M,N ::= \dots | \digamma_i(M_\alpha)_\alpha$$
+$$ M,N ::= \dots \mid\digamma_i(M_\alpha)_\alpha$$
 
 And rules from system are appropriately completed with a forcing context.
 $$
