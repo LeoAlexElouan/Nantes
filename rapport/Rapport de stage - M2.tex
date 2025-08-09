@@ -763,7 +763,7 @@ Amongst other thing, this theory can be used to show that from any term $\cdot |
 
 \subsection{ShTT}
 
-Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$. Such map could be obtained in \ref{MBshtt} as $\ask \bool_{\rec} P (\alpha\ n)$
+Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$. Such map could be obtained in \ref{MBshtt} as $\ask_n T\ t_{\true}\ t_{\false} := \bool_{\rec}\ (\lambda\_.T)\  t_{\true}\ t_{\false}\ (\alpha\ \ovl{n})$. At our level of generality, this is all that can be added.
 
 We suppose we have a type $\Omega$ of \emph{atoms}.
 We then set a type $I$ with decidable equality, and a (morally pointwise finite) type family $A : I -> \Type$ standing for arities, and finally a family $O : \Pi i:I, A\ i -> \Omega$, writing $O_{i,\alpha}$ instead of $O\ i\ \alpha$ for space concerns.
@@ -802,7 +802,7 @@ $$
     \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}AM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-This theory is still incomplete. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
+This theory is unsatisfying with regards to the goal we set. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
 
 \section{Logical relations}\label{LogRel}
 
@@ -810,7 +810,7 @@ A rather standard manner of studying the property of a type theory is through fo
 
 \subsection{System T extension}
 
-To get a hang of $\digamma$ and logical relations I started by studying a extension of system with $\digamma$
+To get a hang of $\digamma$ and logical relations we started by studying a extension of system with $\digamma$
 
 Again the terms simply extend those of system T~:
 
@@ -899,7 +899,7 @@ Where substitution are encoded as lists of terms and reducibility of substitutio
 
 We can then deduce that our theory normalises.
 
-
+A canonicity result could easily follow as well, once hereditary reduction has been defined, with normal form of booleans some variant of dialogue trees, since $\varepsilon$ has no corresponding reduction rule.
 \section{Conclusion}
 
 This constitutes a very imcomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
