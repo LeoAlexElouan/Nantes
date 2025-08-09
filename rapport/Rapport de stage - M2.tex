@@ -63,7 +63,7 @@
 \newcommand{\mnat}{\mathfrak{N}}
 \newcommand{\bool}{\mathbf{B}}
 \newcommand{\mbool}{\mathfrak{B}}
-\newcommand{\C}{\mathcal{C}}
+\newcommand{\C}{\mathbf{C}}
 \newcommand{\D}{\mathcal{D}}
 \newcommand{\SBS}{\mathbf{SBS}}
 
@@ -163,12 +163,12 @@ In section \ref{TT} we explain what type theory is and detail the basic type the
 
 Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction. They are also more adapted to mechanising proof than ZFC.
 
-Our meta-theory should be a type theory, In which 
+Our meta-theory should be a type theory, in which 
 \begin{itemize}
     \item $\mnat$ denotes its natural numbers type
     \item $\mbool$, $\mtrue$ and $\mfalse$, its boolean type and its two constants
     \item $\Pi$, $\lambda$ and concatenation for its dependent function type
-    \item $\Sigma$, $\mathfrak{p}_1$, $\mathfrak{p}_2$ its dependent product type and projections.
+    \item $\Sigma$, $(\_,\_)$, $\mathfrak{p}_1$, $\mathfrak{p}_2$ its dependent product type, pairs and projections, with $\eta$-expansion ($w$ convertible to $(\mathfrak{p}_1 w, \mathfrak{p}_2 w)$).
     \item $\Type$ its universe, with levels left implicit.
 \end{itemize}
 
@@ -648,7 +648,7 @@ $\nat_{\ind}$ also behaves like the usual eliminator applied to a constant predi
 
 Other writers may swap $\ind$ and $\rec$.
 
-The model took 
+The model took
 $$
     \begin{array}{rl}
         \mathsf{Ctx} :=& \Type\\
@@ -669,6 +669,38 @@ This models highlights the importance of computations, since an inconsitent type
 \subsection{Presheaves}
 
 The most time consuming model, where neither universes nor dependant function types could be implemented. The main issue is the straightforward implementation is not strict, meaning equalities have to be proven, and transport along them must be handled.
+
+To give the broad strokes of the model, we use the following definition of a category, mostly to name the fields. It must be understood as a record (a fancy $\Sigma$), so the projection are named according to the fields.
+$$ \textsf{Cat} := \left\{
+    \begin{array}{rl}
+        \mathsf{obj} :& \Type\\
+        \mathsf{hom} :& \mathsf{obj}->\mathsf{obj}->\Type\\
+        \mathsf{id} :& \Pi (X : \mathsf{obj}),\mathsf{hom}\ X\ X\\
+        \mathsf{comp} :& \Pi (X Y Z: \mathsf{obj}), \mathsf{hom}\ Y\ Z -> \mathsf{hom}\ X\ Y -> \mathsf{hom}\ X\ Z \\
+        &\dots
+    \end{array} \right\}
+$$
+
+We fix a category $\mathbf{C} : \mathsf{Cat}$, so the first fields of the model are given by~:
+
+$$
+    \begin{array}{rl}
+        \mathsf{Ctx} :=& 
+        \left\{\begin{array}{rl}
+            \mathsf{Ctx\_obj} :& \mathsf{obj}\ \C -> \Type\\
+            \mathsf{Ctx\_hom} :& \Pi (X Y : \mathsf{obj}\ \C), \mathsf{hom}\ \C\ X\ Y -> \mathsf{Ctx\_obj}\ Y -> \mathsf{Ctx\_obj}\ X\\
+            &\dots
+        \end{array}\right\}\\
+        \Typ\Gamma :=&
+        \left\{\begin{array}{rl}
+            \mathsf{Typ\_obj} :& \Pi (X : \mathsf{obj})\ \mathsf{Ctx\_obj}\ \Gamma\ X -> \Type\\
+            \mathsf{Typ\_hom} :& \Pi (X Y : \mathsf{obj}\ \C)(f:\mathsf{hom}\ \C\ X\ Y)(y : \mathsf{Ctx\_obj}\ \Gamma\ Y),\\ 
+            & \quad\mathsf{Typ\_obj}\ Y\ y -> \mathsf{Typ\_obj}\ X\ (\mathsf{Ctx\_hom}\ \Gamma\ X\ Y\ f\ y)\\
+            &\dots
+        \end{array}\right\}
+    \end{array}
+$$
+Notably, context are presheaves and not just types, and, strictly speaking, types are only presheaves in an empty context.
 
 This model highlights why studying sheaves separately from presheaves is interesting.
 
