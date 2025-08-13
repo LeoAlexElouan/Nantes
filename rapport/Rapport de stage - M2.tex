@@ -98,6 +98,7 @@
 \newcommand{\llvl}{\mathbf{l}}
 \newcommand{\fctx}{\mathcal{L}}
 
+\newcommand{\rocq}{\textsc{Rocq}}
 
 \mathlig{<-}{\leftarrow}
 \mathlig{->}{\to}
@@ -126,31 +127,29 @@
 \begin{document}
 
 
-\begin{titlepage}
-    
 \maketitle
-
-\end{titlepage}
+\newpage
 
 
 \subsection*{General context}
 To efficiently formalise mathematics we need strong permissive theories.
 When attempting to mechanising proofs, however, strong computational properties, like typing decidability, are also expected.
 Studying the computational contents of sheaves could allow to emulate forcing directly in type theory, but also to bring a computational content to the axiom which the theory forces.
-Thierry coquand published a few papers on the computational aspect of forcing, Vincent Rahli studied effectful, though undecidable, type theory based on sheaves.
+Thierry Coquand published a few papers on the computational aspect of forcing, Vincent Rahli studied effectful, though undecidable, type theory based on sheaves.
 Martin Baillon used a similar theory to show a continuity result on the cantor space \cite{baillon:tel-04617881}.
 \subsection*{Research problem}
-An element of a topological sheaf may be defined over an open whenever it is defined on a cover of that open, so long as they are compatible over the intersections.
+An element of a topological sheaf may be defined over an open set whenever it is defined on a cover of that open set, so long as they are compatible over the intersections.
 We hope to be able to do something similar in a type theory, where open sets correspond to proof irrelevant propositions.
 This requires special attention to the compatibility condition~: when a disjunction covers a proposition, it could be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
 \subsection*{Your contribution}
-We have proved using \textsc{Rocq} that a system T with a part of the wanted features normalises. I also have a model in \textsc{Rocq} where types are interpreted as sheaves, though some other variant probably existed before.
+We have proved using \rocq that a system T variant with a part of the wanted features normalises. Since the proof was done using logical relations, a few other results should be within reach. I also have a model in \rocq where types are interpreted as sheaves, although some other variant probably existed before.
 \subsection*{Arguments supporting its validity}
 The type theory developped by Martin Baillon, which we aim to generalise, proved continuity of all functional $(\nat -> \bool) -> \bool$.
 We hope to find similar results at term.
+Forcing has also been a very fruitful method in term of showing consistency of added principle.
 \subsection*{Summary and future works}
 We will refine the type theory further as well as study other instances similar to the one Martin Baillon studied.
-We should also make a fork of the logrel \textsc{Rocq} project, and adapt it to show the good properties of any such theory.
+We should also make a fork of the logrel \rocq project, and adapt it to show the good properties of any such theory.
 \newpage
 \tableofcontents
 \newpage
@@ -173,13 +172,16 @@ Our meta-theory should be a type theory, in which
 \end{itemize}
 
 \subsection{MLTT}
-We present a variant of MLTT (Martin-Löf Type Theory), a very standard type theory
+We present a variant of MLTT (Martin-Löf Type Theory), a very standard type theory.
 
-It is also the theory that we will seek to extend.
+This will give hints as to how our meta-theory work, give a precise reference point for when talking about MLTT, and most importantly, since one of our end goal is to provide an extension of MLTT, describe the first rules of the extension.
 
-We give ourself a poset of universe levels $\ell$, which, for all intents and purposes, is $\mnat$.
+This variant will feature dependent function types, universes, and, as positive types, natural numbers and an empty type.
 
-We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, in stead of the heavy syntax of a general inductive type. They both implement large elimination, which means, in particular, that their induction principle can be used to construct function outputting types, like $\lambda A n, A^n$, in presence of a binary product.
+We give ourself a poset of universe levels $\ell$. It may be thought of as $\mnat$, however, for any proof in \rocq, we will need to pick out a finite poset, most likely "$0 < 1$".
+
+We add a type $\nat$ of natural numbers and an empty type $\bot$ as positive types, instead of the heavy syntax of a general inductive type.
+They both implement large elimination, which means, in particular, that their induction principle can be used to construct functions returning types, like $\lambda A n, A^n$, in presence of a binary product.
 
 We ignore any issue that could stem from bound variables, and assume different binders use variables different from one another and from free variables.
 
@@ -249,7 +251,7 @@ $$
     {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
 $$
 
-But it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
+BHowever, it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
  $ M,N ::= \dots \mid \bool\mid \bool_{\rec}\mid \true\mid \false$
 
  And conversion rules
@@ -272,8 +274,10 @@ $$
 $$
 
 \subsection{System T}
-
-To identify and solve problems in a simpler environment, with no universes, where types and terms are well-separated, we chose to study beforehand a modified System T, based on the following variant.
+To verify that the features we would add made some amount of sense, we studied them first in system T.
+System T has no universes, no dependent function types, and keeps types and terms well-separated.
+This makes applying the proof technique we used, logical relation, much simpler.
+We use the following variant~:
 
 With types~:
 
@@ -330,7 +334,7 @@ $$
 
 \section{Sheaves}\label{Sheaves}
 
-Since we refer to more historical notion of sheaves and topoi are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves} and \ref{topoi} are more alike set theory.
+Since we refer to more historical notion of sheaves and topoi are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves}, \ref{KripkeBeth} and  \ref{topoi} are more alike set theory.
 Since the definition are presented by way of example, this should not be an issue.
 
 \subsection{Sheaves on topological spaces}\label{topsheaves}
@@ -371,7 +375,7 @@ It always yield a sheaf when applied twice, and stabilises at this point \cite{m
 
 Since the definitions only access the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as the reader is concerned, this only means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$. We will stick with calling their elements opens, however.
 
-\subsection{Kripke and Beth semantics}
+\subsection{Kripke and Beth semantics}\label{KripkeBeth}
 As a first taste of the logical content of presheaves and sheaves, we present Kripke and Beth models for proposititional intuitionistic logic.
 
 
@@ -407,7 +411,7 @@ Now it can also be proven that $U ||- \phi$ iff there exists $(U_i)_i$ covering 
 
 They are other variant of Beth semantics, relying on different notion of \emph{cover} in small categories.
 
-Both Kripke and Beth model can be extended to interpret quantifiers, and even further, since some of them, depending on their base category and notion of cover, even interpret set theory entirely. Notably the completely degenerate 1 object category, which recovers the standard model, and models which negates the axiom of choice and the continuum hypothesis.
+Both Kripke and Beth model can be extended to interpret quantifiers, and even further, since some of them, depending on their base category and notion of cover, even interpret set theory entirely. Notably the completely degenerate 1 object category, which recovers the standard model (interpreting sets as sets\dots), and models which negates the axiom of choice or the continuum hypothesis.
 
 \subsection{Topoi and sheaves in topoi}\label{topoi}
 
@@ -489,12 +493,12 @@ Every \guillemetleft~geometric theory~\guillemetright\ can be written as a singl
 
 We'd like to note that they define covers as they can be read as saying that some intersection of atoms can be covered by a family of intersection of atoms, and that they may be integrated in a deduction system as~: 
 $$
-    \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1})|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}})|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x})|-\mathcal{J}}
+    \inference[\textsc{Geo}-$i$]{Q_{i,1,1}(\overrightarrow{x},\overrightarrow{t_1})\dots Q_{i,1,m_{i,1}}(\overrightarrow{x},\overrightarrow{t_1}),\Gamma|-\mathcal{J}\ \cdots\ Q_{i,p_i,1}(\overrightarrow{x},\overrightarrow{t_{p_i}})\dots Q_{i,p_i,m_{i,p_i}}(\overrightarrow{x},\overrightarrow{t_{p_i}}),\Gamma|-\mathcal{J}}{O_{i,1}(\overrightarrow{x}),\dots O_{i,n_i}(\overrightarrow{x}),\Gamma|-\mathcal{J}}
 $$
 
 \subsection{Sheaves in type theory}\label{shfinTT}
 
-Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \textsc{Rocq} with $\SProp$.
+Consider a type theory with a notion of proof irrelevant propositions $\Prop$, \emph{e.g.} book-HoTT with mere propositions, or \rocq\ with $\SProp$.
 
 In this case, a Lawvere-Tierney topology may be similarily defined, as a monad:
 \begin{itemize}
@@ -509,7 +513,7 @@ Then a sheaf is just a type $T$ with
     \item A coherence $\varepsilon_T : \Pi (P:\Prop)\ (j : \mathsf{J}\ P)\ (x:T).\ \ask_T\ P\ j\ (\lambda p:P.x) = x$
 \end{itemize}
 
-In this context, sheafification doesn't exist in general, but if the theory admits quotient inductive types, it can then be defined as follow~:
+In this context, sheafification doesn't exist in general, but if the meta-theory admits quotient inductive types, it can then be defined as follow~:
 
 $$
 \begin{array}{l}
@@ -541,7 +545,7 @@ It is also possible to see geometric formulas as being of the form $\Pi i : I, O
 
 \subsection{Categories with family}
 
-A common manner to construct models of type theory is through categories with families.
+A common mean of constructing models of type theory is through categories with families.
 
 They are constituted of~:
 \begin{itemize}
@@ -549,7 +553,8 @@ They are constituted of~:
     $$ \begin{array}{rl}
         \mathsf{Ctx} :& \Type\\
         \mathsf{Sub} :& \mathsf{Ctx} -> \mathsf{Ctx} -> \Type\\
-        \mathsf{Id} :& \cdots
+        \mathsf{Id} :& \Pi (\Gamma:\mathsf{Ctx}), \mathsf{Sub}\ \Gamma\ \Gamma\\
+        &\dots
     \end{array}$$
     \item For every context a type of inner types, and for every context and inner type in that context, a type of terms, both accompanied by the action of the substitution upon those, and the corresponding rules.
     $$ \begin{array}{rl}
@@ -607,7 +612,7 @@ They may be complemented by~:
     $$
 \end{itemize}
 
-A significant part of my internship was dedicated to contructing models of type theory in \textsc{Rocq}, using categories with families.
+A significant part of my internship was dedicated to contructing models of type theory in \rocq, using categories with families.
 
 The most notable being~:
 \begin{enumerate}
@@ -619,7 +624,7 @@ The most notable being~:
 
 None of them completely implement all the feature listed above, but only the model using presheaves has no dependent function type.
 
-\textsc{Rocq} served as both the meta-theory and the target.
+\rocq\ served as both the meta-theory and the target.
 
 \subsection{Dialogue trees}
 
@@ -635,7 +640,8 @@ $$
 \end{array}
 $$
 
-They encode a fairly large family of monads. They are quite similar to sheaves, however, unlike sheaves, a model interpreting types as dialogue trees do not require no univalence nor HITs, but cannot implement booleans (or in general, inductive types) as usual.
+They encode a fairly large family of monads%, and, notably, the inductive type with only $\ask$ can encode any .
+They are quite similar to sheaves, however, unlike sheaves, a model interpreting types as dialogue trees do not require no univalence nor HITs, but cannot implement booleans (or in general, inductive types) as usual.
 
 Instead, they implement them in the way of Baclofen TT, meaning that, using booleans as an example, the eliminator for types $\bool_{\ind} : \Pi P : \square_\ell, P -> P -> \bool -> P $ is separate from the eliminator for type families $\bool_{\rec} : \Pi P : \bool -> \square_\ell, P \true -> P \false -> \Pi b : \bool, \theta_\bool P b$.
 
@@ -657,6 +663,7 @@ $$
     \end{array}
 $$
 The rest follows. As is the case with the other models here besides presheaves, contexts are just types.
+%This is related to the effects added by these theories, which are all call-by-name, meaning they factor through an Eilenberg-Moore category
 
 This models contrasts with how sheaves do not need to weaken the theory down to Baclofen TT to add effects
 
@@ -708,7 +715,7 @@ This model highlights why studying sheaves separately from presheaves is interes
 
 The most important one is of course the model using sheaves.
 
-The model requires univalence and used rewrite rules to simulate HIT, which are absent in \textsc{Rocq} 9.0.0.
+The model requires univalence and used rewrite rules to simulate HIT, which are absent in \rocq 9.0.0.
 
 Types were interpreted as sheaves as described in definition \ref{IOshf}. Product types are relatively easy as an aribtray product of sheaves is still a sheaf. Positives types, in my case boolean, where contructed as the QIT with the same constructor as the original (true and false), together with $\ask$ and $\varepsilon$. The resulting type is equivalent to the sheafification of booleans but does not compute exactly the same.
 
@@ -716,23 +723,23 @@ One of the interest of type theory is that it yield meaningful computations from
 
 \section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-My work was meant to generalise the work my supervisor past PhD student, Martin Baillon, did in his thesis \cite{baillon:tel-04617881}. He worked on a roughly similar MLTT extended with boolean and a generic function $\alpha: \nat -> \bool$, which is known only through finite approximation.
+OUr work was meant to generalise the work of Pierre-Marie Pédrot and his past PhD student, Martin Baillon, did in the thesis of the latter \cite{baillon:tel-04617881} and afterwards. He worked on a roughly similar MLTT extended with boolean and a generic cohen real $\alpha: \nat -> \bool$, where the context was extended with finite knowledge of this function, which allowed $\alpha$ to compute on closed form integers.
 
 The sheaf structure is the one appearing in this geometric formula~:
 
-$$ \left(\bigwedge_{n : \mnat} \top -> n \mapsto_\alpha \mtrue \vee n \mapsto_\alpha \mfalse\right) \wedge \left(\bigwedge_{n : \mnat} n\mapsto_\alpha \mtrue \wedge  n \mapsto_\alpha \mfalse -> \bot \right)$$
+$$ \left(\bigwedge_{n : \mnat} \top -> (n \mapsto_\alpha \mtrue) \vee (n \mapsto_\alpha \mfalse)\right) \wedge \left(\bigwedge_{n : \mnat} (n\mapsto_\alpha \mtrue) \wedge (n \mapsto_\alpha \mfalse) -> \bot \right)$$
 
-With atoms $n \mapsto_\alpha b$.
+With atoms $n \mapsto_\alpha b$ for all $n : \mnat$ and $b:\mbool$.
 
 
-The term then extends those of MLTT with
+The term then extends those of MLTT with only $\alpha$~:
 $$ M, N ::= \dots \mid \alpha$$
 
-With \emph{forcing contexts}, with $n$ and $b$ an integer and boolean respectively
+Together with the usual context, judgments depends on a \emph{forcing context} containing the finite approximation of $\alpha$, given by the following syntax, when $n$ and $b$ an integer and boolean respectively
 $$ \fctx ::= \fctx, n \mapsto b \mid \cdot$$
 We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \mtrue$ nor $n\mapsto \mfalse$ do.
 
-And rules~:
+The type theory has rules~:
 $$
     \inference[n]{\fctx,\tctx |- \mathcal{J}_0 & \cdots & \fctx,\tctx |- \mathcal{J}_n}{\fctx,\tctx |- \mathcal{J}}
 $$
@@ -740,8 +747,9 @@ whenever the following is a rule of MLTT (with booleans)
 $$
     \inference[n]{\tctx |- \mathcal{J}_0 & \cdots & \tctx |- \mathcal{J}_n}{\tctx |- \mathcal{J}}
 $$
-With $\mathcal{J}$ a judgment, (conversion or well formation) and $\text{n}$ the name of the rule.
-Exception made of \textsc{Wf-Empty}, which becomes
+With $\mathcal{J}$ a judgment of conversion or well formation, and $\text{n}$ the name of the rule.
+
+An exception is made for \textsc{Wf-Empty}, which becomes
 $$
     \inference[\textsc{Wf-Empty}]{}{\cdot,\cdot |- \Wf}
 $$
@@ -787,11 +795,13 @@ $$
     \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
 
-This rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a pure typing judgement.
+The above rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a pure typing judgement.
 
 $$
     \inference[\textsc{Ask}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
 $$
+The above rule is meant to hardwire the coherence $\varepsilon$ of the sheaf.
+
 $$
     \inference[\textsc{Dig-Ev}]{\fctx,\tctx |- N == N' : A & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \Pi x : A, B}{\fctx,\tctx |- (\digamma_i (M_\alpha)_\alpha) N == \digamma (M_\alpha N)_\alpha : B(N/x)}
 $$
@@ -802,21 +812,36 @@ $$
     \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}AM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-This theory is unsatisfying with regards to the goal we set. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso. \textsc{Ask}-$i$ cannot be used in stead of \textsc{Ask} either.
+This last few rules allows for pursuing computations on $\digamma$.
+
+As such, terms of type $\nat$ should always be convertible to a term $\ovl{n'}$, where $n'$ is of type $\mnat'$
+$$
+\begin{array}{l}
+    \Inductive\ \mnat' : \Type := \\
+    \mid 0' : \mnat'\\
+    \mid S' : \mnat' -> \mnat'\\
+    \mid \ask' : \Pi (i : I),(A\ i -> \mnat') -> \mnat'\\
+\end{array}
+$$
+With $\ovl{0'} := 0$, $\ovl{S'\ n'} := S\ \ovl{n'}$, and $\ovl{\ask\ i\ k} := \digamma_i (\ovl{k\ \alpha})_\alpha$. Furthermore, the same index $i$ should not occur twice in a branch.
+
+This theory is unsatisfying with regards to the goal we set. For example, to instantiate it with \ref{MBshtt}, even adding the necessary generic function $\alpha$, and setting $I := \nat$, $A i = \bool$ and $O_{n,b} := n\mapsto_\alpha b$ so that \textsc{Dig}-$i$ may play the role of \textsc{Split}, we  have no way to provide the compatibility proof $n\mapsto \mtrue, n\mapsto \mfalse |- M_{\true} == M_{\false}$, which must be some form of ex-falso.
+
+The \textsc{Ask} rule itself cannot be emulated, although this might be more an issue of level of generality.
 
 \section{Logical relations}\label{LogRel}
 
-A rather standard manner of studying the property of a type theory is through following a recipe {\color{red} CITE GIRARD\,?}
+A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since meant for a system closer to MLTT, would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}.
 
 \subsection{System T extension}
 
-To get a hang of $\digamma$ and logical relations we started by studying a extension of system with $\digamma$
+To get a hang of $\digamma$ and logical relations we started by studying a extension of system T with $\digamma$
 
 Again the terms simply extend those of system T~:
 
 $$ M,N ::= \dots \mid\digamma_i(M_\alpha)_\alpha$$
 
-And rules from system are appropriately completed with a forcing context.
+Rules from system T are then appropriately completed with a forcing context, and the same final rules are appended.
 $$
     \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
@@ -835,6 +860,8 @@ $$
 $$
 
 \subsection{Reducibility}
+
+We then applied logical relations to our system T variant.
 
 We define our reduction relation as follows~:
 
@@ -883,7 +910,7 @@ $$
     \item For type $\bot$, we use a similar definition as above excluding the case mentioning $0$ and the case mentioning $S$ 
 \end{itemize}
 
-We can then show the usual results, all proven in $\textsc{Rocq}$~:
+We can then show the usual results, all proven in $\rocq$~:
 
 \begin{lemma}[reflection]
     If $\neu n$ and $\neu n'$, then $\fctx,\tctx ||- n == n' : A$.
@@ -899,10 +926,10 @@ Where substitution are encoded as lists of terms and reducibility of substitutio
 
 We can then deduce that our theory normalises.
 
-A canonicity result could easily follow as well, once hereditary reduction has been defined, with normal form of booleans some variant of dialogue trees, since $\varepsilon$ has no corresponding reduction rule.
+A canonicity result could easily follow as well, once hereditary reduction has been defined, with normal form of booleans some variant of dialogue trees instead of sheaves, since $\varepsilon$ has no corresponding reduction rule.
 \section{Conclusion}
 
-This constitutes a very imcomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
+This constitutes a very incomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
 
 %\newpage
 %
