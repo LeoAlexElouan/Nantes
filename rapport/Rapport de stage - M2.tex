@@ -539,7 +539,7 @@ We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$
 
 $(I,O)$-Sheafification can be defined similarily. This definition is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
 
-It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, and as such be used as the basis for sheaves.
+It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, after hefty uncurrying. As such, we will use them as to describe our sheaves.
 
 \section{Models}\label{Models}
 
@@ -723,7 +723,7 @@ One of the interest of type theory is that it yield meaningful computations from
 
 \section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-OUr work was meant to generalise the work of Pierre-Marie Pédrot and his past PhD student, Martin Baillon, did in the thesis of the latter \cite{baillon:tel-04617881} and afterwards. He worked on a roughly similar MLTT extended with boolean and a generic cohen real $\alpha: \nat -> \bool$, where the context was extended with finite knowledge of this function, which allowed $\alpha$ to compute on closed form integers.
+Our work was meant to generalise the work of Pierre-Marie Pédrot and his past PhD student, Martin Baillon, did in the thesis of the latter \cite{baillon:tel-04617881} and afterwards. He worked on a roughly similar MLTT extended with boolean and a generic cohen real $\alpha: \nat -> \bool$, where the context was extended with finite knowledge of this function, which allowed $\alpha$ to compute on closed form integers.
 
 The sheaf structure is the one appearing in this geometric formula~:
 
@@ -771,13 +771,20 @@ Amongst other thing, this theory can be used to show that from any term $\cdot |
 
 \subsection{ShTT}
 
-Being sheaves, the model of every type contained a map $\ask$, we sought to create our type theory of sheaves by adding this map to the syntax under the name $\digamma$. Such map could be obtained in \ref{MBshtt} as $\ask_n T\ t_{\true}\ t_{\false} := \bool_{\rec}\ (\lambda\_.T)\  t_{\true}\ t_{\false}\ (\alpha\ \ovl{n})$. At our level of generality, this is all that can be added.
+We sought to create a type theory based on general sheaves, based on a simple geometric formula.
+As of our latest draft, we use $\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alpha}\right)$.
+It is the simplest one involving branching.
+
+While in \ref{MBshtt} conversion rules could be added, it is imposible without specialising the system and deciding what $O_{i,\alpha}$ means.
+We needed to add term by which the sheaf nature of our types would appear.
+Since the model of each type was a sheaf, it contained a map $\ask$, which we sought to add to the syntax under the name $\digamma$.
+Such map could be obtained in \ref{MBshtt} as $\ask_n T\ t_{\true}\ t_{\false} := \bool_{\rec}\ (\lambda\_.T)\  t_{\true}\ t_{\false}\ (\alpha\ \ovl{n})$.
+%At our level of generality, this is all that can be added.
 
 We suppose we have a type $\Omega$ of \emph{atoms}.
 We then set a type $I$ with decidable equality, and a (morally pointwise finite) type family $A : I -> \Type$ standing for arities, and finally a family $O : \Pi i:I, A\ i -> \Omega$, writing $O_{i,\alpha}$ instead of $O\ i\ \alpha$ for space concerns.
 
-This roughly correspond to the geometric formula : 
-$\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alpha}\right)$
+Those are also the types we use to give the shape of the geometric formula.
 
 The terms extend those of MLTT as follows~:
 
@@ -785,7 +792,7 @@ $$ M, N ::= \dots \mid\digamma_i (M_\alpha)_{\alpha : A\ i}$$
 
 When instanciating with finite $A i$, it would rather be  $\digamma_i M_1 \cdots M_n$.
 
-The forcing contexts $\fctx$ are now subset of $\Omega$ (lists accessed only through wether they include some elements), and never cause ill-formation.
+The forcing contexts $\fctx$ are now subset of $\Omega$ (lists accessed only through whether they include some elements), and never cause ill-formation.
 
 The conversion rules also copy those from MLTT by adding a forcing context as in \ref{MBshtt}, without the \textsc{WF-Empty} exception.
 
@@ -831,7 +838,7 @@ The \textsc{Ask} rule itself cannot be emulated, although this might be more an 
 
 \section{Logical relations}\label{LogRel}
 
-A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since meant for a system closer to MLTT, would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}.
+A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since it is meant for a system closer to MLTT, which would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}.
 
 \subsection{System T extension}
 
