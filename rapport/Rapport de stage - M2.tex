@@ -19,7 +19,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{euscript}
 
-
+\usepackage{listings}
 
 \usepackage{adjustbox}
 
@@ -142,14 +142,14 @@ An element of a topological sheaf may be defined over an open set whenever it is
 We hope to be able to do something similar in a type theory, where open sets correspond to proof irrelevant propositions.
 This requires special attention to the compatibility condition~: when a disjunction covers a proposition, it could be possible to eliminate from this disjunction to create a term in any type whenever compatible marginal terms are found.
 \subsection*{Your contribution}
-We have proved using \rocq that a system T variant with a part of the wanted features normalises. Since the proof was done using logical relations, a few other results should be within reach. I also have a model in \rocq where types are interpreted as sheaves, although some other variant probably existed before.
+We have proved using \rocq\ that a system T variant with a part of the wanted features normalises. Since the proof was done using logical relations, a few other results should be within reach. I also have a model in \rocq\ where types are interpreted as sheaves, although some other variant probably existed before.
 \subsection*{Arguments supporting its validity}
 The type theory developped by Martin Baillon, which we aim to generalise, proved continuity of all functional $(\nat -> \bool) -> \bool$.
-We hope to find similar results at term.
+We hope to find other similar results at term.
 Forcing has also been a very fruitful method in term of showing consistency of added principle.
 \subsection*{Summary and future works}
 We will refine the type theory further as well as study other instances similar to the one Martin Baillon studied.
-We should also make a fork of the logrel \rocq project, and adapt it to show the good properties of any such theory.
+We should also make a fork of the logrel \rocq\ project, and adapt it to show the good properties of any such theory.
 \newpage
 \tableofcontents
 \newpage
@@ -162,7 +162,7 @@ In section \ref{TT} we explain what type theory is and detail the basic type the
 
 Type theory is a manner of formalising mathematics with a very different design from set theory, and quite a bit closer in structure to a purely logical system like natural deduction. They are also more adapted to mechanising proof than ZFC.
 
-Our meta-theory should be a type theory, in which 
+Our meta-theory is alike a type theory, in which 
 \begin{itemize}
     \item $\mnat$ denotes its natural numbers type
     \item $\mbool$, $\mtrue$ and $\mfalse$, its boolean type and its two constants
@@ -251,8 +251,8 @@ $$
     {\tctx |- M == M' :A & \tctx |- A == A' : \square_\ell}{\tctx M ==M' : A'}
 $$
 
-BHowever, it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
- $ M,N ::= \dots \mid \bool\mid \bool_{\rec}\mid \true\mid \false$
+However, it is useful to consider the extension with a type of booleans $\bool$, with new terms~:
+ $$ M,N ::= \dots \mid \bool\mid \bool_{\rec}\mid \true\mid \false $$
 
  And conversion rules
 
@@ -276,7 +276,7 @@ $$
 \subsection{System T}
 To verify that the features we would add made some amount of sense, we studied them first in system T.
 System T has no universes, no dependent function types, and keeps types and terms well-separated.
-This makes applying the proof technique we used, logical relation, much simpler.
+This makes applying the proof technique we used, logical relations, much simpler.
 We use the following variant~:
 
 With types~:
@@ -305,12 +305,12 @@ $$
 $$
 
 $$
-    \inference[\textsc{Int-Zero}]{\tctx |- \Wf}{\tctx |- 0 == 0 : \nat} \qquad
-    \inference[\textsc{Int-Succ}]{\tctx |- \Wf}{\tctx |- S == S : \nat -> \nat}
+    \inference[\textsc{Int-Zero}]{}{\tctx |- 0 == 0 : \nat} \qquad
+    \inference[\textsc{Int-Succ}]{}{\tctx |- S == S : \nat -> \nat}
 $$
 
 $$
-    \inference[\textsc{Int-Rec}]{\tctx |- \Wf}{\tctx |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
+    \inference[\textsc{Int-Rec}]{}{\tctx |- \nat_{\rec} == \nat_{\rec} : A \to \left(\nat -> A -> A \right) -> \nat -> A}
 $$
 
 
@@ -332,9 +332,11 @@ $$
     {\tctx |- M == M' :A & \tctx |- M' == M'' : A}{\tctx |- M == M'' : A}
 $$
 
+Typing rules are encoded as self-conversion, and difficulties surrounding variables are ignored.
+
 \section{Sheaves}\label{Sheaves}
 
-Since we refer to more historical notion of sheaves and topoi are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves}, \ref{KripkeBeth} and  \ref{topoi} are more alike set theory.
+Since we refer to some of the more historical notion of sheaves and since topoi are a set theorist approach of type theory, the meta-theory and language of subsections \ref{topsheaves}, \ref{KripkeBeth} and  \ref{topoi} are more alike set theory.
 Since the definition are presented by way of example, this should not be an issue.
 
 \subsection{Sheaves on topological spaces}\label{topsheaves}
@@ -353,7 +355,7 @@ We fix a topological space $X$, in this case presheaves on that space are preshe
         \item If $s\in P(U)$, $W\subseteq V \subseteq U$, $(s|_V)|_W = s|_W$
     \end{itemize}
 \end{definition}
-The $\lambda (s\in P(U)), s|_V : P(U) -> P(V)$ function gives the $P(f)$ necessary to construct the functor $P : \mathcal{O}(X)^{op} -> \mathbf{Set}$ justifying the use of the same term presheaf here and in the categorical context.
+The $\lambda (s\in P(U)), s|_V : P(U) -> P(V)$ function is the function $P(f)$ necessary to construct the functor $P : \mathcal{O}(X)^{op} -> \mathbf{Set}$, justifying the use of the same term \guillemotleft~presheaf \guillemotright\ here and in the categorical context.
 
 In the context of topologies, sheaves are simply refinements of presheaves~:
 \begin{definition}[Sheaf on a topology]
@@ -371,7 +373,7 @@ Using natural transformations as arrows, both sheaves and presheaves over a topo
 \end{lemma}
 
 This adjoint can be constructed using the plus construction $P \mapsto P^{+}$, which gives the presheaf of compatible families up to refinement.
-It always yield a sheaf when applied twice, and stabilises at this point \cite{maclane2012sheaves}.
+It always yields a sheaf when applied twice, and stabilises at this point \cite{maclane2012sheaves}.
 
 Since the definitions only access the open subsets and not the points of the space, they can be extended to \emph{locales}, that is, posets with finite meets and arbitrary joins satisfying the infinite distributive law. As far as the reader is concerned, this only means $\vee,\wedge$ and $\leq$ will be used instead $\cup,\cap$ and $\subseteq$. We will stick with calling their elements opens, however.
 
@@ -471,6 +473,8 @@ And just like with topological presheaves, we can define sheafification.
     The inclusion functor from $j$-sheaves in a topos $\mathcal{E}$ to the topos $\mathcal{E}$ has a left \emph{sheafification} adjoint.
 \end{lemma}
 
+As announced, it is an idempotentt monad.
+
 \subsection{Geometric formulas}
 In the litterature around sheaves and forcing, we find the following definitions.
 \begin{ndefinition}
@@ -539,7 +543,7 @@ We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$
 
 $(I,O)$-Sheafification can be defined similarily. This definition is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
 
-It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, after hefty uncurrying. As such, we will use them as to describe our sheaves.
+It is also possible to see geometric formulas as being of the form $\Pi i : I, O i$, after hefty uncurrying. As such, we will use them to describe our sheaves. However, not all sheaves can be described this way, in particular $\lnot\lnot$ is a Lawvere-Tierney topology which has no satisfying geometric formula.
 
 \section{Models}\label{Models}
 
@@ -723,7 +727,7 @@ One of the interest of type theory is that it yield meaningful computations from
 
 \section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
-Our work was meant to generalise the work of Pierre-Marie Pédrot and his past PhD student, Martin Baillon, did in the thesis of the latter \cite{baillon:tel-04617881} and afterwards. He worked on a roughly similar MLTT extended with boolean and a generic cohen real $\alpha: \nat -> \bool$, where the context was extended with finite knowledge of this function, which allowed $\alpha$ to compute on closed form integers.
+Our work was meant to generalise the work of Pierre-Marie Pédrot and his past PhD student, Martin Baillon, did in the thesis of the latter \cite{baillon:tel-04617881} and afterwards, which itself follows up on a note from Jaber and Coquand \cite{10.5555/1839560.1839564}. He worked on a roughly similar MLTT extended with boolean and a generic cohen real $\alpha: \nat -> \bool$, where the context was extended with finite knowledge of this function, which allowed $\alpha$ to compute on closed form integers.
 
 The sheaf structure is the one appearing in this geometric formula~:
 
@@ -767,7 +771,7 @@ $$
     \inference[\textsc{Split}]{\fctx,n\mapsto \mtrue,\tctx |-M == M' :A & \fctx, n\mapsto\mfalse, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
-Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\cdot |- \{M\} == \{M\} : \mathsf{continuous}\ M$ of MLTT proving its continuity can be constructed.
+Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\{M\}$ of MLTT proving its continuity can be constructed, \emph{i.e.} $\cdot |- \{M\} == \{M\} : \mathsf{continuous}\ M$ can be derived.
 
 \subsection{ShTT}
 
@@ -838,7 +842,7 @@ The \textsc{Ask} rule itself cannot be emulated, although this might be more an 
 
 \section{Logical relations}\label{LogRel}
 
-A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since it is meant for a system closer to MLTT, which would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}.
+A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since it is meant for a system closer to MLTT, which would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}. We use \guillemotleft~logical relations~\guillemotright\ in a rather precise manner to designate this recipe. Roughly speaking, we establish a reduction relation and interpret terms by their reduction to a normal form.
 
 \subsection{System T extension}
 
@@ -942,6 +946,9 @@ This constitutes a very incomplete work. I don't think attempting to prove norma
 %
 %\appendix
 %\appendixname
+%
+%\section{Models}
+%\subsection{Dialogue trees}
 %
 %\section{Dummy}
 
