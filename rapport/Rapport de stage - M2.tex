@@ -523,14 +523,14 @@ $$
 \begin{array}{l}
     \Inductive\ \mathcal{S}_{\mathsf{J}}\ T : \Type := \\
     \mid \ret : T -> \mathcal{S}_{\mathsf{J}}\ T\\
-    \mid \ask : \Pi (P:\Prop), \mathsf{J}\ P -> (P -> \mathcal{S}_{\mathsf{J}}\ T) -> \mathcal{S}_{\mathsf{J}}\ T\\
+    \mid \ask : \Pi (P:\Prop). \mathsf{J}\ P -> (P -> \mathcal{S}_{\mathsf{J}}\ T) -> \mathcal{S}_{\mathsf{J}}\ T\\
     \mid \varepsilon : \Pi (P:\Prop)\ (j : \mathsf J\ P)\ (x : \mathcal{S}_{\mathsf{J}}\ T). \ask\ P\ j\ (\lambda p:P. x) = x
 \end{array}
 $$
 
 The induction principle is then about as powerful as an adjunction could be, as such we will chose not to define the amount of category theory necessary to formulate the later.
 
-We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$, a sheaf is then defined as
+We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O:=\lambda (P,j).P$, the definition of a sheaf becomes a special case of the following~:
 \begin{definition}\label{IOshf}
     A \emph{sheaf} or \emph{$(I,O)$-sheaf}, is given by
 \begin{itemize}
@@ -540,6 +540,7 @@ We note that by taking $I := \Sigma (P:\Prop). \mathsf{J}\ P$ and $O\ (P,j) : P$
 \end{itemize}
 
 \end{definition}
+Where $I$ is a type and $O$ a family of propositions.
 
 $(I,O)$-Sheafification can be defined similarily. This definition is marginally simpler, and make sheaves appear as quotient dialogue trees, hence why we will henceforth consider \emph{$(I,O)$-sheaves} instead of \emph{$\mathsf{J}$-sheaves}.
 
