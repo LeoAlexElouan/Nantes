@@ -169,6 +169,8 @@ Our meta-theory is alike a type theory, in which
     \item $\Pi$, $\lambda$ and concatenation for its dependent function type
     \item $\Sigma$, $(\_,\_)$, $\mathfrak{p}_1$, $\mathfrak{p}_2$ its dependent product type, pairs and projections, with $\eta$-expansion ($w$ convertible to $(\mathfrak{p}_1 w, \mathfrak{p}_2 w)$).
     \item $\Type$ its universe, with levels left implicit.
+    \item Inductive equality types $\mathsf{eq}$ or $=$ with constructor $\mathsf{eq_refl}$
+    \item Lists as $\mathsf{List}$, with predicate $\mathsf{In} : \Pi (A:\Type), A -> \mathsf{List}\ A -> \Type$ indicating when a element occurs in a list.
 \end{itemize}
 
 \subsection{MLTT}
@@ -440,7 +442,7 @@ We deduce a presheaf $\mathbf{Sub}$ where $\mathbf{Sub}(X)$ is the the set of su
 We note that topoi also have finite colimits.
 
 Topoi form a class of models of some kind of type theory.
-However, one the one hand, this type theory has equality reflection, proposititional extensionnality, strict propositions and the axiom of unique choice.
+However, one the one hand, this type theory has equality reflection, proposititional extensionality, strict propositions and the axiom of unique choice.
 These properties form a very strong, but also undecidable, system.
 In particular they are no known type theory with both unique choice and strict propositions which preserves canonicity and decidability of type-checking.
 On the other hand, in general, they have no universe, which makes them very weak.
@@ -692,13 +694,17 @@ This model contrasts with how sheaves do not need to weaken the theory down to B
 
 The exceptional model (for exception type $E$) interprets a type as a pair of a type and a map $E -> A$. It is inconsistent, at least when $E$ is inhabited, however, together with parametricity, a consistent model can be recovered.
 
-This models highlights the importance of computations, since an inconsitent type theory can still be used to state a few thing as long as it computes properly.
+This model highlights the importance of computations, since an inconsitent type theory can still be used to state a few thing as long as it computes properly.
 
 \subsection{Presheaves}
 
-The most time consuming model, where neither universes nor dependant function types could be implemented. The main issue is the straightforward implementation is not strict, meaning equalities have to be proven, and transport along them must be handled.
+The presheaf models was the most time consuming model, where neither universes nor dependant function types ended up being implemented, despite the time spent.
+The main issue is the straightforward implementation is not strict \emph{i.e.} not all equalities are proven using $\mathsf{eq\_refl}$.
+Furthermore, the proofs of these equalities are not immediate, and some proofs involve transport along non-trivial equalities.
 
-To give the broad strokes of the model, we use the following definition of a category, mostly to name the fields. It must be understood as a record (a fancy $\Sigma$), so the projection are named according to the fields.
+The model uses functional extensionality and unicity of identity proofs as axioms, which helps with the above issues.
+
+To give the broad strokes of the model, we use the following definition of a category, mostly to name the fields. It must be understood as a record (a fancy $\Sigma$), so the projections are named according to the fields.
 $$ \textsf{Cat} := \left\{
     \begin{array}{rl}
         \mathsf{obj} :& \Type\\
@@ -728,7 +734,7 @@ $$
         \end{array}\right\}
     \end{array}
 $$
-Notably, context are presheaves and not just types, and, strictly speaking, types are only presheaves in an empty context.
+Notably, contexts are presheaves and not just types, and, strictly speaking, types are only presheaves in an empty context.
 
 This model highlights why studying sheaves separately from presheaves is interesting.
 
@@ -736,11 +742,11 @@ This model highlights why studying sheaves separately from presheaves is interes
 
 The most important one is of course the model using sheaves.
 
-The model requires univalence and used rewrite rules to simulate HIT, which are absent in \rocq 9.0.0.
+The model requires univalence and uses rewrite rules to simulate higher inductive types, which are absent in \rocq 9.0.0.
 
-Types were interpreted as sheaves as described in definition \ref{IOshf}. Product types are relatively easy as an aribtray product of sheaves is still a sheaf. Positives types, in my case boolean, where contructed as the QIT with the same constructor as the original (true and false), together with $\ask$ and $\varepsilon$. The resulting type is equivalent to the sheafification of booleans but does not compute exactly the same.
+Types were interpreted as sheaves as described in definition \ref{IOshf}. Product types are relatively easy as an arbitrary product of sheaves is still a sheaf. Positives types, in my case boolean, where contructed as the higher inductive types with the same constructor as the original (true and false), together with $\ask$ and $\varepsilon$. The resulting type is equivalent to the sheafification of booleans but does not compute exactly the same.
 
-One of the interest of type theory is that it yield meaningful computations from proof, so we were careful about that.
+One of the interest of type theory is that it yields meaningful computations from proof, so we were careful about that.
 
 \section{ShTT}\label{ShTT}
 \subsection{Martin Baillon's ShTT}\label{MBshtt}
@@ -756,7 +762,7 @@ With atoms $n \mapsto_\alpha b$ for all $n : \mnat$ and $b:\mbool$.
 The term then extends those of MLTT with only $\alpha$~:
 $$ M, N ::= \dots \mid \alpha$$
 
-Together with the usual context, judgments depends on a \emph{forcing context} containing the finite approximation of $\alpha$, given by the following syntax, when $n$ and $b$ an integer and boolean respectively
+Together with the usual context, judgments depend on a \emph{forcing context} containing the finite approximation of $\alpha$, given by the following syntax, when $n$ and $b$ are a meta-theoretical integer and boolean respectively.
 $$ \fctx ::= \fctx, n \mapsto b \mid \cdot$$
 We write $n\mapsto_\fctx b$ when $n\mapsto b$ appears in $\fctx$, and $n\not\mapsto_\fctx$ when neither $n\mapsto \mtrue$ nor $n\mapsto \mfalse$ do.
 
@@ -788,7 +794,7 @@ $$
     \inference[\textsc{Split}]{\fctx,n\mapsto \mtrue,\tctx |-M == M' :A & \fctx, n\mapsto\mfalse, \tctx |- M == M' : A & n\not\mapsto_\fctx}{\fctx,\tctx |- M == M' : A}
 $$
 
-Amongst other thing, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\{M\}$ of MLTT proving its continuity can be constructed, \emph{i.e.} $\cdot |- \{M\} == \{M\} : \mathsf{continuous}\ M$ can be derived.
+Amongst other things, this theory can be used to show that from any term $\cdot |- M == M : (\nat -> \bool) -> \nat$ of MLTT, a term $\{M\}$ of MLTT proving its continuity can be constructed, \emph{i.e.} $\cdot |- \{M\} == \{M\} : \mathsf{continuous}\ M$ can be derived.
 
 \subsection{ShTT}
 
@@ -796,7 +802,7 @@ We sought to create a type theory based on general sheaves, based on a simple ge
 As of our latest draft, we use $\bigwedge\limits_{i : I} \left(\top -> \bigvee\limits_{\alpha : A\ i}O_{i,\alpha}\right)$.
 It is the simplest one involving branching.
 
-While in \ref{MBshtt} conversion rules could be added, it is imposible without specialising the system and deciding what $O_{i,\alpha}$ means.
+While in \ref{MBshtt} conversion rules could be added, it is impossible without specialising the system and deciding what $O_{i,\alpha}$ means.
 We needed to add term by which the sheaf nature of our types would appear.
 Since the model of each type was a sheaf, it contained a map $\ask$, which we sought to add to the syntax under the name $\digamma$.
 Such map could be obtained in \ref{MBshtt} as $\ask_n T\ t_{\true}\ t_{\false} := \bool_{\rec}\ (\lambda\_.T)\  t_{\true}\ t_{\false}\ (\alpha\ \ovl{n})$.
@@ -813,7 +819,7 @@ $$ M, N ::= \dots \mid\digamma_i (M_\alpha)_{\alpha : A\ i}$$
 
 When instanciating with finite $A i$, it would rather be  $\digamma_i M_1 \cdots M_n$.
 
-The forcing contexts $\fctx$ are now subset of $\Omega$ (lists accessed only through whether they include some elements), and never cause ill-formation.
+The forcing contexts $\fctx$ are now finite subsets of $\Omega$ (subsets are lists accessed only through $\mathsf{In}$), and never cause ill-formation.
 
 The conversion rules also copy those from MLTT by adding a forcing context as in \ref{MBshtt}, without the \textsc{WF-Empty} exception.
 
@@ -823,7 +829,7 @@ $$
     \inference[\textsc{Dig}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,\tctx |- \digamma_i (M_\alpha)_\alpha == \digamma_i (M'_\alpha)_\alpha: A}
 $$
 
-The above rule is both the expected congruence rule for conversion and also a compatibility rule for typing that would be stated separately in a system with a pure typing judgement.
+The above rule is both the expected congruence rule for conversion and a compatibility rule for typing that would be stated separately in a system with a pure typing judgement.
 
 $$
     \inference[\textsc{Ask}-$i$]{\forall \alpha\alpha'. \fctx,O_{i,\alpha},O_{i,\alpha'},\tctx |- M_\alpha == M'_{\alpha'} : A}{\fctx,O_{i,\alpha},\tctx |- \digamma_i (M_{\alpha'})_{\alpha'} == M'_\alpha: A}
@@ -840,7 +846,7 @@ $$
     \inference[\textsc{Emp-Rec-Dig}]{\fctx,\tctx |- A == A : \bot -> \square_\slvl & \forall \alpha \alpha', \fctx, O_{i,\alpha},O_{i,\alpha},\tctx |- M_\alpha == M_{\alpha'} : \bot}{\fctx,\tctx |- \bot_{\rec} A(\digamma_i (M_\alpha)_\alpha) == \digamma_i (\bot_{\rec}AM_\alpha)_\alpha : A \digamma_i (M_\alpha)_\alpha}
 $$
 
-This last few rules allows for pursuing computations on $\digamma$.
+These last few rules allow for pursuing computations on $\digamma$.
 
 As such, terms of type $\nat$ should always be convertible to a term $\ovl{n'}$, where $n'$ is of type $\mnat'$
 $$
@@ -859,11 +865,15 @@ The \textsc{Ask} rule itself cannot be emulated, although this might be more an 
 
 \section{Logical relations}\label{LogRel}
 
-A rather standard manner of studying the properties of a type theory is through logical relations. We roughly followed the recipe of Abel \cite{10.1145/3158111}, which, since it is meant for a system closer to MLTT, which would ease later scaling. In pratice, we used LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}. We use \guillemotleft~logical relations~\guillemotright\ in a rather precise manner to designate this recipe. Roughly speaking, we establish a reduction relation and interpret terms by their reduction to a normal form.
+A rather standard manner of studying the properties of a type theory is through logical relations.
+We roughly follow the recipe of Abel \cite{10.1145/3158111}, which, since it is meant for a system closer to MLTT, would ease later scaling.
+In pratice, we use LogRel \rocq as a reference point \cite{DBLP:conf/cpp/AdjedjLMPP24}.
+We use \guillemotleft~logical relations~\guillemotright\ in a rather precise manner to designate this recipe.
+Roughly speaking, we establish a reduction relation and interpret terms by their reduction to a normal form.
 
 \subsection{System T extension}
 
-To get a hang of $\digamma$ and logical relations we started by studying a extension of system T with $\digamma$
+To get a hang of $\digamma$ and logical relations we start by studying a extension of system T with $\digamma$
 
 Again the terms simply extend those of system T~:
 
@@ -889,7 +899,7 @@ $$
 
 \subsection{Reducibility}
 
-We then applied logical relations to our system T variant.
+We then apply logical relations to our system T variant.
 
 We define our reduction relation as follows~:
 
@@ -957,7 +967,11 @@ We can then deduce that our theory normalises.
 A canonicity result could easily follow as well, once hereditary reduction has been defined, with normal form of booleans some variant of dialogue trees instead of sheaves, since $\varepsilon$ has no corresponding reduction rule.
 \section{Conclusion}
 
-This constitutes a very incomplete work. I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality. It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
+This work remains very incomplete.
+I don't think attempting to prove normalisation of ShTT is the next step, same for any theories at the same level of generality.
+It might be more interesting to either look at continuity for a more general $\alpha$ than in Martin Baillon's work, or find a simple enough theory with non-empty intersections.
+The Zariski topos is a candidate for this approach, but the language extension is trickier.
+Coquand has a few paper that we could revisit as well.
 
 %\newpage
 %
