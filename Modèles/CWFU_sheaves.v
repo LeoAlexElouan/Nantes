@@ -623,7 +623,7 @@ Proof.
   reflexivity.
 Defined.
 
-Definition exceptional : CWFU.
+Definition sheaves : CWFU.
 Proof.
   refine {|
   ctx := shf_ctx;

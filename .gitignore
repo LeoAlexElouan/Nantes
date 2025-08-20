@@ -9,5 +9,6 @@
 *.synctex.gz
 *.toc
 *.v.crashrocqide
+*.out
 forcing1.pdf
 RSS.pdf
