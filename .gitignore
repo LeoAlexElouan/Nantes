@@ -10,5 +10,6 @@
 *.toc
 *.v.crashrocqide
 *.pyg
+*.out
 forcing1.pdf
 RSS.pdf
