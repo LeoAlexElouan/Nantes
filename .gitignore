@@ -11,5 +11,8 @@
 *.v.crashrocqide
 *.pyg
 *.out
+*.nav
+*.snm
+*.vrb
 forcing1.pdf
 RSS.pdf

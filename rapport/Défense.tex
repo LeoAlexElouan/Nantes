@@ -1,0 +1,178 @@
+\documentclass{beamer}
+\usepackage{graphicx}
+
+
+\usecolortheme{rose}
+\useoutertheme{infolines}
+\useinnertheme{rectangles}
+\usecolortheme{whale}
+
+\setbeamertemplate{headline}
+{%
+
+\begin{beamercolorbox}[center]{section in head/foot}
+\vskip2pt\thesection.~\insertsection\vskip2pt
+\end{beamercolorbox}%
+%
+}
+
+\makeatletter
+\def\ps@navigation@titlepage{%
+  \setbeamertemplate{headline}{}
+  \@nameuse{ps@navigation}}
+\addtobeamertemplate{title page}{\thispagestyle{navigation@titlepage}}{}
+\makeatother
+
+
+\usepackage{tikz}
+\usetikzlibrary{cd}
+
+
+\usepackage[sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+
+\usepackage{mathrsfs}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{amsthm}
+\usepackage{stmaryrd }
+\usepackage[T1]{fontenc}
+\usepackage{euscript}
+
+
+
+\usepackage{adjustbox}
+
+\usepackage{color}
+
+
+\usepackage{semantic}
+
+\DeclareMathOperator{\colim}{colim}
+
+\newcommand{\ovarr}{\overrightarrow}
+\newcommand{\ovl}{\overline}
+\newcommand{\omlim}{A_0+\sum\limits_{i\geq 1}\ovl A_i}
+
+\newcommand{\0}{\boldsymbol{0}}
+\newcommand{\1}{\boldsymbol{1}}
+\newcommand{\N}{\boldsymbol{N}}
+\newcommand{\R}{\boldsymbol{R}}
+\newcommand{\C}{\mathcal{C}}
+\newcommand{\D}{\mathcal{D}}
+\newcommand{\SBS}{\boldsymbol{SBS}}
+\newcommand{\Meas}{\boldsymbol{Meas}}
+
+\newcommand{\Gram}{\codefont{G}}
+\newcommand{\mono}{\rightarrowtail}
+\newcommand{\omop}{\omega^{op}}
+\newcommand{\omopch}{\Theta}
+\newcommand{\omch}{\Omega}
+\newcommand{\Dist}{\codefont{Dist}}
+\newcommand{\gd}{\dot {\mathbf{Fun}}}
+\newcommand{\colomf}[1]{\varinjlim\circ\omch_{#1}^{(-)}}
+\newcommand{\colom}[2]{\varinjlim(\omch_{#1}^{#2})}
+\newcommand{\lcontext}{\Gamma}
+\newcommand{\rcontext}{\Delta}
+\newcommand{\lvar}{\gamma}
+\newcommand{\rvar}{\delta}
+
+\newcommand{\codefont}{\mathtt}
+
+\newcommand{\tcontext}{\Gamma}
+\newcommand{\tvar}{\gamma}
+\newcommand{\diag}{\Delta}
+\newcommand{\DThunk}{\codefont{Dist}}
+
+\newcommand{\Unit}{\codefont{Unit}}
+\newcommand{\Bool}{\codefont{Bool}}
+\newcommand{\Real}{\codefont{Real}}
+\newcommand{\Nat}{\codefont{Nat}}
+\newcommand{\List}{\codefont{List}}
+\newcommand{\Stream}{\codefont{Stream}}
+
+\mathlig{<-}{\leftarrow}
+\mathlig{->}{\to}
+\mathlig{|->}{\mapsto}
+\mathlig{=>}{\Rightarrow}
+\mathlig{|-}{\vdash}
+\mathlig{[|}{\llbracket}
+\mathlig{|]}{\rrbracket}
+
+\reservestyle{\command}{\codefont}
+\command{inl,inr,wrap,roll,rec,corec,as,match,return,let,in,sample,on,do,Unit,Bool,Real,Nat,List,Stream,Dist}
+
+
+% Distributions in programming language
+\newcommand{\Uniform}{\codefont{uniform}}
+\newcommand{\Normal}{\codefont{normal}}
+\newcommand{\Dirac}{\codefont{dirac}}
+\newcommand{\Bern}{\codefont{bernoulli}}
+
+
+\AtBeginSection[] % Do nothing for \section*
+{
+\begin{frame}<beamer>
+\frametitle{Table of contents}
+\tableofcontents[currentsection]
+\end{frame}
+}
+
+\title[Sheaves]{Internship defense M2\\ Parisian Master of Research in Computer Science\\  \'Elimination non-singleton~:\\ Avec les faisceaux, c'est pas faux}
+\author[Soudant Léo]{\textbf{Soudant L\'eo}, second year student at ENS Paris Saclay}
+\date[2023]{February 28th to July 30th 2023}
+
+\usepackage{quiver}
+
+\begin{document}
+
+\begin{frame}
+    \maketitle
+    \centering
+    Supervisor
+    
+    \textbf{Pierre-Marie Pédrot}
+
+\end{frame}
+
+
+
+\section{Preliminary~: Topoi}
+
+\begin{frame}
+    \frametitle{The starting point}
+    \begin{tabular}{ p{0.25\textwidth}cp{0.25\textwidth}cp{0.25\textwidth}}
+        \centering Cartesian closed categories&
+        $\Leftrightarrow$&
+        \centering Simply typed $\lambda$-calculus&$\Leftrightarrow$&
+        \centering Negative fragment of intuitionistic propositional logic\tabularnewline
+        $\begin{array}{c}
+            \mathbf{Hom}(A\times B, C)\\
+            \simeq\\
+            \mathbf{Hom}(A,B\to C)
+        \end{array}$&&$\lambda x : A.t : A\to B$&&\inference{\Gamma,A\vdash B}{\Gamma\vdash A\to B}
+    \end{tabular}
+\end{frame}
+
+
+
+\begin{frame}
+    \frametitle{Subobject classifier}
+
+    $$\mathbf{Sub}(A) \simeq \mathbf{Hom}(A,\Omega)$$
+    $\mathbf{Sub(A)} := $ equivalences classes of monomorphisms $X \mono A$.
+
+    Introduces a type of proposition in the $\lambda$-calculus, as well as subobjects
+    \vspace{1cm}
+
+    $\bullet$ All finite limits as well.
+    Finite colimits are recovered\cite{maclane2012sheaves}.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Formulas}
+\end{frame}
+
+
+\end{document}
