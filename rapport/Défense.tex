@@ -29,7 +29,7 @@
 
 
 \usepackage[sorting=none]{biblatex}
-\addbibresource{references.bib}
+\addbibresource{reference.bib}
 
 
 \usepackage{mathrsfs}
@@ -170,9 +170,98 @@
     Finite colimits are recovered\cite{maclane2012sheaves}.
 \end{frame}
 
-\begin{frame}
+\begin{frame}[fragile]
     \frametitle{Formulas}
+    \centering $\land,\lor,\forall,\exists,\lnot,\bot,\top,\Rightarrow$ can all be expressed \emph{e.g.}
+
+\[\begin{tikzcd}
+	{X\land Y} & Y \\
+	X & A
+	\arrow[from=1-1, to=1-2]
+	\arrow[from=1-1, to=2-1]
+	\arrow[from=1-2, to=2-2]
+	\arrow[from=2-1, to=2-2]
+\end{tikzcd}\]
+
+    So can $=$ and $\in$. Equality is the predicate $A\times A \to \Omega$ given by the diagonal $A \mono A\times A$.
+    \vspace{1cm}
+
+    Objects similar to the set theoritic $\{ x\in A | \phi(x)\}$ can be constructed.
 \end{frame}
 
+\begin{frame}
+    \frametitle{Internal logic of $\Omega$}
+
+    \begin{itemize}
+        \item $\land : \mathbf{Sub}(A)\times \mathbf{Sub}(A) \to \mathbf{Sub}(A)$
+        \item $\land : \mathbf{Hom}(A,\Omega)\times \mathbf{Hom}(A,\Omega)\to \mathbf{Hom}(A,\Omega)$
+        \item $\land : \mathbf{Hom}(A,\Omega\times \Omega)\to\mathbf{Hom}(A,\Omega)$
+        \item $\land : \Omega\times\Omega \to\Omega$
+    \end{itemize}
+
+    Similarily for $\lor,\bot,\top,\Rightarrow$.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Topoi of presheaves}
+    For a small category $\textbf{C}$, its category of presheaves is noted $\widehat{\textbf{C}} := \mathbf{Set}^{\textbf{C}^{op}}$.
+    $$ (P\times Q) (C) = P(C)\times Q(C)$$
+    $$P^Q(C) \simeq \mathbf{Nat}(\mathbf{y}C,P^Q)\simeq \mathbf{Nat}(\mathbf{y}C \times Q, P)$$
+    \vspace{0cm}
+
+    \centering $\Omega(C)$ is the set of subpresheaves of $\mathbf{y}C$ (also called sieves on $C$).
+
+    \centering (A subpresheaf is pointwise a subset, with function restricted)
+
+    \vspace{0.5cm}
+    Small limits are pointwise.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Sheaves}
+
+    A sheaf = A presheaf with a compatibility property.
+    \vspace{0.5cm}
+
+    More precisely~: certain sieves are considered special, they are \emph{covering sieves}.
+
+    The rule that selects special sieves is called a grothendieck topology~:
+
+\begin{itemize}
+    \item The full sieve $\mathbf{y}C$ is covering.
+    \item Pullbacks along $\mathbf{y}f$ preserves covering.
+    \item For any sieve $R$, if pullback along any map of a covering sieve $S$ yields a covering sieve, then $R$ is covering.
+\end{itemize}
+    \vspace{0.5cm}
+
+    A sheaf is a presheaf where a map in $\mathbf{Nat}(S, F)$, with $S$ a covering sieve, correspond to exactly one element of $F(C)\simeq \mathbf{Nat}(\mathbf{y}C,F)$.
+\end{frame}
+\begin{frame}
+    \frametitle{Example~: Sheaves on $\mathbf{R}^2$}
+
+    $\textbf{C} := \mathcal{O}(\mathbf{R}^2)$
+
+\end{frame}
+
+%\section{Preliminary~: Forcing, presheaves and sheaves}
+%\begin{frame}
+%    \frametitle{Forcing with presheaves}
+%    Given a poset $\mathbf{P}$ with elements $p,p',\dots$ and a family of models $M$ decreasing over $\mathbf{P}$.
+%     \begin{itemize}
+%        \item $p,M \Vdash \phi\land\psi$ iff $p,M\Vdash \phi$ and $p,M\Vdash \phi$.
+%        \item $p,M\Vdash \phi \Rightarrow \psi$, iff for all $p' \leq p$, if $p',M \Vdash \phi$ then $p',M\Vdash \psi$.
+%        \item $p,M \Vdash \phi\land\psi$ iff $p,M\Vdash \phi$ or $p,M\Vdash \phi$.
+%        \item 
+%     \end{itemize}
+    
+%\end{frame}
+\section{Bibliography}
+
+\begin{frame}[allowframebreaks]
+    \frametitle{Bibliography}
+
+    \printbibliography
+
+\end{frame}
 
 \end{document}
