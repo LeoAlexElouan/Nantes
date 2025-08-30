@@ -223,29 +223,33 @@
     A sheaf = A presheaf with a compatibility property.
     \vspace{0.5cm}
 
-    More precisely~: certain sieves are considered special, they are \emph{covering sieves}.
-
-    The rule that selects special sieves is called a grothendieck topology~:
+    A Grothendieck topology introduces a notion of cover.
 
 \begin{itemize}
-    \item The full sieve $\mathbf{y}C$ is covering.
-    \item Pullbacks along $\mathbf{y}f$ preserves covering.
-    \item For any sieve $R$, if pullback along any map of a covering sieve $S$ yields a covering sieve, then $R$ is covering.
+    \item If $f : D\to C$ is in $S(D)$ , then it is covered by $S$.
+    \item If $f$ is covered then $f \circ g$ is covered.
+    \item If $S$ covers $f$ and $R$ covers any map of $S(D)$ for all $D$, then $R$ covers $f$
 \end{itemize}
+
+We note the sieve of all maps covered by $S$ as $\ovl{S}$.
+
     \vspace{0.5cm}
 
-    A sheaf is a presheaf where a map in $\mathbf{Nat}(S, F)$, with $S$ a covering sieve, correspond to exactly one element of $F(C)\simeq \mathbf{Nat}(\mathbf{y}C,F)$.
+    A sheaf is a presheaf where a map in $\mathbf{Nat}(S, F)$ correspond to exactly one map of $\mathbf{Nat}(\ovl{S},F)$.
 \end{frame}
+
 \begin{frame}
     \frametitle{Example~: Sheaves on $\mathbf{R}^2$}
 
-    $\textbf{C} := \mathcal{O}(\mathbf{R}^2)$ (poset~: at most one map between object)
+    $\textbf{C} := \mathcal{O}(\mathbf{R}^2)$ (poset~: at most one map between object).
 
-    $S$ covers $U$ $:=$ $(U = \bigcup S)$~:
+    We fix $C := \mathbf{R}^2$.
+
+    $S$ covers $U$ $:=$ $(U \subseteq \bigcup S)$~:
     \begin{itemize}
-        \item $U = \bigcup \{V\subset U\}$
-        \item if $U = \bigcup S$, and $V \subset U$, then $V = \bigcup (S\cap V)$
-        \item if $U = \bigcup S$, and for all $V\in S$, $V = \bigcup (R\cap V)$, then $U = \bigcup R$
+        \item if $U \in S$ then $U \subseteq \bigcup S$
+        \item if $U \subseteq \bigcup S$, and $V \subset U$, then $V \subseteq \bigcup S$
+        \item if $U \subseteq \bigcup S$, and for all $V\in S$, $V \subseteq \bigcup R$, then $U = \bigcup R$
     \end{itemize}
 \end{frame}
 
@@ -256,7 +260,22 @@
 
     $F^P$ is a sheaf whenever $F$ is.\vspace{1cm}
     
-    $\Omega$ contains the sieves which are also sheaves.
+    $\Omega$ contains the sieves which are also sheaves, that is which only cover themselves.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Lawvere-Tierney topology}
+    Sheaves are defined through an operator $j : \Omega \to \Omega$ for which
+    \begin{itemize}
+        \item $ id \leq j$, since $S\subseteq \ovl S$
+        \item $ jj \leq j$, since $\ovl S \subseteq \ovl R$ whenever $S \subseteq \ovl{R}$
+        \item $j\circ \land = \land \circ j\times j :\Omega \times \Omega \to \Omega$, since for $f$ covered by $S$ and $R$, 
+    \end{itemize}
+
+    This can be defined in any topos.
+    \vspace{0.5cm}
+
+    Or, rather, any type theory with a type of (strict) proposition.
 \end{frame}
 
 %\section{Preliminary~: Forcing, presheaves and sheaves}
