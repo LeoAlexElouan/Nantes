@@ -293,33 +293,79 @@ We note the sieve of all maps covered by $S$ as $\ovl{S}$.
     A sheaf is then a type $F$ together with
     \begin{itemize}
         \item A map $\mathbf{ask} : \Pi P, JP -> (P -> F) -> F$
-        \item Such that $\Pi P\ j, \mathbf{ask}\ P\ j\ (\lambda \_, f) = f$
+        \item Such that for all proposition $P$ and any proof $j$ of $JP$, $\mathbf{ask}\ P\ j\ (\lambda \_, f) = f$
     \end{itemize}
 \end{frame}
 \begin{frame}
     \frametitle{$IO$-sheaves}
     Noting $I := \Sigma P. J P : \mathbf{Type}$ and $O (P,j) := P : I -> \mathbf{Prop}$,\vspace{0.5cm}
 
-    A sheaf is equivalently a type $F$ where:
-    \begin{itemize}
-        \item $\mathbf{ask} : \Pi i:I, (O\ i -> F) -> F$
-        \item $\Pi i:I, \mathbf{ask}\ i\ (\lambda\_, f) = f $
-    \end{itemize}
+    A sheaf is equivalently given by:
+
+    $$ \begin{array}{rl}
+        \mathbf{Shf} &:=\left\{\begin{array}{rl}
+            F& : \mathbf{Type}\\
+            \mathbf{ask}&: \Pi i:I, (O\ i -> F) -> F\\
+            \varepsilon&:\Pi (i:I)(f:F), \mathbf{ask}\ i\ (\lambda\_, f) = f 
+        \end{array}\right\}
+    \end{array}$$
+    A type has at most one sheaf structure (with univalence).
 \end{frame}
 
-%\begin{frame}
-%   \frametitle{The sheaf model}
-%
-%
-%    If $F$ is a sheaf then $A -> F$ is a sheaf. Hence, context can just be interpreted as types.
-%    $$\mathbf{Ctx} := \mathbf{Type} : \mathbf{Type}$$
-%    \vspace{0.5cm}
-%
-%    Types are interpreted as families of sheaves.
-%
-%    $$\mathbf{Typ}\ := \lambda \Gamma, \Pi (\gamma : \Gamma), \mathbf{Shf} : \mathbf{Ctx} -> Type$$
-%
-%\end{frame}
+\section{Sheaf type theories}
+
+\begin{frame}
+   \frametitle{The sheaf model}
+
+   $$ \begin{array}{rl}
+        [\mathbf{Type}] &:= \{F:=\mathbf{Shf}; \dots\}\\
+        \llbracket A \rrbracket&:= F\ [A]\\
+%        \Pi a : A, B &:= \{F:= \Pi a : \llbracket A\rrbracket, \llbracket B\rrbracket; \dots\}
+    \end{array} $$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Positive types}
+    Interpreting positive types requires higher inductive types.
+    
+$$
+\begin{array}{l}
+    \mathbf{Inductive}\ \mathbf{B} : \mathbf{Type} := \\
+    \mid \mathbf{true} : \mathbf{B}\\
+    \mid \mathbf{false} : \mathbf{B}\\
+    \mid \mathbf{ask}_{\mathbf{B}} : \Pi (i:I). (O\ i -> \mathbf{B}) -> \mathbf{B}\\
+    \mid \varepsilon_\mathbf{B} : \Pi (i:I)\ (b : \mathbf B). \mathbf{ask}\ i\ (\lambda _ : O\ i. b) = b
+\end{array}
+$$
+
+\end{frame}
+
+\begin{frame}
+    \frametitle{Basic sheaf theory}
+
+    $$\begin{array}{rl}
+        [\mathbf{ask}] &:= \mathbf{ask}\\
+    \end{array}$$
+
+    But $\mathbf{ask}$ has type  $\Pi (A : \mathbf{Shf}) (i:I), (O\ i -> A ) -> A$, should be $\llbracket ? \rrbracket$
+    \vspace{1cm}
+
+    An approximation~:
+
+    $$\inference{O_i,\Gamma\vdash k : A}{\Gamma\vdash \mathbf{ask}_i\ k : A}\qquad \inference{}{O_i,\Gamma\vdash \mathbf{ask}_i\ k \equiv k}$$
+    With $[\mathbf{ask}_i\ k] := \mathbf{ask}\ [A]\ i\ (\lambda (o_i: O_i), [k])$
+\end{frame}
+
+\begin{frame}
+    \frametitle{Geometric formulas}
+
+    $$\bigwedge_{i : I}\left(\forall \overrightarrow{x}, O_i => \bigvee_{k : K_i}\exists \overrightarrow{y}, Q_{i,k}\right)$$
+    \vspace{1cm}
+
+    Up to curryfication, of the shape $\Pi i, O i$.
+\end{frame}
+
+
 
 \section{Bibliography}
 
