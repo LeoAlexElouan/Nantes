@@ -120,7 +120,7 @@
 }
 
 \title[Sheaves]{Internship defense M2\\ Parisian Master of Research in Computer Science\\  \'Elimination non-singleton~:\\ Avec les faisceaux, c'est pas faux}
-\author[Soudant Léo]{\textbf{Soudant L\'eo}, second year student at ENS Paris Saclay}
+\author[Soudant Léo]{\textbf{Soudant L\'eo}, fourth year student at ENS Paris Saclay}
 \date[2023]{February 28th to July 30th 2023}
 
 \usepackage{quiver}
@@ -138,7 +138,7 @@
 
 
 
-\section{Preliminary~: Topoi}
+\section{Topoi}
 
 \begin{frame}
     \frametitle{The starting point}
@@ -235,7 +235,7 @@ We note the sieve of all maps covered by $S$ as $\ovl{S}$.
 
     \vspace{0.5cm}
 
-    A sheaf is a presheaf where a map in $\mathbf{Nat}(S, F)$ correspond to exactly one map of $\mathbf{Nat}(\ovl{S},F)$.
+    A sheaf is a presheaf where the inclusion of $\mathbf{Nat}(\ovl{S},F)$ in $\mathbf{Nat}(S, F)$ is an equivalence.
 \end{frame}
 
 \begin{frame}
@@ -268,28 +268,59 @@ We note the sieve of all maps covered by $S$ as $\ovl{S}$.
     Sheaves are defined through an operator $j : \Omega \to \Omega$ for which
     \begin{itemize}
         \item $ id \leq j$, since $S\subseteq \ovl S$
-        \item $ jj \leq j$, since $\ovl S \subseteq \ovl R$ whenever $S \subseteq \ovl{R}$
-        \item $j\circ \land = \land \circ j\times j :\Omega \times \Omega \to \Omega$, since for $f$ covered by $S$ and $R$, 
+%        \item $ jj \leq j$, since $\ovl S \subseteq \ovl R$ whenever $S \subseteq \ovl{R}$
+%        \item $j\circ \land = \land \circ j\times j :\Omega \times \Omega \to \Omega$.
+        \item $ \Rightarrow \circ id \times j \leq \Rightarrow \circ j \times j : \Omega \times \Omega ->\Omega$, since $\ovl S \subseteq \ovl R$ whenever $S \subseteq \ovl{R}$
     \end{itemize}
 
     This can be defined in any topos.
     \vspace{0.5cm}
 
-    Or, rather, any type theory with a type of (strict) proposition.
+    Or, rather, any type theory with a type of (strict) propositions.
 \end{frame}
 
-%\section{Preliminary~: Forcing, presheaves and sheaves}
+\section{Sheaves in Type theory}
+
+\begin{frame}
+    \frametitle{$J$-Sheaves}
+    Given $J : \mathbf{Prop}->\mathbf{Prop}$ with
+    \begin{itemize}
+        \item $\mathbf{ret}_J : \Pi P, P -> JP$
+        \item $\mathbf{bind}_J : \Pi Q P, J P -> (P -> JQ)-> JQ$
+    \end{itemize}
+    \vspace{0.5cm}
+
+    A sheaf is then a type $F$ together with
+    \begin{itemize}
+        \item A map $\mathbf{ask} : \Pi P, JP -> (P -> F) -> F$
+        \item Such that $\Pi P\ j, \mathbf{ask}\ P\ j\ (\lambda \_, f) = f$
+    \end{itemize}
+\end{frame}
+\begin{frame}
+    \frametitle{$IO$-sheaves}
+    Noting $I := \Sigma P. J P : \mathbf{Type}$ and $O (P,j) := P : I -> \mathbf{Prop}$,\vspace{0.5cm}
+
+    A sheaf is equivalently a type $F$ where:
+    \begin{itemize}
+        \item $\mathbf{ask} : \Pi i:I, (O\ i -> F) -> F$
+        \item $\Pi i:I, \mathbf{ask}\ i\ (\lambda\_, f) = f $
+    \end{itemize}
+\end{frame}
+
 %\begin{frame}
-%    \frametitle{Forcing with presheaves}
-%    Given a poset $\mathbf{P}$ with elements $p,p',\dots$ and a family of models $M$ decreasing over $\mathbf{P}$.
-%     \begin{itemize}
-%        \item $p,M \Vdash \phi\land\psi$ iff $p,M\Vdash \phi$ and $p,M\Vdash \phi$.
-%        \item $p,M\Vdash \phi \Rightarrow \psi$, iff for all $p' \leq p$, if $p',M \Vdash \phi$ then $p',M\Vdash \psi$.
-%        \item $p,M \Vdash \phi\land\psi$ iff $p,M\Vdash \phi$ or $p,M\Vdash \phi$.
-%        \item 
-%     \end{itemize}
-    
+%   \frametitle{The sheaf model}
+%
+%
+%    If $F$ is a sheaf then $A -> F$ is a sheaf. Hence, context can just be interpreted as types.
+%    $$\mathbf{Ctx} := \mathbf{Type} : \mathbf{Type}$$
+%    \vspace{0.5cm}
+%
+%    Types are interpreted as families of sheaves.
+%
+%    $$\mathbf{Typ}\ := \lambda \Gamma, \Pi (\gamma : \Gamma), \mathbf{Shf} : \mathbf{Ctx} -> Type$$
+%
 %\end{frame}
+
 \section{Bibliography}
 
 \begin{frame}[allowframebreaks]
