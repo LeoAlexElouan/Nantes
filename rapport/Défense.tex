@@ -97,8 +97,8 @@
 \mathlig{|->}{\mapsto}
 \mathlig{=>}{\Rightarrow}
 \mathlig{|-}{\vdash}
-\mathlig{[|}{\llbracket}
-\mathlig{|]}{\rrbracket}
+%\mathlig{[|}{\llbracket}
+%\mathlig{|]}{\rrbracket}
 
 \reservestyle{\command}{\codefont}
 \command{inl,inr,wrap,roll,rec,corec,as,match,return,let,in,sample,on,do,Unit,Bool,Real,Nat,List,Stream,Dist}
@@ -319,8 +319,10 @@ We note the sieve of all maps covered by $S$ as $\ovl{S}$.
 
    $$ \begin{array}{rl}
         [\mathbf{Type}] &:= \{F:=\mathbf{Shf}; \dots\}\\
+        \left[\Pi a : A, B\right] &:= \{F:= \Pi a : \llbracket A\rrbracket, \llbracket B\rrbracket; \dots\}\\
         \llbracket A \rrbracket&:= F\ [A]\\
-%        \Pi a : A, B &:= \{F:= \Pi a : \llbracket A\rrbracket, \llbracket B\rrbracket; \dots\}
+%        \left[x\right] := x
+
     \end{array} $$
 \end{frame}
 
@@ -334,7 +336,12 @@ $$
     \mid \mathbf{true} : \mathbf{B}\\
     \mid \mathbf{false} : \mathbf{B}\\
     \mid \mathbf{ask}_{\mathbf{B}} : \Pi (i:I). (O\ i -> \mathbf{B}) -> \mathbf{B}\\
-    \mid \varepsilon_\mathbf{B} : \Pi (i:I)\ (b : \mathbf B). \mathbf{ask}\ i\ (\lambda _ : O\ i. b) = b
+    \mid \varepsilon_\mathbf{B} : \Pi (i:I)\ (b : \mathbf B). \mathbf{ask}\ i\ (\lambda \_. b) = b
+\end{array}
+$$
+$$
+\begin{array}{rl}
+    [B] &:={F:= B; \mathbf{ask}:=\mathbf{ask}_B;\varepsilon := \varepsilon_B}
 \end{array}
 $$
 
@@ -359,13 +366,42 @@ $$
 \begin{frame}
     \frametitle{Geometric formulas}
 
-    $$\bigwedge_{i : I}\left(\forall \overrightarrow{x}, O_i => \bigvee_{k : K_i}\exists \overrightarrow{y}, Q_{i,k}\right)$$
-    \vspace{1cm}
+    $$\bigwedge_{i : I}\left(\forall \overrightarrow{x}, O_i => \bigvee_{j : J_i}\exists \overrightarrow{y}, Q_{i,j}\right)$$
+    \vspace{0.5cm}
 
     Up to curryfication, of the shape $\Pi i, O i$.
+
+
+    $$ \inference{Q_{i,1},\overrightarrow{y},\Gamma\vdash k_1:A & \cdots & Q_{i,n},\overrightarrow{y},\Gamma\vdash k_n : A}{O_i,\Gamma\vdash \mathbf{ask}_i\ A\ \overrightarrow{x}\ \overrightarrow{k} : A}$$
 \end{frame}
 
+\begin{frame}
+    \frametitle{Normalisation of a modified system $T$}
+    \begin{itemize}
+        \item No types-as-terms
+        \item Natural numbers, functions, empty type
+    \end{itemize}
+    $$\bigwedge_{i : I}\bigvee_{j : J_i} O_{i,j}$$
 
+    Proof of normalisation through logical relations.
+\end{frame}
+
+\begin{frame}
+    \frametitle{Example of working theory}
+    With an extra cohen real $\alpha : \mathbf{N} -> \mathbf{B}$
+
+    $$ \begin{array}{rl}
+        &\left(\bigwedge_{n} \top -> (n \mapsto_\alpha \mathbf{true}) \vee (n \mapsto_\alpha \mathbf{false})\right)\\
+        \land &\left(\bigwedge_{n } (n\mapsto_\alpha \mathbf{true}) \wedge (n \mapsto_\alpha \mathbf{false}) -> \bot \right)
+    \end{array} $$
+    \vspace{0cm} 
+
+\centering $\inference{}{n\mapsto_\alpha b\vdash\alpha\ n \equiv b : \mathbf{B}}$ and $\mathbf{ask}_n\ A:= \mathbf{B}_{rec}\ A\ (\alpha\ n)$
+\vspace{0.5cm}
+
+Can be used to show continuity of functionals $(\mathbf{N} -> \mathbf{B}) -> \mathbf{N}$
+
+\end{frame}
 
 \section{Bibliography}
 
