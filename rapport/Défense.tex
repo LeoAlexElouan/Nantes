@@ -374,7 +374,12 @@ $$
 
     $$ \inference{Q_{i,1},\overrightarrow{y},\Gamma\vdash k_1:A & \cdots & Q_{i,n},\overrightarrow{y},\Gamma\vdash k_n : A}{O_i,\Gamma\vdash \mathbf{ask}_i\ A\ \overrightarrow{x}\ \overrightarrow{k} : A}$$
 \end{frame}
+\begin{frame}
+    \frametitle{Compatibility}
+    Using $\bigwedge_{i : I}\bigvee_{j : J_i} O_{i,j}$~:
 
+    $$\inference{(O_{i,j},O_{i,j'},\Gamma\vdash k_j\equiv k_{j'}:A)_{j,j'}}{\Gamma\vdash\mathbf{ask}_i\ A\ (k_j)_{j : J_i}:A}$$
+\end{frame}
 \begin{frame}
     \frametitle{Normalisation of a modified system $T$}
     \begin{itemize}
@@ -402,7 +407,15 @@ $$
 Can be used to show continuity of functionals $(\mathbf{N} -> \mathbf{B}) -> \mathbf{N}$
 
 \end{frame}
-
+\section{Conclusion}
+\begin{frame}
+    \frametitle{Conclusion}
+    \begin{itemize}
+        \item Generalise to all geometric formulas
+        \item Generalise normalisation to type theory with types-as-terms
+        \item Study specific theories.
+    \end{itemize}
+\end{frame}
 \section{Bibliography}
 
 \begin{frame}[allowframebreaks]
